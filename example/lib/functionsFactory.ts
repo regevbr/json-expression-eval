@@ -1,9 +1,9 @@
 'use strict';
 
-import * as fs from 'fs';
-import * as path from 'path';
 import {Func, FunctionsTable} from "../../dist";
 import {ExpressionContext} from "./evaluator";
+import {factory as userFuncFactory} from './functions/userFunc';
+import {factory as counterFuncFactory} from './functions/counterFunc';
 
 export interface FunctionDescription {
     name: string;
@@ -12,19 +12,16 @@ export interface FunctionDescription {
 
 export type FuncFactory = () => FunctionDescription;
 
-const functionsDir = path.join(__dirname, '/functions');
-
 const functionsTable: FunctionsTable<ExpressionContext> = {};
 
-fs.readdirSync(functionsDir).forEach((file) => {
-  if (file.endsWith('.js')) {
-    const data = require(path.join(functionsDir, file)).factory as FuncFactory;
-    const description = data();
+const _addFunction = (description: FunctionDescription) : void => {
     if (functionsTable[description.name]) {
-      throw new Error(`Function with name ${description.name} already exists`);
+        throw new Error(`Function with name ${description.name} already exists`);
     }
     functionsTable[description.name] = description.evaluate;
-  }
-});
+};
+
+_addFunction(userFuncFactory());
+_addFunction(counterFuncFactory());
 
 export { functionsTable };

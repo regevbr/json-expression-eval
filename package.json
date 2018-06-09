@@ -1,6 +1,6 @@
 {
   "name": "json-expression-eval",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "evaluate a json described boolean expression using dynamic functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
