@@ -35,3 +35,10 @@ expression = {
     ]
 };
 run(expression, context);
+expression = {
+    or: [
+        { not: { user: 'a@b.com' } },
+        { maxCount: 1 },
+    ]
+};
+run(expression, context);

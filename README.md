@@ -9,10 +9,43 @@ npm install json-expression-eval --save
 yarn add json-expression-eval
 ```
 ## Usage
+ - Please see example dir for extended usage and opinionated usage
+### API
+This module enables you to evaluate boolean expressions which are described using a JSON structure and can utilize user defined 'functions'.  
+There are 4 types op operators you can use:
+- and - accepts a non empty list of operators
+- or - accepts a non empty list of operators
+- not - accepts another operator
+- \<user defined funcs\> - accepts any type of argument and evaluated by the user defined functions and given context.
+
+Example expressions, assuming we have the user and maxCount user defined functions in place can be:
+```json
+{  
+   "or":[  
+      {  
+         "not":{  
+            "user":"a@b.com"
+         }
+      },
+      {  
+         "maxCount":1
+      }
+   ]
+}
+```
+
 ### Javascript
 ```javascript
-var evaluator = require('json-expression-eval');
-var result = evaluator.evaluate({and:[{user: 'a@b.com'}]},{userId:'a@b.com'});
+const evaluator = require('json-expression-eval');
+const functionsTable = {
+	user: (user, context) => {
+        return context.userId === user;
+    },
+	maxCount: (maxCount, context) => {
+        return context.times < maxCount;
+    }
+};
+const result = evaluator.evaluate({or:[{user: 'a@b.com'},{not: {and: [{maxCount: 1},{user: 'a2@b.com'}]}}]},{userId:'a@b.com', times: 1},functionsTable);
 ```
 ```sh
 Output should be 'true'
@@ -20,11 +53,18 @@ Output should be 'true'
 ### TypeScript
 ```typescript
 import { evaluate } from 'json-expression-eval';
-console.log(evaluate({and:[{user: 'a@b.com'}]},{userId:'a@b.com'});)
-
+const functionsTable : FunctionsTable = {
+	user: (user :string , context : { userId: string }): boolean => {
+        return context.userId === user;
+    },
+	maxCount: (maxCount: number, context: { times: number }): boolean => {
+        return context.times < maxCount;
+    }
+};
+const result = evaluate({or:[{user: 'a@b.com'},{not: {and: [{maxCount: 5},{user: 'a2@b.com'}]}}]},{userId:'a2@b.com', times: 1},functionsTable);
 ```
 ```sh
-Output should be 'true'
+Output should be 'false'
 ```
 ## Test 
 ```sh
