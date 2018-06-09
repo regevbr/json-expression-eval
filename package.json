@@ -19,6 +19,9 @@
     "dynamic",
     "function",
     "boolean",
+    "node",
+    "js",
+    "javascript",
     "eval"
   ],
   "author": "Regev Brody <regevbr@gmail.com>",
