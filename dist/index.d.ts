@@ -11,8 +11,7 @@ export interface NotOp {
     not: Expression;
 }
 export declare type Expression = FuncOp | AndOp | OrOp | NotOp;
-export declare type ExpressionContext = any;
-export declare type Func = (param: any, context: ExpressionContext) => boolean;
+export declare type Func = (param: any, context: any) => boolean;
 export declare type FunctionsTable = {
     [k: string]: Func;
 };

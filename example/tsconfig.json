@@ -4,18 +4,10 @@
     "module": "none",
     "moduleResolution": "node",
     "declaration": true,
-    "outDir": "./dist",
     "strict": true,
     "lib": [
       "es6",
       "dom"
     ]
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  }
 }

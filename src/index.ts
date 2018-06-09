@@ -20,9 +20,7 @@ export interface NotOp {
 
 export type Expression = FuncOp | AndOp | OrOp | NotOp;
 
-export type ExpressionContext = any;
-
-export type Func = (param: any, context: ExpressionContext) => boolean;
+export type Func = (param: any, context: any) => boolean;
 
 export type FunctionsTable = { [k: string]: Func };
 
@@ -38,7 +36,7 @@ function isNotOp(expression: Expression): expression is NotOp {
     return (<NotOp>expression).not !== undefined;
 }
 
-export const evaluate = (expression: Expression, context: ExpressionContext, functionsTable: FunctionsTable): boolean => {
+export const evaluate = (expression: Expression, context: any, functionsTable: FunctionsTable): boolean => {
     const _evaluate = (_expression: Expression): boolean => {
         const keys = Object.keys(_expression);
         if (keys.length !== 1) {
