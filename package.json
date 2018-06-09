@@ -1,12 +1,14 @@
 {
   "name": "json-expression-eval",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "evaluate a json described boolean expression using dynamic functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "mocha test/ --reporter spec --compilers ts:ts-node/register --recursive",
-    "build": "./node_modules/.bin/tsc",
+    "build": "npm run buildDist && npm run buildExample",
+    "buildDist": "./node_modules/.bin/tsc",
+    "buildExample": "cd ./example && tsc",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha test/ -- -R spec --compilers ts:ts-node/register --recursive"
   },
   "repository": {
@@ -44,6 +46,5 @@
     "typescript": "^2.9.1"
   },
   "dependencies": {
-    "underscore": "^1.9.1"
   }
 }

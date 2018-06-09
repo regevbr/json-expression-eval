@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const _ = require("underscore");
 function isAndOp(expression) {
     return expression.and !== undefined;
 }
@@ -10,6 +9,36 @@ function isOrOp(expression) {
 function isNotOp(expression) {
     return expression.not !== undefined;
 }
+const _isObject = (obj) => {
+    var type = typeof obj;
+    return type === 'function' || type === 'object' && !!obj;
+};
+const _evaluateCompareOp = (op, param) => {
+    if (!_isObject(op)) {
+        return param === op;
+    }
+    const keys = Object.keys(op);
+    if (keys.length !== 1) {
+        throw new Error('Invalid expression - too may keys');
+    }
+    const key = keys[0];
+    const value = op[key];
+    switch (key) {
+        case 'gt':
+            return param > value;
+        case 'gte':
+            return param >= value;
+        case 'lt':
+            return param < value;
+        case 'lte':
+            return param <= value;
+        case 'eq':
+            return param === value;
+        case 'neq':
+            return param !== value;
+    }
+    throw new Error(`Invalid expression - unknown op ${key}`);
+};
 exports.evaluate = (expression, context, functionsTable) => {
     const _evaluate = (_expression) => {
         const keys = Object.keys(_expression);
@@ -23,7 +52,7 @@ exports.evaluate = (expression, context, functionsTable) => {
                 throw new Error('Invalid expression - and operator must have at least one expression');
             }
             let result = true;
-            _.each(andExpression, (currExpression) => {
+            andExpression.forEach((currExpression) => {
                 const currResult = _evaluate(currExpression);
                 result = result && currResult;
             });
@@ -35,7 +64,7 @@ exports.evaluate = (expression, context, functionsTable) => {
                 throw new Error('Invalid expression - or operator must have at least one expression');
             }
             let result = false;
-            _.each(orExpression, (currExpression) => {
+            orExpression.forEach((currExpression) => {
                 const currResult = _evaluate(currExpression);
                 result = result || currResult;
             });
@@ -47,6 +76,9 @@ exports.evaluate = (expression, context, functionsTable) => {
         }
         else if (key in functionsTable) {
             return functionsTable[key](_expression[key], context);
+        }
+        else if (key in context) {
+            return _evaluateCompareOp(_expression[key], context[key]);
         }
         throw new Error(`Invalid expression - unknown function ${key}`);
     };

@@ -56,5 +56,23 @@ expression = {
 
 run(expression, context);
 
+expression = {
+    or: [
+        {times: { lt: 5}},
+        {times: { gte: 10}},
+    ]
+};
+
+run(expression, context);
+
+expression = {
+    or: [
+        {times: 3},
+        {times: { gte: 10}},
+    ]
+};
+
+run(expression, context);
+
 
 

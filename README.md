@@ -9,16 +9,27 @@ npm install json-expression-eval --save
 yarn add json-expression-eval
 ```
 ## Usage
- - Please see example dir for extended usage and opinionated usage
+ *Please see tests for more usages and example dir for extended and opinionated usage.*
 ### API
 This module enables you to evaluate boolean expressions which are described using a JSON structure and can utilize user defined 'functions'.  
-There are 4 types op operators you can use:
-- and - accepts a non empty list of operators
-- or - accepts a non empty list of operators
-- not - accepts another operator
-- \<user defined funcs\> - accepts any type of argument and evaluated by the user defined functions and given context.
+There are 4 types op operators you can use (evaluated in that order of precedence):
+- `and` - accepts a non empty list of operators
+- `or` - accepts a non empty list of operators
+- `not` - accepts another operator
+- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions and given context.
+- `<compare funcs>` - operates on one of the context properties and compare it to a given value.
+    - `{property: {op: value}}`
+        - available ops:
+            - `gt` - >
+            - `gte` - >=
+            - `lt` - <
+            - `lte` - <=
+            - `eq` - ===
+            - `neq` - !==
+    - `{property: value}`
+        - compares the property to that value (shorthand to the `eq` op)
 
-Example expressions, assuming we have the user and maxCount user defined functions in place can be:
+Example expressions, assuming we have the `user` and `maxCount` user defined functions in place can be:
 ```json
 {  
    "or":[  
@@ -29,6 +40,12 @@ Example expressions, assuming we have the user and maxCount user defined functio
       },
       {  
          "maxCount":1
+      },
+      {  
+         "times": { "eq" : 5}
+      },
+      {  
+         "country": "USA"
       }
    ]
 }

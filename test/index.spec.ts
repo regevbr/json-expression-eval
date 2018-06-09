@@ -11,6 +11,78 @@ describe('evaluator', function() {
         }
     };
 
+    it('should evaluate short eq compare op to true', function() {
+        expect(evaluate({ timesCounter: 5 }, { timesCounter: 5 }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate short eq compare op to false', function() {
+        expect(evaluate({ timesCounter: 5 }, { timesCounter: 7 }, functionsTable)).to.eql(false);
+    });
+
+    it('should evaluate eq compare op to true', function() {
+        expect(evaluate({ timesCounter: {eq: 5} }, { timesCounter: 5 }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate eq compare op to false', function() {
+        expect(evaluate({ timesCounter: {eq: 5} }, { timesCounter: 7 }, functionsTable)).to.eql(false);
+    });
+
+    it('should evaluate neq compare op to true', function() {
+        expect(evaluate({ timesCounter: {neq: 5} }, { timesCounter: 8 }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate eq compare op to false', function() {
+        expect(evaluate({ timesCounter: {neq: 5} }, { timesCounter: 5 }, functionsTable)).to.eql(false);
+    });
+
+    it('should evaluate gt compare op to true', function() {
+        expect(evaluate({ timesCounter: {gt: 5} }, { timesCounter: 8 }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate gt compare op to false', function() {
+        expect(evaluate({ timesCounter: {gt: 5} }, { timesCounter: 3 }, functionsTable)).to.eql(false);
+    });
+
+    it('should evaluate gt compare op to false 2', function() {
+        expect(evaluate({ timesCounter: {gt: 5} }, { timesCounter: 5 }, functionsTable)).to.eql(false);
+    });
+
+    it('should evaluate gte compare op to true', function() {
+        expect(evaluate({ timesCounter: {gte: 5} }, { timesCounter: 8 }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate gte compare op to true 2', function() {
+        expect(evaluate({ timesCounter: {gte: 5} }, { timesCounter: 5 }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate gte compare op to false', function() {
+        expect(evaluate({ timesCounter: {gte: 5} }, { timesCounter: 3 }, functionsTable)).to.eql(false);
+    });
+
+    it('should evaluate lt compare op to true', function() {
+        expect(evaluate({ timesCounter: {lt: 5} }, { timesCounter: 3 }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate gt compare lt to false', function() {
+        expect(evaluate({ timesCounter: {lt: 5} }, { timesCounter: 8 }, functionsTable)).to.eql(false);
+    });
+
+    it('should evaluate lt compare op to false 2', function() {
+        expect(evaluate({ timesCounter: {lt: 5} }, { timesCounter: 5 }, functionsTable)).to.eql(false);
+    });
+
+    it('should evaluate lte compare op to true', function() {
+        expect(evaluate({ timesCounter: {lte: 5} }, { timesCounter: 3 }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate lte compare op to true 2', function() {
+        expect(evaluate({ timesCounter: {lte: 5} }, { timesCounter: 5 }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate lte compare op to false', function() {
+        expect(evaluate({ timesCounter: {lte: 5} }, { timesCounter: 8 }, functionsTable)).to.eql(false);
+    });
+
     it('should evaluate a single function', function() {
         expect(evaluate({ user: 'r@a.com' }, { userId: 'r@a.com' }, functionsTable)).to.eql(true);
     });
@@ -61,6 +133,18 @@ describe('evaluator', function() {
         expect(function() {
             evaluate({ dummy: 1 }, { userId: 'r@a.com' }, functionsTable);
         }).to.throw('Invalid expression - unknown function dummy');
+    });
+
+    it('should fail on non existing op', function() {
+        expect(function() {
+            evaluate({ userId: {bk : 1} }, { userId: 'r@a.com' }, functionsTable);
+        }).to.throw('Invalid expression - unknown op bk');
+    });
+
+    it('should fail too many keys to op', function() {
+        expect(function() {
+            evaluate({ userId: {eq : 1, nq: 2} }, { userId: 'r@a.com' }, functionsTable);
+        }).to.throw('Invalid expression - too may keys');
     });
 
     it('should fail too many keys', function() {
