@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/regevbr/json-expression-eval.svg?branch=master)](https://travis-ci.org/regevbr/json-expression-eval)
+[![Coverage Status](https://coveralls.io/repos/github/regevbr/json-expression-eval/badge.svg?branch=master)](https://coveralls.io/github/regevbr/json-expression-eval?branch=master)
+
 # json-expression-eval
 A Node.js module that evaluates a json described boolean expression using dynamic functions
 ## Installation 
