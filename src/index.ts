@@ -60,9 +60,9 @@ export interface NotOp {
 
 export type Expression = FuncOp | AndOp | OrOp | NotOp | CompareOp;
 
-export type Func = (param: any, context: any) => boolean;
+export type Func<T> = (param: any, context: T) => boolean;
 
-export type FunctionsTable = { [k: string]: Func };
+export type FunctionsTable<T> = { [k: string]: Func<T> };
 
 function isAndOp(expression: Expression): expression is AndOp {
     return (<AndOp>expression).and !== undefined;
@@ -77,7 +77,7 @@ function isNotOp(expression: Expression): expression is NotOp {
 }
 
 const _isObject = (obj: any) => {
-    var type = typeof obj;
+    const type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
 };
 
@@ -108,7 +108,11 @@ const _evaluateCompareOp = (op: CompareOp, param: any) : boolean => {
     throw new Error(`Invalid expression - unknown op ${key}`);
 };
 
-export const evaluate = (expression: Expression, context: any, functionsTable: FunctionsTable): boolean => {
+export interface Context {
+    [index:string] : any;
+}
+
+export const evaluate = <T extends Context>(expression: Expression, context: T, functionsTable: FunctionsTable<T>): boolean => {
     const _evaluate = (_expression: Expression): boolean => {
         const keys = Object.keys(_expression);
         if (keys.length !== 1) {

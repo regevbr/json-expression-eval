@@ -45,8 +45,11 @@ export interface NotOp {
     not: Expression;
 }
 export declare type Expression = FuncOp | AndOp | OrOp | NotOp | CompareOp;
-export declare type Func = (param: any, context: any) => boolean;
-export declare type FunctionsTable = {
-    [k: string]: Func;
+export declare type Func<T> = (param: any, context: T) => boolean;
+export declare type FunctionsTable<T> = {
+    [k: string]: Func<T>;
 };
-export declare const evaluate: (expression: Expression, context: any, functionsTable: FunctionsTable) => boolean;
+export interface Context {
+    [index: string]: any;
+}
+export declare const evaluate: <T extends Context>(expression: Expression, context: T, functionsTable: FunctionsTable<T>) => boolean;

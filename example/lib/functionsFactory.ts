@@ -3,17 +3,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {Func, FunctionsTable} from "../../dist";
+import {ExpressionContext} from "./evaluator";
 
 export interface FunctionDescription {
     name: string;
-    evaluate: Func;
+    evaluate: Func<ExpressionContext>;
 }
 
 export type FuncFactory = () => FunctionDescription;
 
 const functionsDir = path.join(__dirname, '/functions');
 
-const functionsTable: FunctionsTable = {};
+const functionsTable: FunctionsTable<ExpressionContext> = {};
 
 fs.readdirSync(functionsDir).forEach((file) => {
   if (file.endsWith('.js')) {

@@ -10,7 +10,7 @@ function isNotOp(expression) {
     return expression.not !== undefined;
 }
 const _isObject = (obj) => {
-    var type = typeof obj;
+    const type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
 };
 const _evaluateCompareOp = (op, param) => {
