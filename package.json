@@ -1,0 +1,35 @@
+{
+  "name": "json-expression-eval",
+  "version": "1.0.0",
+  "description": "evaluate a json described boolean expression using dynamic functions",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/regevbr/json-expression-eval.git"
+  },
+  "keywords": [
+    "evaluate",
+    "expression",
+    "json",
+    "dynamic",
+    "function",
+    "boolean",
+    "eval"
+  ],
+  "author": "Regev Brody <regevbr@gmail.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/regevbr/json-expression-eval/issues"
+  },
+  "homepage": "https://github.com/regevbr/json-expression-eval#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "typescript": "^2.9.1"
+  }
+}
