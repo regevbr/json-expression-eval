@@ -1,4 +1,4 @@
-import { Expression } from "../../dist";
+import { Expression } from '../../dist';
 export interface ExpressionContext {
     userId: string;
     times: number;

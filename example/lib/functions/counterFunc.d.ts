@@ -1,2 +1,3 @@
-import { FuncFactory } from "../functionsFactory";
-export declare const factory: FuncFactory;
+export declare const counterFunc: (maxCount: number, context: {
+    times: number;
+}) => boolean;

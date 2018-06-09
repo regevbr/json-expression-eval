@@ -1,9 +1,7 @@
 "use strict";
 
-import {Expression} from "../../dist";
-
-import { functionsTable } from './functionsFactory';
-import { evaluate as _evaluate } from './../../dist/index';
+import {functionsTable} from './functionsFactory';
+import {evaluate as _evaluate, Expression} from '../../dist';
 
 export interface ExpressionContext {
     userId: string;

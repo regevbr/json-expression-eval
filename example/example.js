@@ -11,7 +11,7 @@ let context = {
     times: 3
 };
 let expression = {
-    user: 'a@b.com'
+    user: 'a@b.com',
 };
 run(expression, context);
 expression = {

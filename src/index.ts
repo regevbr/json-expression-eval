@@ -1,7 +1,7 @@
 "use strict";
 
 export interface FuncOp {
-  [k: string]: any;
+    [k: string]: any;
 }
 
 export interface GtOp {
@@ -46,16 +46,40 @@ export interface NeqOp {
 
 export type CompareOp = GtOp | GteOp | LtOp | LteOp | EqOp | NeqOp | ShortEqOp ;
 
+function isGtOp<T>(op: CompareOp, key: string): op is GtOp {
+    return (<GtOp>op)[key].gt !== undefined;
+}
+
+function isGteOp<T>(op: CompareOp, key: string): op is GteOp {
+    return (<GteOp>op)[key].gte !== undefined;
+}
+
+function isLteOp<T>(op: CompareOp, key: string): op is LteOp {
+    return (<LteOp>op)[key].lte !== undefined;
+}
+
+function isLtOp<T>(op: CompareOp, key: string): op is LtOp {
+    return (<LtOp>op)[key].lt !== undefined;
+}
+
+function isEqOp<T>(op: CompareOp, key: string): op is EqOp {
+    return (<EqOp>op)[key].eq !== undefined;
+}
+
+function isNeqOp<T>(op: CompareOp, key: string): op is NeqOp {
+    return (<NeqOp>op)[key].neq !== undefined;
+}
+
 export interface AndOp {
-  and: Expression[];
+    and: Expression[];
 }
 
 export interface OrOp {
-  or: Expression[];
+    or: Expression[];
 }
 
 export interface NotOp {
-  not: Expression;
+    not: Expression;
 }
 
 export type Expression = FuncOp | AndOp | OrOp | NotOp | CompareOp;
@@ -76,40 +100,41 @@ function isNotOp(expression: Expression): expression is NotOp {
     return (<NotOp>expression).not !== undefined;
 }
 
+function isFuncOp<T>(expression: Expression, key: string, functionsTable: FunctionsTable<T>): expression is FuncOp {
+    return key in functionsTable;
+}
+
 const _isObject = (obj: any) => {
     const type = typeof obj;
     return type === 'function' || type === 'object' && !!obj;
 };
 
-const _evaluateCompareOp = (op: CompareOp, param: any) : boolean => {
-    if (!_isObject(op)){
-        return param === op;
+const _evaluateCompareOp = (op: CompareOp, key: string, param: any): boolean => {
+    if (!_isObject(op[key])) {
+        return param === op[key];
     }
-    const keys = Object.keys(op);
+    const keys = Object.keys(op[key]);
     if (keys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
     }
-    const key = keys[0];
-    const value = op[key];
-    switch (key){
-        case 'gt':
-            return param > value;
-        case 'gte':
-            return param >= value;
-        case 'lt':
-            return param < value;
-        case 'lte':
-            return param <= value;
-        case 'eq':
-            return param === value;
-        case 'neq':
-            return param !== value;
+    if (isGtOp(op, key)) {
+        return param > op[key].gt;
+    } else if (isGteOp(op, key)) {
+        return param >= op[key].gte;
+    } else if (isLteOp(op, key)) {
+        return param <= op[key].lte;
+    } else if (isLtOp(op, key)) {
+        return param < op[key].lt;
+    } else if (isEqOp(op, key)) {
+        return param === op[key].eq;
+    } else if (isNeqOp(op, key)) {
+        return param !== op[key].neq;
     }
-    throw new Error(`Invalid expression - unknown op ${key}`);
+    throw new Error(`Invalid expression - unknown op ${keys[0]}`);
 };
 
 export interface Context {
-    [index:string] : any;
+    [index: string]: any;
 }
 
 export const evaluate = <T extends Context>(expression: Expression, context: T, functionsTable: FunctionsTable<T>): boolean => {
@@ -144,10 +169,10 @@ export const evaluate = <T extends Context>(expression: Expression, context: T, 
         } else if (isNotOp(_expression)) {
             const notExpression = _expression.not;
             return !_evaluate(notExpression);
-        } else if (key in functionsTable) {
+        } else if (isFuncOp(_expression, key, functionsTable)) {
             return functionsTable[key](_expression[key], context);
         } else if (key in context) {
-            return _evaluateCompareOp(_expression[key], context[key]);
+            return _evaluateCompareOp(_expression, key, context[key]);
         }
         throw new Error(`Invalid expression - unknown function ${key}`);
     };

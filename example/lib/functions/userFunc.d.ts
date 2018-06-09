@@ -1,2 +1,3 @@
-import { FuncFactory } from "../functionsFactory";
-export declare const factory: FuncFactory;
+export declare const userFunc: (user: string, context: {
+    userId: string;
+}) => boolean;

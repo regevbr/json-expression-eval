@@ -15,7 +15,7 @@ let context: ExpressionContext = {
 };
 
 let expression: Expression = {
-   user: 'a@b.com'
+    user: 'a@b.com',
 };
 
 run(expression, context);
