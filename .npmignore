@@ -23,7 +23,11 @@ coverage
 src
 test
 scripts
-
+.idea
+.github
+.travis.yml
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
 # source maps
 
 **/*.js.map
