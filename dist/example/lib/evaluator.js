@@ -1,7 +1,8 @@
-"use strict";
+'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const functionsFactory_1 = require("./functionsFactory");
-const dist_1 = require("../../dist");
+const __1 = require("../..");
 exports.evaluate = (expression, context) => {
-    return dist_1.evaluate(expression, context, functionsFactory_1.functionsTable);
+    return __1.evaluate(expression, context, functionsFactory_1.functionsTable);
 };
+//# sourceMappingURL=evaluator.js.map

@@ -1,55 +1,44 @@
-export interface FuncOp {
-    [k: string]: any;
+export declare type PropertyCompareOp<C, K extends keyof C> = C[K];
+export declare type FuncCompareOp<C, F extends FunctionsTable<C>, K extends keyof F> = Parameters<F[K]>[0];
+export interface EqualCompareOp<C, K extends keyof C> {
+    eq: C[K];
 }
-export interface GtOp {
-    [k: string]: {
-        gt: any;
-    };
+export interface NotEqualCompareOp<C, K extends keyof C> {
+    neq: C[K];
 }
-export interface GteOp {
-    [k: string]: {
-        gte: any;
-    };
+export interface GtCompareOp<C, K extends keyof C> {
+    gt: C[K] extends number ? number : never;
 }
-export interface LtOp {
-    [k: string]: {
-        lt: any;
-    };
+export interface GteCompareOp<C, K extends keyof C> {
+    gte: C[K] extends number ? number : never;
 }
-export interface LteOp {
-    [k: string]: {
-        lte: any;
-    };
+export interface LtCompareOp<C, K extends keyof C> {
+    lt: C[K] extends number ? number : never;
 }
-export interface EqOp {
-    [k: string]: {
-        eq: any;
-    };
+export interface LteCompareOp<C, K extends keyof C> {
+    lte: C[K] extends number ? number : never;
 }
-export interface ShortEqOp {
-    [k: string]: any;
-}
-export interface NeqOp {
-    [k: string]: {
-        neq: any;
-    };
-}
-export declare type CompareOp = GtOp | GteOp | LtOp | LteOp | EqOp | NeqOp | ShortEqOp;
-export interface AndOp {
-    and: Expression[];
-}
-export interface OrOp {
-    or: Expression[];
-}
-export interface NotOp {
-    not: Expression;
-}
-export declare type Expression = FuncOp | AndOp | OrOp | NotOp | CompareOp;
-export declare type Func<T> = (param: any, context: T) => boolean;
-export declare type FunctionsTable<T> = {
-    [k: string]: Func<T>;
+export declare type CompareOp<C, F extends FunctionsTable<C>> = {
+    [k in keyof C]: PropertyCompareOp<C, k> | EqualCompareOp<C, k> | NotEqualCompareOp<C, k> | GtCompareOp<C, k> | GteCompareOp<C, k> | LtCompareOp<C, k> | LteCompareOp<C, k>;
+} & {
+    [k in keyof F]: FuncCompareOp<C, F, k>;
 };
-export interface Context {
-    [index: string]: any;
+export interface AndCompareOp<C, F extends FunctionsTable<C>> {
+    and: Array<Expression<C, F>>;
 }
-export declare const evaluate: <T extends Context>(expression: Expression, context: T, functionsTable: FunctionsTable<T>) => boolean;
+export interface OrCompareOp<C, F extends FunctionsTable<C>> {
+    or: Array<Expression<C, F>>;
+}
+export interface NotCompareOp<C, F extends FunctionsTable<C>> {
+    not: Expression<C, F>;
+}
+export declare type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<T, Exclude<keyof T, Keys>> & {
+    [K in Keys]-?: Required<Pick<T, K>> & Partial<Record<Exclude<Keys, K>, undefined>>;
+}[Keys];
+export declare type Expression<C, F extends FunctionsTable<C>> = NotCompareOp<C, F> | OrCompareOp<C, F> | AndCompareOp<C, F> | RequireOnlyOne<CompareOp<C, F>>;
+export declare type Func<T> = (param: any, context: T) => boolean;
+export interface FunctionsTable<T> {
+    [k: string]: Func<T>;
+}
+export declare type Context = Record<string, any>;
+export declare const evaluate: <C extends Record<string, any>, F extends FunctionsTable<C>>(expression: Expression<C, F>, context: C, functionsTable: F) => boolean;

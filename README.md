@@ -1,5 +1,8 @@
+[![Npm Version](https://img.shields.io/npm/v/json-expression-eval.svg?style=popout)](https://www.npmjs.com/package/json-expression-eval)
 [![Build Status](https://travis-ci.org/regevbr/json-expression-eval.svg?branch=master)](https://travis-ci.org/regevbr/json-expression-eval)
 [![Coverage Status](https://coveralls.io/repos/github/regevbr/json-expression-eval/badge.svg?branch=master)](https://coveralls.io/github/regevbr/json-expression-eval?branch=master)
+[![dependencies Status](https://david-dm.org/regevbr/json-expression-eval/status.svg)](https://david-dm.org/regevbr/json-expression-eval)
+[![devDependencies Status](https://david-dm.org/regevbr/json-expression-eval/dev-status.svg)](https://david-dm.org/regevbr/json-expression-eval?type=dev)
 
 # json-expression-eval
 A Node.js module that evaluates a json described boolean expression using dynamic functions

@@ -1,34 +1,31 @@
-"use strict";
+'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-function isGtOp(op, key) {
-    return op[key].gt !== undefined;
+function isAndCompareOp(expression) {
+    return Array.isArray(expression.and);
 }
-function isGteOp(op, key) {
-    return op[key].gte !== undefined;
+function isOrCompareOp(expression) {
+    return Array.isArray(expression.or);
 }
-function isLteOp(op, key) {
-    return op[key].lte !== undefined;
+function isNotCompareOp(expression) {
+    return _isObject(expression.not);
 }
-function isLtOp(op, key) {
-    return op[key].lt !== undefined;
+function isGtCompareOp(op) {
+    return op.gt !== undefined;
 }
-function isEqOp(op, key) {
-    return op[key].eq !== undefined;
+function isGteCompareOp(op) {
+    return op.gte !== undefined;
 }
-function isNeqOp(op, key) {
-    return op[key].neq !== undefined;
+function isLteCompareOp(op) {
+    return op.lte !== undefined;
 }
-function isAndOp(expression) {
-    return expression.and !== undefined;
+function isLtCompareOp(op) {
+    return op.lt !== undefined;
 }
-function isOrOp(expression) {
-    return expression.or !== undefined;
+function isEqualCompareOp(op) {
+    return op.eq !== undefined;
 }
-function isNotOp(expression) {
-    return expression.not !== undefined;
-}
-function isFuncOp(expression, key, functionsTable) {
-    return key in functionsTable;
+function isNotEqualCompareOp(op) {
+    return op.neq !== undefined;
 }
 const _isObject = (obj) => {
     const type = typeof obj;
@@ -42,22 +39,22 @@ const _evaluateCompareOp = (op, key, param) => {
     if (keys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
     }
-    if (isGtOp(op, key)) {
+    if (isGtCompareOp(op[key])) {
         return param > op[key].gt;
     }
-    else if (isGteOp(op, key)) {
+    else if (isGteCompareOp(op[key])) {
         return param >= op[key].gte;
     }
-    else if (isLteOp(op, key)) {
+    else if (isLteCompareOp(op[key])) {
         return param <= op[key].lte;
     }
-    else if (isLtOp(op, key)) {
+    else if (isLtCompareOp(op[key])) {
         return param < op[key].lt;
     }
-    else if (isEqOp(op, key)) {
+    else if (isEqualCompareOp(op[key])) {
         return param === op[key].eq;
     }
-    else if (isNeqOp(op, key)) {
+    else if (isNotEqualCompareOp(op[key])) {
         return param !== op[key].neq;
     }
     throw new Error(`Invalid expression - unknown op ${keys[0]}`);
@@ -69,7 +66,7 @@ exports.evaluate = (expression, context, functionsTable) => {
             throw new Error('Invalid expression - too may keys');
         }
         const key = keys[0];
-        if (isAndOp(_expression)) {
+        if (isAndCompareOp(_expression)) {
             const andExpression = _expression.and;
             if (andExpression.length === 0) {
                 throw new Error('Invalid expression - and operator must have at least one expression');
@@ -81,7 +78,7 @@ exports.evaluate = (expression, context, functionsTable) => {
             });
             return result;
         }
-        else if (isOrOp(_expression)) {
+        else if (isOrCompareOp(_expression)) {
             const orExpression = _expression.or;
             if (orExpression.length === 0) {
                 throw new Error('Invalid expression - or operator must have at least one expression');
@@ -93,11 +90,11 @@ exports.evaluate = (expression, context, functionsTable) => {
             });
             return result;
         }
-        else if (isNotOp(_expression)) {
+        else if (isNotCompareOp(_expression)) {
             const notExpression = _expression.not;
             return !_evaluate(notExpression);
         }
-        else if (isFuncOp(_expression, key, functionsTable)) {
+        else if (key in functionsTable) {
             return functionsTable[key](_expression[key], context);
         }
         else if (key in context) {
@@ -107,3 +104,4 @@ exports.evaluate = (expression, context, functionsTable) => {
     };
     return _evaluate(expression);
 };
+//# sourceMappingURL=index.js.map

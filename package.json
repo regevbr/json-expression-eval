@@ -1,15 +1,15 @@
 {
   "name": "json-expression-eval",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "evaluate a json described boolean expression using dynamic functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "mocha test/ --reporter spec --compilers ts:ts-node/register --recursive",
-    "build": "npm run buildDist && npm run buildExample",
+    "test": "mocha --opts src/test/mocha.opts",
+    "build": "npm run lint && npm run buildDist",
     "buildDist": "./node_modules/.bin/tsc",
-    "buildExample": "cd ./example && tsc",
-    "cover": "istanbul cover node_modules/mocha/bin/_mocha test/ -- -R spec --compilers ts:ts-node/register --recursive"
+    "cover": "nyc --reporter=lcov --reporter=text-summary npm run test",
+    "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'"
   },
   "repository": {
     "type": "git",
@@ -34,16 +34,19 @@
   },
   "homepage": "https://github.com/regevbr/json-expression-eval#readme",
   "devDependencies": {
-    "@types/chai": "^4.1.3",
-    "@types/mocha": "^5.2.1",
-    "@types/node": "^10.3.2",
-    "@types/underscore": "^1.8.8",
-    "chai": "^4.1.2",
-    "coveralls": "^3.0.1",
-    "istanbul": "^0.4.5",
-    "mocha": "^5.2.0",
-    "ts-node": "^6.1.0",
-    "typescript": "^2.9.1"
+    "@istanbuljs/nyc-config-typescript": "^0.1.3",
+    "@types/chai": "^4.2.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.3.1",
+    "@types/underscore": "^1.9.2",
+    "chai": "^4.2.0",
+    "coveralls": "^3.0.6",
+    "mocha": "^6.2.0",
+    "nyc": "^14.1.1",
+    "source-map-support": "^0.5.13",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
   },
   "dependencies": {}
 }

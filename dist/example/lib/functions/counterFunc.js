@@ -3,3 +3,4 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.counterFunc = (maxCount, context) => {
     return context.times < maxCount;
 };
+//# sourceMappingURL=counterFunc.js.map
