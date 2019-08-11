@@ -12,7 +12,7 @@ npm install json-expression-eval --save
 yarn add json-expression-eval
 ```
 ## Usage
- *Please see tests for more usages and example dir for extended and opinionated usage.*
+ *Please see tests for more usages and example dir for extended and opinionated usage. (under /src)* 
 ### API
 This module enables you to evaluate boolean expressions which are described using a JSON structure and can utilize user defined 'functions'.  
 There are 4 types op operators you can use (evaluated in that order of precedence):
