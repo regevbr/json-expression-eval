@@ -7,17 +7,67 @@
 [![devDependencies Status](https://david-dm.org/regevbr/json-expression-eval/dev-status.svg)](https://david-dm.org/regevbr/json-expression-eval?type=dev)
 
 # json-expression-eval
-A Node.js module that evaluates a json described boolean expression using dynamic functions
+A Node.js module that evaluates a json described boolean expressions using dynamic functions and a given context.
+
+The module is strictly typed, ensuring that passed expressions are 100% valid at compile time.
+
+This module is especially useful if you need to serialize complex expressions (to be saved in DB for example) 
+  
 ## Installation 
 ```sh
-npm install json-expression-eval --save
+npm install json-expression-eval
+```
+Or
+```sh
 yarn add json-expression-eval
 ```
+
 ## Usage
- *Please see tests for more usages and example dir for extended and opinionated usage. (under /src)* 
-### API
-This module enables you to evaluate boolean expressions which are described using a JSON structure and can utilize user defined 'functions'.  
-There are 4 types op operators you can use (evaluated in that order of precedence):
+
+ *Please see tests and examples dir for more usages and example (under /src)* 
+
+```typescript
+import { Expression, evaluate } from 'json-expression-eval';
+
+interface IExampleContext {
+  userId: string;
+  times: number;
+}
+
+const exampleContext: IExampleContext = {
+  userId: 'a2@b.com',
+  times: 5,
+};
+
+const functionsTable = {
+  countRange: ([min, max]: [number, number], context: IExampleContext): boolean => {
+    return context.times >= min && context.times < max;
+  },
+};
+
+const expression: Expression<IExampleContext, typeof functionsTable> = {
+  or: [
+    {
+      userId: 'a@b.com',
+    },
+    {
+      and: [
+        {
+          countRange: [2, 6],
+        },
+        {
+          userId: 'a2@b.com',
+        },
+      ],
+    },
+  ],
+};
+console.log(evaluate(expression, exampleContext, functionsTable)); // true
+```
+
+### Expression
+
+There are 4 types of operators you can use (evaluated in that order of precedence):
 - `and` - accepts a non empty list of operators
 - `or` - accepts a non empty list of operators
 - `not` - accepts another operator
@@ -54,50 +104,4 @@ Example expressions, assuming we have the `user` and `maxCount` user defined fun
       }
    ]
 }
-```
-
-### TypeScript
-```typescript
-import {evaluate} from 'json-expression-eval';
-
-const functionsTable: FunctionsTable = {
-    user: (user: string, context: { userId: string }): boolean => {
-        return context.userId === user;
-    },
-    maxCount: (maxCount: number, context: { times: number }): boolean => {
-        return context.times < maxCount;
-    }
-};
-const result = evaluate(
-    {
-        or: [
-            {
-                user: 'a@b.com'
-            },
-            {
-                not: {
-                    and: [
-                        {
-                            maxCount: 5
-                        },
-                        {
-                            user: 'a2@b.com'
-                        }
-                    ]
-                }
-            }
-        ]
-    },
-    {
-        userId: 'a2@b.com',
-        times: 1
-    },
-    functionsTable);
-```
-```sh
-Output should be 'false'
-```
-## Test 
-```sh
-npm run test
 ```
