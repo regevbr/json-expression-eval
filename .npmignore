@@ -44,7 +44,7 @@ tslint.json
 .prettierrc
 .gitlab-ci.yml
 tsconfig.json
-
+.nycrc
 # nyc test coverage
 .nyc_output
 
