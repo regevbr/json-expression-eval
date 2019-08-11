@@ -1,6 +1,8 @@
 [![Npm Version](https://img.shields.io/npm/v/json-expression-eval.svg?style=popout)](https://www.npmjs.com/package/json-expression-eval)
 [![Build Status](https://travis-ci.org/regevbr/json-expression-eval.svg?branch=master)](https://travis-ci.org/regevbr/json-expression-eval)
-[![Coverage Status](https://coveralls.io/repos/github/regevbr/json-expression-eval/badge.svg?branch=master)](https://coveralls.io/github/regevbr/json-expression-eval?branch=master)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/64f26f52c548c8d1e010/test_coverage)](https://codeclimate.com/github/regevbr/json-expression-eval/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/64f26f52c548c8d1e010/maintainability)](https://codeclimate.com/github/regevbr/json-expression-eval/maintainability)
+[![Known Vulnerabilities](https://snyk.io/test/github/regevbr/json-expression-eval/badge.svg?targetFile=package.json)](https://snyk.io/test/github/regevbr/json-expression-eval?targetFile=package.json)
 [![dependencies Status](https://david-dm.org/regevbr/json-expression-eval/status.svg)](https://david-dm.org/regevbr/json-expression-eval)
 [![devDependencies Status](https://david-dm.org/regevbr/json-expression-eval/dev-status.svg)](https://david-dm.org/regevbr/json-expression-eval?type=dev)
 
@@ -54,34 +56,43 @@ Example expressions, assuming we have the `user` and `maxCount` user defined fun
 }
 ```
 
-### Javascript
-```javascript
-const evaluator = require('json-expression-eval');
-const functionsTable = {
-	user: (user, context) => {
-        return context.userId === user;
-    },
-	maxCount: (maxCount, context) => {
-        return context.times < maxCount;
-    }
-};
-const result = evaluator.evaluate({or:[{user: 'a@b.com'},{not: {and: [{maxCount: 1},{user: 'a2@b.com'}]}}]},{userId:'a@b.com', times: 1},functionsTable);
-```
-```sh
-Output should be 'true'
-```
 ### TypeScript
 ```typescript
-import { evaluate } from 'json-expression-eval';
-const functionsTable : FunctionsTable = {
-	user: (user :string , context : { userId: string }): boolean => {
+import {evaluate} from 'json-expression-eval';
+
+const functionsTable: FunctionsTable = {
+    user: (user: string, context: { userId: string }): boolean => {
         return context.userId === user;
     },
-	maxCount: (maxCount: number, context: { times: number }): boolean => {
+    maxCount: (maxCount: number, context: { times: number }): boolean => {
         return context.times < maxCount;
     }
 };
-const result = evaluate({or:[{user: 'a@b.com'},{not: {and: [{maxCount: 5},{user: 'a2@b.com'}]}}]},{userId:'a2@b.com', times: 1},functionsTable);
+const result = evaluate(
+    {
+        or: [
+            {
+                user: 'a@b.com'
+            },
+            {
+                not: {
+                    and: [
+                        {
+                            maxCount: 5
+                        },
+                        {
+                            user: 'a2@b.com'
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        userId: 'a2@b.com',
+        times: 1
+    },
+    functionsTable);
 ```
 ```sh
 Output should be 'false'

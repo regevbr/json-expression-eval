@@ -69,6 +69,8 @@ export interface FunctionsTable<T> {
     [k: string]: Func<T>;
 }
 
+export type Context = Record<string, any>;
+
 function isAndCompareOp<C, F extends FunctionsTable<C>>(expression: Expression<C, F>):
     expression is AndCompareOp<C, F> {
     return Array.isArray((expression as AndCompareOp<C, F>).and);
@@ -114,7 +116,7 @@ const _isObject = (obj: any) => {
     return type === 'function' || type === 'object' && !!obj;
 };
 
-const _evaluateCompareOp = <C, F extends FunctionsTable<C>, K extends keyof RequireOnlyOne<CompareOp<C, F>>>(
+const evaluateCompareOp = <C, F extends FunctionsTable<C>, K extends keyof RequireOnlyOne<CompareOp<C, F>>>(
     op: RequireOnlyOne<CompareOp<C, F>>, key: K, param: any): boolean => {
     if (!_isObject(op[key])) {
         return param === op[key];
@@ -139,48 +141,49 @@ const _evaluateCompareOp = <C, F extends FunctionsTable<C>, K extends keyof Requ
     throw new Error(`Invalid expression - unknown op ${keys[0]}`);
 };
 
-export type Context = Record<string, any>;
+const handleAndOp = <C extends Context, F extends FunctionsTable<C>>(andExpression: Array<Expression<C, F>>, context: C,
+                                                                     functionsTable: F): boolean => {
+    if (andExpression.length === 0) {
+        throw new Error('Invalid expression - and operator must have at least one expression');
+    }
+    let result = true;
+    andExpression.forEach((currExpression) => {
+        const currResult = evaluate(currExpression, context, functionsTable);
+        result = result && currResult;
+    });
+    return result;
+};
+
+const handleOrOp = <C extends Context, F extends FunctionsTable<C>>(orExpression: Array<Expression<C, F>>, context: C,
+                                                                    functionsTable: F): boolean => {
+    if (orExpression.length === 0) {
+        throw new Error('Invalid expression - or operator must have at least one expression');
+    }
+    let result = false;
+    orExpression.forEach((currExpression) => {
+        const currResult = evaluate(currExpression, context, functionsTable);
+        result = result || currResult;
+    });
+    return result;
+};
 
 export const evaluate = <C extends Context, F extends FunctionsTable<C>>(expression: Expression<C, F>, context: C,
                                                                          functionsTable: F): boolean => {
-    const _evaluate = (_expression: Expression<C, F>): boolean => {
-        const keys = Object.keys(_expression);
-        if (keys.length !== 1) {
-            throw new Error('Invalid expression - too may keys');
-        }
-        const key = keys[0];
-        if (isAndCompareOp(_expression)) {
-            const andExpression = _expression.and;
-            if (andExpression.length === 0) {
-                throw new Error('Invalid expression - and operator must have at least one expression');
-            }
-            let result = true;
-            andExpression.forEach((currExpression) => {
-                const currResult = _evaluate(currExpression);
-                result = result && currResult;
-            });
-            return result;
-        } else if (isOrCompareOp(_expression)) {
-            const orExpression = _expression.or;
-            if (orExpression.length === 0) {
-                throw new Error('Invalid expression - or operator must have at least one expression');
-            }
-            let result = false;
-            orExpression.forEach((currExpression) => {
-                const currResult = _evaluate(currExpression);
-                result = result || currResult;
-            });
-            return result;
-        } else if (isNotCompareOp(_expression)) {
-            const notExpression = _expression.not;
-            return !_evaluate(notExpression);
-        } else if (key in functionsTable) {
-            return functionsTable[key](_expression[key], context);
-        } else if (key in context) {
-            return _evaluateCompareOp<C, F, typeof key>(_expression, key, context[key]);
-        }
-        throw new Error(`Invalid expression - unknown function ${key}`);
-    };
-
-    return _evaluate(expression);
+    const keys = Object.keys(expression);
+    if (keys.length !== 1) {
+        throw new Error('Invalid expression - too may keys');
+    }
+    const key = keys[0];
+    if (isAndCompareOp(expression)) {
+        return handleAndOp(expression.and, context, functionsTable);
+    } else if (isOrCompareOp(expression)) {
+        return handleOrOp(expression.or, context, functionsTable);
+    } else if (isNotCompareOp(expression)) {
+        return !evaluate(expression.not, context, functionsTable);
+    } else if (key in functionsTable) {
+        return functionsTable[key](expression[key], context);
+    } else if (key in context) {
+        return evaluateCompareOp<C, F, typeof key>(expression, key, context[key]);
+    }
+    throw new Error(`Invalid expression - unknown function ${key}`);
 };
