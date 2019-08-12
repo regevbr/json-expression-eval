@@ -1,5 +1,7 @@
 'use strict';
 
+import {O as tObject} from 'ts-toolbelt';
+
 export type PropertyCompareOp<C, K extends keyof C> = C[K];
 
 export type FuncCompareOp<C, F extends FunctionsTable<C>, K extends keyof F> = Parameters<F[K]>[0];
@@ -52,13 +54,7 @@ export interface NotCompareOp<C, F extends FunctionsTable<C>> {
     not: Expression<C, F>;
 }
 
-export type RequireOnlyOne<T, Keys extends keyof T = keyof T> =
-    Pick<T, Exclude<keyof T, Keys>>
-    & {
-    [K in Keys]-?:
-    Required<Pick<T, K>>
-    & Partial<Record<Exclude<Keys, K>, undefined>>
-}[Keys];
+export type RequireOnlyOne<T extends object> = tObject.Either<T, keyof T>;
 
 export type Expression<C, F extends FunctionsTable<C>> = NotCompareOp<C, F> | OrCompareOp<C, F> | AndCompareOp<C, F> |
     RequireOnlyOne<CompareOp<C, F>>;

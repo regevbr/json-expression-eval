@@ -1,6 +1,6 @@
 {
   "name": "json-expression-eval",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "evaluate a json described boolean expression using dynamic functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -47,5 +47,7 @@
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "ts-toolbelt": "^3.7.1"
+  }
 }
