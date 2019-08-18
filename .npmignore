@@ -38,6 +38,8 @@ dist/example/
 # config files
 tslint.json
 .gitignore
+.npmignore
+cc-test-reporter
 .editorconfig
 .jscs
 .jshintrc
