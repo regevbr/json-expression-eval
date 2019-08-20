@@ -34,7 +34,7 @@ CONTRIBUTING.md
 **/*.spec.*
 dist/test/
 dist/example/
-
+package-lock.json
 # config files
 tslint.json
 .gitignore
