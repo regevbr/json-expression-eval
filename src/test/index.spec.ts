@@ -337,4 +337,59 @@ describe('evaluator', () => {
             }, functionsTable);
         }).to.throw('Invalid expression - too may keys');
     });
+
+    describe('short circuit', () => {
+        it('or is short circuiting', () => {
+            let fnCounter = 0;
+            const fnTable = {
+                eval: (arg: boolean): boolean => {
+                    fnCounter++;
+                    return arg
+                },
+            };
+            evaluate({or: [
+                    {
+                        eval: false,
+                    },
+                    {
+                        eval: false,
+                    },
+                    {
+                        eval: true,
+                    },
+                    {
+                        eval: false,
+                    },
+                ]}, {}, fnTable);
+
+            expect(fnCounter).to.eql(3);
+        });
+
+        it('and is short circuiting', () => {
+            let fnCounter = 0;
+            const fnTable = {
+                eval: (arg: boolean): boolean => {
+                    fnCounter++;
+                    return arg
+                },
+            };
+            evaluate({and: [
+                    {
+                        eval: true,
+                    },
+                    {
+                        eval: true,
+                    },
+                    {
+                        eval: false,
+                    },
+                    {
+                        eval: true,
+                    },
+                ]}, {}, fnTable);
+
+            expect(fnCounter).to.eql(3);
+        });
+    });
+
 });

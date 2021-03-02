@@ -150,12 +150,12 @@ const handleAndOp = <C extends Context, F extends FunctionsTable<C>>(andExpressi
     if (andExpression.length === 0) {
         throw new Error('Invalid expression - and operator must have at least one expression');
     }
-    let result = true;
-    andExpression.forEach((currExpression) => {
-        const currResult = evaluate(currExpression, context, functionsTable);
-        result = result && currResult;
-    });
-    return result;
+    for (const currExpression of andExpression) {
+        if (!evaluate(currExpression, context, functionsTable)) {
+            return false
+        }
+    }
+    return true;
 };
 
 const handleOrOp = <C extends Context, F extends FunctionsTable<C>>(orExpression: Expression<C, F>[], context: C,
@@ -163,12 +163,12 @@ const handleOrOp = <C extends Context, F extends FunctionsTable<C>>(orExpression
     if (orExpression.length === 0) {
         throw new Error('Invalid expression - or operator must have at least one expression');
     }
-    let result = false;
-    orExpression.forEach((currExpression) => {
-        const currResult = evaluate(currExpression, context, functionsTable);
-        result = result || currResult;
-    });
-    return result;
+    for (const currExpression of orExpression) {
+        if (evaluate(currExpression, context, functionsTable)) {
+            return true
+        }
+    }
+    return false;
 };
 
 export const evaluate = <C extends Context, F extends FunctionsTable<C>>(expression: Expression<C, F>, context: C,
