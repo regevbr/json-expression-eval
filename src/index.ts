@@ -43,11 +43,11 @@ export type CompareOp<C, F extends FunctionsTable<C>> = {
 };
 
 export interface AndCompareOp<C, F extends FunctionsTable<C>> {
-    and: Array<Expression<C, F>>;
+    and: Expression<C, F>[];
 }
 
 export interface OrCompareOp<C, F extends FunctionsTable<C>> {
-    or: Array<Expression<C, F>>;
+    or: Expression<C, F>[];
 }
 
 export interface NotCompareOp<C, F extends FunctionsTable<C>> {
@@ -137,7 +137,7 @@ const evaluateCompareOp = <C, F extends FunctionsTable<C>, K extends keyof Requi
     throw new Error(`Invalid expression - unknown op ${keys[0]}`);
 };
 
-const handleAndOp = <C extends Context, F extends FunctionsTable<C>>(andExpression: Array<Expression<C, F>>, context: C,
+const handleAndOp = <C extends Context, F extends FunctionsTable<C>>(andExpression: Expression<C, F>[], context: C,
                                                                      functionsTable: F): boolean => {
     if (andExpression.length === 0) {
         throw new Error('Invalid expression - and operator must have at least one expression');
@@ -150,7 +150,7 @@ const handleAndOp = <C extends Context, F extends FunctionsTable<C>>(andExpressi
     return result;
 };
 
-const handleOrOp = <C extends Context, F extends FunctionsTable<C>>(orExpression: Array<Expression<C, F>>, context: C,
+const handleOrOp = <C extends Context, F extends FunctionsTable<C>>(orExpression: Expression<C, F>[], context: C,
                                                                     functionsTable: F): boolean => {
     if (orExpression.length === 0) {
         throw new Error('Invalid expression - or operator must have at least one expression');
@@ -170,11 +170,11 @@ export const evaluate = <C extends Context, F extends FunctionsTable<C>>(express
         throw new Error('Invalid expression - too may keys');
     }
     const key = keys[0];
-    if (isAndCompareOp(expression)) {
+    if (isAndCompareOp<C, F>(expression)) {
         return handleAndOp(expression.and, context, functionsTable);
-    } else if (isOrCompareOp(expression)) {
+    } else if (isOrCompareOp<C, F>(expression)) {
         return handleOrOp(expression.or, context, functionsTable);
-    } else if (isNotCompareOp(expression)) {
+    } else if (isNotCompareOp<C, F>(expression)) {
         return !evaluate(expression.not, context, functionsTable);
     } else if (key in functionsTable) {
         return functionsTable[key](expression[key], context);

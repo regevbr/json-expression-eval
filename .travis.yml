@@ -5,6 +5,8 @@ node_js:
  - "8"
  - "10"
  - "12"
+ - "14"
+ - "15"
 
 install:
  - npm install
