@@ -1,9 +1,12 @@
 {
   "name": "json-expression-eval",
-  "version": "2.0.3",
+  "version": "3.0.0",
   "description": "evaluate a json described boolean expression using dynamic functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=6"
+  },
   "scripts": {
     "test": "mocha --opts src/test/mocha.opts",
     "build": "npm run lint && npm run buildDist",

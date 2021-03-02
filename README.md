@@ -83,6 +83,7 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
             - `neq` - !==
     - `{property: value}`
         - compares the property to that value (shorthand to the `eq` op)
+> Note that nested properties in the context are also supported starting version 3
 
 Example expressions, assuming we have the `user` and `maxCount` user defined functions in place can be:
 ```json

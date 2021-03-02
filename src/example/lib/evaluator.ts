@@ -6,6 +6,12 @@ import {evaluate as _evaluate, Expression, FunctionsTable} from '../..';
 export interface ExpressionContext {
     userId: string;
     times: number;
+    nested: {
+        value: number;
+        nested2: {
+            value: number;
+        };
+    };
 }
 
 export type ExpressionFunction = typeof functionsTable;

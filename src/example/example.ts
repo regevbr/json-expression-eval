@@ -12,6 +12,12 @@ const run = (expr: Expression<ExpressionContext, ExpressionFunction>, ctx: Expre
 const context: ExpressionContext = {
     userId: 'a@b.com',
     times: 3,
+    nested: {
+        value: 5,
+        nested2: {
+            value: 7,
+        },
+    },
 };
 
 let expression: Expression<ExpressionContext, ExpressionFunction> = {
@@ -69,6 +75,26 @@ expression = {
     or: [
         {times: 3},
         {times: {gte: 10}},
+    ],
+};
+
+run(expression, context);
+
+expression = {
+    or: [
+        {times: 3},
+        {
+            nested: {
+                value: 5,
+            },
+        },
+        {
+            nested: {
+                value: {
+                    gt: 6,
+                },
+            },
+        },
     ],
 };
 

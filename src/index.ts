@@ -2,8 +2,6 @@
 
 import {O as tObject} from 'ts-toolbelt';
 
-export type PropertyCompareOp<C, K extends keyof C> = C[K];
-
 export type FuncCompareOp<C, F extends FunctionsTable<C>, K extends keyof F> = Parameters<F[K]>[0];
 
 export interface EqualCompareOp<C, K extends keyof C> {
@@ -30,17 +28,23 @@ export interface LteCompareOp<C, K extends keyof C> {
     lte: C[K] extends number ? number : never;
 }
 
-export type CompareOp<C, F extends FunctionsTable<C>> = {
-    [k in keyof C]: PropertyCompareOp<C, k>
-    | EqualCompareOp<C, k>
-    | NotEqualCompareOp<C, k>
-    | GtCompareOp<C, k>
-    | GteCompareOp<C, k>
-    | LtCompareOp<C, k>
-    | LteCompareOp<C, k>
-} & {
-    [k in keyof F]: FuncCompareOp<C, F, k>
+export type FuncCompares<C, F extends FunctionsTable<C>> = {
+    [K in keyof F]: FuncCompareOp<C, F, K>;
+}
+
+export type ExtendedCompareOp<C, K extends keyof C> = EqualCompareOp<C, K>
+    | NotEqualCompareOp<C, K>
+    | GtCompareOp<C, K>
+    | GteCompareOp<C, K>
+    | LtCompareOp<C, K>
+    | LteCompareOp<C, K>;
+
+export type PropertyCompareOp<C> = {
+    [K in keyof C]: C[K] extends string | number | boolean ?
+        (C[K] | ExtendedCompareOp<C, K>) : RequireOnlyOne<PropertyCompareOp<C[K]>>;
 };
+
+export type CompareOp<C, F extends FunctionsTable<C>> = PropertyCompareOp<C> & FuncCompares<C, F>;
 
 export interface AndCompareOp<C, F extends FunctionsTable<C>> {
     and: Expression<C, F>[];
@@ -114,27 +118,31 @@ const _isObject = (obj: any) => {
 
 const evaluateCompareOp = <C, F extends FunctionsTable<C>, K extends keyof RequireOnlyOne<CompareOp<C, F>>>(
     op: RequireOnlyOne<CompareOp<C, F>>, key: K, param: any): boolean => {
-    if (!_isObject(op[key])) {
-        return param === op[key];
+    const value = op[key];
+    if (!_isObject(value)) {
+        return param === value;
     }
-    const keys = Object.keys(op[key]);
+    const keys = Object.keys(value);
     if (keys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
     }
-    if (isGtCompareOp(op[key])) {
-        return param > op[key].gt;
-    } else if (isGteCompareOp(op[key])) {
-        return param >= op[key].gte;
-    } else if (isLteCompareOp(op[key])) {
-        return param <= op[key].lte;
-    } else if (isLtCompareOp(op[key])) {
-        return param < op[key].lt;
-    } else if (isEqualCompareOp(op[key])) {
-        return param === op[key].eq;
-    } else if (isNotEqualCompareOp(op[key])) {
-        return param !== op[key].neq;
+    const valueKey = keys[0];
+    if (isGtCompareOp(value)) {
+        return param > value.gt;
+    } else if (isGteCompareOp(value)) {
+        return param >= value.gte;
+    } else if (isLteCompareOp(value)) {
+        return param <= value.lte;
+    } else if (isLtCompareOp(value)) {
+        return param < value.lt;
+    } else if (isEqualCompareOp(value)) {
+        return param === value.eq;
+    } else if (isNotEqualCompareOp(value)) {
+        return param !== value.neq;
+    } else if (_isObject(param) && valueKey in param) {
+        return evaluateCompareOp(value, valueKey, param[valueKey]);
     }
-    throw new Error(`Invalid expression - unknown op ${keys[0]}`);
+    throw new Error(`Invalid expression - unknown op ${valueKey}`);
 };
 
 const handleAndOp = <C extends Context, F extends FunctionsTable<C>>(andExpression: Expression<C, F>[], context: C,

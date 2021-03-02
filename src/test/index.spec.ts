@@ -8,8 +8,52 @@ const functionsTable = {
         return context.userId === user;
     },
 };
+type ExpressionFunction = typeof functionsTable;
 
 describe('evaluator', () => {
+
+    it('should evaluate short eq compare op true to on nested properties', () => {
+        expect(evaluate({
+            nested: {
+                value: 7,
+            },
+        }, {
+            timesCounter: 5,
+            userId: 'a',
+            nested: {
+                value2: 9,
+                value: 7,
+            },
+        }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate short eq compare op true to on deeply nested properties', () => {
+        expect(evaluate({
+            or: [
+                {
+                    nested: {
+                        nested2: {
+                            value: 7,
+                        },
+                    },
+                },
+                {
+                    nested: {
+                        value: 4,
+                    },
+                },
+            ],
+        }, {
+            timesCounter: 5,
+            userId: 'a',
+            nested: {
+                value: 4,
+                nested2: {
+                    value: 7,
+                },
+            },
+        }, functionsTable)).to.eql(true);
+    });
 
     it('should evaluate short eq compare op to true', () => {
         expect(evaluate({timesCounter: 5}, {
@@ -29,6 +73,54 @@ describe('evaluator', () => {
         expect(evaluate({timesCounter: {eq: 5}}, {
             timesCounter: 5,
             userId: 'a',
+        }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate eq compare op to true on nested properties', () => {
+        expect(evaluate({
+            nested: {
+                value: {
+                    eq: 7,
+                },
+            },
+        }, {
+            timesCounter: 5,
+            userId: 'a',
+            nested: {
+                value: 7,
+            },
+        }, functionsTable)).to.eql(true);
+    });
+
+    it('should evaluate eq compare op true to on deeply nested properties', () => {
+        expect(evaluate({
+            or: [
+                {
+                    nested: {
+                        nested2: {
+                            value: {
+                                eq: 7,
+                            },
+                        },
+                    },
+                },
+                {
+                    nested: {
+                        value: {
+                            eq: 4,
+                        },
+                    },
+                },
+            ],
+        }, {
+            timesCounter: 5,
+            userId: 'a',
+            nested: {
+                value: 4,
+                nested2: {
+                    value: 7,
+                },
+            },
         }, functionsTable)).to.eql(true);
     });
 
@@ -138,49 +230,49 @@ describe('evaluator', () => {
     });
 
     it('should evaluate a single function', () => {
-        expect(evaluate({user: 'r@a.com'}, {
+        expect(evaluate<{ userId: string, timesCounter: number }, ExpressionFunction>({user: 'r@a.com'}, {
             userId: 'r@a.com',
             timesCounter: 8,
         }, functionsTable)).to.eql(true);
     });
 
     it('should evaluate a single not function to false', () => {
-        expect(evaluate({not: {user: 'r@a.com'}}, {
+        expect(evaluate<{ userId: string, timesCounter: number }, ExpressionFunction>({not: {user: 'r@a.com'}}, {
             userId: 'r@a.com',
             timesCounter: 8,
         }, functionsTable)).to.eql(false);
     });
 
     it('should evaluate a single not function to true', () => {
-        expect(evaluate({not: {user: 'a@a.com'}}, {
+        expect(evaluate<{ userId: string, timesCounter: number }, ExpressionFunction>({not: {user: 'a@a.com'}}, {
             userId: 'r@a.com',
             timesCounter: 8,
         }, functionsTable)).to.eql(true);
     });
 
     it('should evaluate a single and function to true', () => {
-        expect(evaluate({and: [{user: 'r@a.com'}]}, {
+        expect(evaluate<{ userId: string, timesCounter: number }, ExpressionFunction>({and: [{user: 'r@a.com'}]}, {
             userId: 'r@a.com',
             timesCounter: 8,
         }, functionsTable)).to.eql(true);
     });
 
     it('should evaluate a single or function to true', () => {
-        expect(evaluate({or: [{user: 'r@a.com'}]}, {
+        expect(evaluate<{ userId: string, timesCounter: number }, ExpressionFunction>({or: [{user: 'r@a.com'}]}, {
             userId: 'r@a.com',
             timesCounter: 8,
         }, functionsTable)).to.eql(true);
     });
 
     it('should evaluate a single and function to false', () => {
-        expect(evaluate({and: [{user: 't@a.com'}]}, {
+        expect(evaluate<{ userId: string, timesCounter: number }, ExpressionFunction>({and: [{user: 't@a.com'}]}, {
             userId: 'r@a.com',
             timesCounter: 8,
         }, functionsTable)).to.eql(false);
     });
 
     it('should evaluate a single or function to false', () => {
-        expect(evaluate({or: [{user: 't@a.com'}]}, {
+        expect(evaluate<{ userId: string, timesCounter: number }, ExpressionFunction>({or: [{user: 't@a.com'}]}, {
             userId: 'r@a.com',
             timesCounter: 8,
         }, functionsTable)).to.eql(false);
