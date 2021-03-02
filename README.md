@@ -27,7 +27,7 @@ yarn add json-expression-eval
  *Please see tests and examples dir for more usages and example (under /src)* 
 
 ```typescript
-import { Expression, evaluate } from 'json-expression-eval';
+import { Expression, evaluate, validate } from 'json-expression-eval';
 
 interface IExampleContext {
   userId: string;
@@ -62,6 +62,7 @@ const expression: Expression<IExampleContext, typeof functionsTable> = {
     },
   ],
 };
+validate(expression, exampleContext, functionsTable); // Should not throw
 console.log(evaluate(expression, exampleContext, functionsTable)); // true
 ```
 
