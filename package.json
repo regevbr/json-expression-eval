@@ -8,10 +8,11 @@
     "node": ">=6"
   },
   "scripts": {
-    "test": "mocha --opts src/test/mocha.opts",
+    "test": "npm run lint && npm run test:cover",
+    "test:unit": "mocha --opts src/test/mocha.opts",
     "build": "npm run lint && npm run buildDist",
     "buildDist": "./node_modules/.bin/tsc",
-    "cover": "nyc --reporter=lcov --reporter=text-summary npm run test",
+    "test:cover": "nyc --reporter=lcov --reporter=text-summary npm run test:unit",
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'"
   },
   "repository": {
