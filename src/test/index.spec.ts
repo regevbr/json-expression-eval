@@ -1,7 +1,7 @@
 'use strict';
 
 import {expect} from 'chai';
-import {evaluate, validate} from '../';
+import {evaluate, ExpressionEval, validate} from '../';
 
 const functionsTable = {
     user: (user: string, context: { userId: string }): boolean => {
@@ -26,9 +26,11 @@ describe('evaluator', () => {
                 value: 7,
             },
         };
+        const exp = new ExpressionEval<typeof context, ExpressionFunction>(expression, functionsTable);
+        expect(exp.validate(context)).to.be.an('undefined');
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        expect(exp.evaluate(context)).to.eql(true);
     });
 
     it('should evaluate short eq compare op true to on deeply nested properties', () => {

@@ -5,7 +5,6 @@ import {
 } from './typeGuards';
 import {CompareOp, Context, Expression, FunctionsTable, RequireOnlyOne} from './types';
 
-
 function evaluateCompareOp<C, F extends FunctionsTable<C>, K extends keyof RequireOnlyOne<CompareOp<C, F>>>(
     op: RequireOnlyOne<CompareOp<C, F>>, key: K, param: any, validation: false): boolean;
 function evaluateCompareOp<C, F extends FunctionsTable<C>, K extends keyof RequireOnlyOne<CompareOp<C, F>>>(
@@ -143,3 +142,18 @@ export const validate = <C extends Context, F extends FunctionsTable<C>>(express
                                                                          functionsTable: F): void => {
     _run(expression, dummyContext, functionsTable, true);
 };
+
+export class ExpressionEval<C extends Context, F extends FunctionsTable<C>> {
+
+    constructor(private readonly expression: Expression<C, F>, private readonly functionsTable: F) {
+    }
+
+    public evaluate(context: C): boolean {
+        return evaluate(this.expression, context, this.functionsTable);
+    }
+
+    public validate(dummyContext: C): void {
+        validate(this.expression, dummyContext, this.functionsTable);
+    }
+
+}
