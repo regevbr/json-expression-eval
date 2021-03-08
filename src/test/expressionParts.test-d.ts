@@ -1,4 +1,4 @@
-import {ExpressionParts} from '../descriptionType';
+import {ExpressionParts} from '../expressionParts';
 import {Any, O, Test} from 'ts-toolbelt';
 
 interface ExpressionContext {
@@ -8,7 +8,7 @@ interface ExpressionContext {
     nested: {
         value: number;
         nested2: {
-            value: number;
+            value: string;
         };
     };
 }
@@ -25,11 +25,21 @@ type ExpressionFunction = {
 type Result = O.Readonly<ExpressionParts<ExpressionContext, ExpressionFunction>, Any.Key, 'deep'>;
 
 const expected = {
-    'nested.value': {
-        isArray: false,
-        isFunction: false,
-        propertyPath: 'nested.value',
-        type: 'number',
+    nested: {
+        value: {
+            isArray: false,
+            isFunction: false,
+            propertyPath: 'nested.value',
+            type: 'number',
+        },
+        nested2: {
+            value: {
+                isArray: false,
+                isFunction: false,
+                propertyPath: 'nested.nested2.value',
+                type: 'string',
+            },
+        },
     },
     str: {
         isArray: false,

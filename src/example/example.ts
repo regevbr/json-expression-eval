@@ -1,13 +1,7 @@
 'use strict';
 
-import {evaluate, ExpressionContext, ExpressionFunction} from './lib/evaluator';
-import {Expression} from '../';
-
-const run = (expr: Expression<ExpressionContext, ExpressionFunction>, ctx: ExpressionContext) => {
-    const result = evaluate(expr, ctx);
-    console.log(`Evaluating expression ${JSON.stringify(expr)} using context ${JSON.stringify(ctx)}`);
-    console.log(`Result: ${result}`);
-};
+import {ExpressionContext, ExpressionFunction, getEvaluator} from './lib/evaluator';
+import {Expression, GetExpressionParts} from '../';
 
 const context: ExpressionContext = {
     userId: 'a@b.com',
@@ -18,6 +12,12 @@ const context: ExpressionContext = {
             value: 7,
         },
     },
+};
+
+const run = (expr: Expression<ExpressionContext, ExpressionFunction>, ctx: ExpressionContext) => {
+    const result = getEvaluator(expression).evaluate(ctx);
+    console.log(`Evaluating expression ${JSON.stringify(expr)} using context ${JSON.stringify(ctx)}`);
+    console.log(`Result: ${result}`);
 };
 
 let expression: Expression<ExpressionContext, ExpressionFunction> = {
@@ -99,3 +99,48 @@ expression = {
 };
 
 run(expression, context);
+
+const evaluator = getEvaluator(expression);
+
+const expressionParts: GetExpressionParts<typeof evaluator> = {
+    nested: {
+        value: {
+            isArray: false,
+            isFunction: false,
+            propertyPath: 'nested.value',
+            type: 'number',
+        },
+        nested2: {
+            value: {
+                isArray: false,
+                isFunction: false,
+                propertyPath: 'nested.nested2.value',
+                type: 'number',
+            },
+        },
+    },
+    times: {
+        isArray: false,
+        isFunction: false,
+        propertyPath: 'times',
+        type: 'number',
+    },
+    userId: {
+        isArray: false,
+        isFunction: false,
+        propertyPath: 'userId',
+        type: 'string',
+    },
+    maxCount: {
+        isArray: false,
+        isFunction: true,
+        propertyPath: 'maxCount',
+        type: 'number',
+    },
+    user: {
+        isArray: false,
+        isFunction: true,
+        propertyPath: 'user',
+        type: 'string',
+    },
+} as const;

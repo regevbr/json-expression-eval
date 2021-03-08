@@ -142,18 +142,3 @@ export const validate = <C extends Context, F extends FunctionsTable<C>>(express
                                                                          functionsTable: F): void => {
     _run(expression, dummyContext, functionsTable, true);
 };
-
-export class ExpressionEval<C extends Context, F extends FunctionsTable<C>> {
-
-    constructor(private readonly expression: Expression<C, F>, private readonly functionsTable: F) {
-    }
-
-    public evaluate(context: C): boolean {
-        return evaluate(this.expression, context, this.functionsTable);
-    }
-
-    public validate(dummyContext: C): void {
-        validate(this.expression, dummyContext, this.functionsTable);
-    }
-
-}

@@ -1,7 +1,7 @@
 'use strict';
 
 import {functionsTable} from './functionsFactory';
-import {evaluate as _evaluate, Expression, FunctionsTable} from '../..';
+import {Expression, ExpressionEval} from '../..';
 
 export interface ExpressionContext {
     userId: string;
@@ -16,7 +16,6 @@ export interface ExpressionContext {
 
 export type ExpressionFunction = typeof functionsTable;
 
-export const evaluate = (expression: Expression<ExpressionContext, ExpressionFunction>, context: ExpressionContext):
-    boolean => {
-    return _evaluate(expression, context, functionsTable);
-};
+export const getEvaluator = (expression: Expression<ExpressionContext, ExpressionFunction>) =>
+    new ExpressionEval<ExpressionContext, ExpressionFunction>(expression, functionsTable);
+
