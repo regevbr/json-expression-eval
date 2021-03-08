@@ -27,7 +27,7 @@ yarn add json-expression-eval
  *Please see tests and examples dir for more usages and example (under /src)* 
 
 ```typescript
-import { Expression, evaluate, validate } from 'json-expression-eval';
+import { Expression, evaluate, validate, ExpressionEval } from 'json-expression-eval';
 
 interface IExampleContext {
   userId: string;
@@ -45,7 +45,9 @@ const functionsTable = {
   },
 };
 
-const expression: Expression<IExampleContext, typeof functionsTable> = {
+type ExpressionFunction = typeof functionsTable;
+
+const expression: Expression<IExampleContext, ExpressionFunction> = {
   or: [
     {
       userId: 'a@b.com',
@@ -62,6 +64,13 @@ const expression: Expression<IExampleContext, typeof functionsTable> = {
     },
   ],
 };
+
+// Example usage 1
+const exp = new ExpressionEval<IExampleContext, ExpressionFunction>(expression, functionsTable);
+exp.validate(exampleContext); // Should not throw
+console.log(exp.evaluate(exampleContext)); // true
+
+// Example usage 2
 validate(expression, exampleContext, functionsTable); // Should not throw
 console.log(evaluate(expression, exampleContext, functionsTable)); // true
 ```
