@@ -23,5 +23,5 @@ export class ExpressionEval<C extends Context, F extends FunctionsTable<C>> {
 
 }
 
-export type GetExpressionParts<E extends ExpressionEval<any, any>> =
-    E extends ExpressionEval<infer C, infer F> ? ExpressionParts<C, F> : never;
+export type GetExpressionParts<E extends ExpressionEval<any, any>, Extra extends object = {}> =
+    E extends ExpressionEval<infer C, infer F> ? ExpressionParts<C, F, Extra> : never;

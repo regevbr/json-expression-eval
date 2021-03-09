@@ -12,8 +12,8 @@ interface ExpressionFunctionPart<C extends Context, F extends FunctionsTable<C>,
     isFunction: true;
 }
 
-type ExpressionFunctionParts<C extends Context, F extends FunctionsTable<C>> = {
-    [K in keyof F]: ExpressionFunctionPart<C, F, K>
+type ExpressionFunctionParts<C extends Context, F extends FunctionsTable<C>, Extra extends object> = {
+    [K in keyof F]: ExpressionFunctionPart<C, F, K> & Extra;
 }
 
 interface ExpressionContextPart<C extends Context, K extends keyof C, P extends List.List<string>> {
@@ -25,15 +25,15 @@ interface ExpressionContextPart<C extends Context, K extends keyof C, P extends 
 
 type Primitive = string | number | boolean;
 
-type _ExpressionContextParts<C, P extends List.List<string>> = {
+type _ExpressionContextParts<C, P extends List.List<string>, Extra extends object> = {
     [k in U.Select<keyof C, string>]:
-    C[k] extends Primitive ? ExpressionContextPart<C, k, [...P, k]>
+    C[k] extends Primitive ? ExpressionContextPart<C, k, [...P, k]> & Extra
         : C[k] extends Array<any> ? never
-        : _ExpressionContextParts<C[k], [...P, k]>;
+        : _ExpressionContextParts<C[k], [...P, k], Extra>;
 }
 
-type ExpressionContextParts<C extends Context> = _ExpressionContextParts<C, []>;
+type ExpressionContextParts<C extends Context, Extra extends object> = _ExpressionContextParts<C, [], Extra>;
 
-export type ExpressionParts<C extends Context, F extends FunctionsTable<C>> =
-    ExpressionFunctionParts<C, F>
-    & ExpressionContextParts<C>;
+export type ExpressionParts<C extends Context, F extends FunctionsTable<C>, Extra extends object = {}> =
+    ExpressionFunctionParts<C, F, Extra>
+    & ExpressionContextParts<C, Extra>;

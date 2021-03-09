@@ -102,13 +102,14 @@ run(expression, context);
 
 const evaluator = getEvaluator(expression);
 
-const expressionParts: GetExpressionParts<typeof evaluator> = {
+const expressionParts: GetExpressionParts<typeof evaluator, { description: string }> = {
     nested: {
         value: {
             isArray: false,
             isFunction: false,
             propertyPath: 'nested.value',
             type: 'number',
+            description: 'my desc',
         },
         nested2: {
             value: {
@@ -116,6 +117,7 @@ const expressionParts: GetExpressionParts<typeof evaluator> = {
                 isFunction: false,
                 propertyPath: 'nested.nested2.value',
                 type: 'number',
+                description: 'my desc',
             },
         },
     },
@@ -124,23 +126,27 @@ const expressionParts: GetExpressionParts<typeof evaluator> = {
         isFunction: false,
         propertyPath: 'times',
         type: 'number',
+        description: 'my desc',
     },
     userId: {
         isArray: false,
         isFunction: false,
         propertyPath: 'userId',
         type: 'string',
+        description: 'my desc',
     },
     maxCount: {
         isArray: false,
         isFunction: true,
         propertyPath: 'maxCount',
         type: 'number',
+        description: 'my desc',
     },
     user: {
         isArray: false,
         isFunction: true,
         propertyPath: 'user',
         type: 'string',
+        description: 'my desc',
     },
 } as const;
