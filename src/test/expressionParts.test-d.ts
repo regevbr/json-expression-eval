@@ -1,5 +1,5 @@
 import {ExpressionParts} from '../expressionParts';
-import {Any, O, Test} from 'ts-toolbelt';
+import {Any, Test} from 'ts-toolbelt';
 
 interface ExpressionContext {
     str: string;
@@ -8,7 +8,7 @@ interface ExpressionContext {
     nested: {
         value: number;
         nested2: {
-            value: string;
+            value2: string;
         };
     };
 }
@@ -22,24 +22,20 @@ type ExpressionFunction = {
     boolArrFn: (a: boolean[], context: { str: string }) => boolean;
 };
 
-type Result = O.Readonly<ExpressionParts<ExpressionContext, ExpressionFunction>, Any.Key, 'deep'>;
+type Result = Any.Compute<ExpressionParts<ExpressionContext, ExpressionFunction>>;
 
-const expected = {
-    nested: {
-        value: {
-            isArray: false,
-            isFunction: false,
-            propertyPath: 'nested.value',
-            type: 'number',
-        },
-        nested2: {
-            value: {
-                isArray: false,
-                isFunction: false,
-                propertyPath: 'nested.nested2.value',
-                type: 'string',
-            },
-        },
+type Expected = {
+    'nested.value': {
+        isArray: false,
+        isFunction: false,
+        propertyPath: 'nested.value',
+        type: 'number',
+    },
+    'nested.nested2.value2': {
+        isArray: false,
+        isFunction: false,
+        propertyPath: 'nested.nested2.value2',
+        type: 'string',
     },
     str: {
         isArray: false,
@@ -95,96 +91,91 @@ const expected = {
         propertyPath: 'boolArrFn',
         type: 'boolean',
     },
-} as const;
+};
 
-type ResultExtended =
-    O.Readonly<ExpressionParts<ExpressionContext, ExpressionFunction, { description: string }>, Any.Key, 'deep'>;
+type ResultExtended = Any.Compute<ExpressionParts<ExpressionContext, ExpressionFunction, { description: string }>>;
 
-const expectedExtended = {
-    nested: {
-        value: {
-            isArray: false,
-            isFunction: false,
-            propertyPath: 'nested.value',
-            type: 'number',
-            description: 'my desc' as string,
-        },
-        nested2: {
-            value: {
-                isArray: false,
-                isFunction: false,
-                propertyPath: 'nested.nested2.value',
-                type: 'string',
-                description: 'my desc' as string,
-            },
-        },
+type ExpectedExtended = {
+    'nested.value': {
+        isArray: false,
+        isFunction: false,
+        propertyPath: 'nested.value',
+        type: 'number',
+        description: string,
+    },
+    'nested.nested2.value2': {
+        isArray: false,
+        isFunction: false,
+        propertyPath: 'nested.nested2.value2',
+        type: 'string',
+        description: string,
     },
     str: {
         isArray: false,
         isFunction: false,
         propertyPath: 'str',
         type: 'string',
-        description: 'my desc' as string,
+        description: string,
     },
     strFn: {
         isArray: false,
         isFunction: true,
         propertyPath: 'strFn',
         type: 'string',
-        description: 'my desc' as string,
+        description: string,
     },
     strArrFn: {
         isArray: true,
         isFunction: true,
         propertyPath: 'strArrFn',
         type: 'string',
-        description: 'my desc' as string,
+        description: string,
     },
     num: {
         isArray: false,
         isFunction: false,
         propertyPath: 'num',
         type: 'number',
-        description: 'my desc' as string,
+        description: string,
     },
     numFn: {
         isArray: false,
         isFunction: true,
         propertyPath: 'numFn',
         type: 'number',
-        description: 'my desc' as string,
+        description: string,
     },
     numArrFn: {
         isArray: true,
         isFunction: true,
         propertyPath: 'numArrFn',
         type: 'number',
-        description: 'my desc' as string,
+        description: string,
     },
     bool: {
         isArray: false,
         isFunction: false,
         propertyPath: 'bool',
         type: 'boolean',
-        description: 'my desc' as string,
+        description: string,
     },
     boolFn: {
         isArray: false,
         isFunction: true,
         propertyPath: 'boolFn',
         type: 'boolean',
-        description: 'my desc' as string,
+        description: string,
     },
     boolArrFn: {
         isArray: true,
         isFunction: true,
         propertyPath: 'boolArrFn',
         type: 'boolean',
-        description: 'my desc' as string,
+        description: string,
     },
-} as const;
+};
 
 Test.checks([
-    Test.check<Result, typeof expected, Test.Pass>(),
-    Test.check<ResultExtended, typeof expectedExtended, Test.Pass>(),
+    Test.check<Result, Expected, Test.Pass>(),
+    Test.check<ResultExtended, ExpectedExtended, Test.Pass>(),
 ]);

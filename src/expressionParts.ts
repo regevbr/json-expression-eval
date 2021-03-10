@@ -1,6 +1,6 @@
 /* tslint:disable:array-type */
 import {Context, FunctionsTable} from './types';
-import {Function, S, List, U} from 'ts-toolbelt';
+import {Function, String, Object, List} from 'ts-toolbelt';
 
 type GetPartType<V> = V extends string ? 'string' : V extends number ? 'number' : V extends boolean ? 'boolean'
     : V extends Array<infer N> ? GetPartType<N> : never;
@@ -16,24 +16,23 @@ type ExpressionFunctionParts<C extends Context, F extends FunctionsTable<C>, Ext
     [K in keyof F]: ExpressionFunctionPart<C, F, K> & Extra;
 }
 
-interface ExpressionContextPart<C extends Context, K extends keyof C, P extends List.List<string>> {
-    type: GetPartType<C[K]>;
+interface ExpressionContextPart<V, P extends string> {
+    type: GetPartType<V>;
     isArray: false;
-    propertyPath: S.Join<P, '.'>;
+    propertyPath: P;
     isFunction: false;
 }
 
 type Primitive = string | number | boolean;
 
-type _ExpressionContextParts<C, P extends List.List<string>, Extra extends object> = {
-    [k in U.Select<keyof C, string>]:
-    C[k] extends Primitive ? ExpressionContextPart<C, k, [...P, k]> & Extra
-        : C[k] extends Array<any> ? never
-        : _ExpressionContextParts<C[k], [...P, k], Extra>;
+type StringPaths<O extends object> = String.Join<List.Required<Object.Paths<O>>, '.'>;
+
+type ExpressionContextParts<C extends object, Extra extends object> = {
+    [K in StringPaths<C>]:
+    Object.Path<C, String.Split<K, '.'>> extends Primitive
+        ? ExpressionContextPart<Object.Path<C, String.Split<K, '.'>>, K> & Extra
+        : never;
 }
 
-type ExpressionContextParts<C extends Context, Extra extends object> = _ExpressionContextParts<C, [], Extra>;
-
 export type ExpressionParts<C extends Context, F extends FunctionsTable<C>, Extra extends object = {}> =
-    ExpressionFunctionParts<C, F, Extra>
-    & ExpressionContextParts<C, Extra>;
+    ExpressionFunctionParts<C, F, Extra> & ExpressionContextParts<C, Extra>;
