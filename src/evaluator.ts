@@ -10,31 +10,44 @@ const assertUnreachable = <T = never>(x: never, message: string): T => {
     throw new Error(message);
 };
 
-function evaluateCompareOp(value: ExtendedCompareOp<any>, param: any, validation: false): boolean;
-function evaluateCompareOp(value: ExtendedCompareOp<any>, param: any, validation: true): void;
-function evaluateCompareOp(value: ExtendedCompareOp<any>, param: any, validation: boolean): boolean | void {
-    if (!_isObject(value)) {
-        return validation ? undefined : param === value;
+function evaluateCompareOp
+(expressionValue: ExtendedCompareOp<any>, contextValue: any, key: string, validation: false): boolean;
+function evaluateCompareOp
+(expressionValue: ExtendedCompareOp<any>, contextValue: any, key: string, validation: true): void;
+function evaluateCompareOp
+(expressionValue: ExtendedCompareOp<any>, contextValue: any, key: string, validation: boolean): boolean | void {
+    if (!_isObject(expressionValue)) {
+        return validation ? undefined : contextValue === expressionValue;
     }
-    const keys = Object.keys(value);
+    const keys = Object.keys(expressionValue);
     if (keys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
     }
-    const valueKey = keys[0];
-    if (isGtCompareOp(value)) {
-        return validation ? undefined : param > value.gt;
-    } else if (isGteCompareOp(value)) {
-        return validation ? undefined : param >= value.gte;
-    } else if (isLteCompareOp(value)) {
-        return validation ? undefined : param <= value.lte;
-    } else if (isLtCompareOp(value)) {
-        return validation ? undefined : param < value.lt;
-    } else if (isEqualCompareOp(value)) {
-        return validation ? undefined : param === value.eq;
-    } else if (isNotEqualCompareOp(value)) {
-        return validation ? undefined : param !== value.neq;
+    if (isEqualCompareOp(expressionValue)) {
+        return validation ? undefined : contextValue === expressionValue.eq;
+    } else if (isNotEqualCompareOp(expressionValue)) {
+        return validation ? undefined : contextValue !== expressionValue.neq;
     } else {
-        assertUnreachable(value, `Invalid expression - unknown op ${valueKey}`);
+        const assertNumber = (value: any) => {
+            if (typeof value !== 'number') {
+                throw new Error(`Invalid expression - ${key} must be a number`);
+            }
+        }
+        if (isGtCompareOp(expressionValue)) {
+            assertNumber(expressionValue.gt);
+            return validation ? undefined : contextValue > expressionValue.gt;
+        } else if (isGteCompareOp(expressionValue)) {
+            assertNumber(expressionValue.gte);
+            return validation ? undefined : contextValue >= expressionValue.gte;
+        } else if (isLteCompareOp(expressionValue)) {
+            assertNumber(expressionValue.lte);
+            return validation ? undefined : contextValue <= expressionValue.lte;
+        } else if (isLtCompareOp(expressionValue)) {
+            assertNumber(expressionValue.lt);
+            return validation ? undefined : contextValue < expressionValue.lt;
+        } else {
+            assertUnreachable(expressionValue, `Invalid expression - unknown op ${keys[0]}`);
+        }
     }
 }
 
@@ -92,6 +105,7 @@ function _run<C extends Context, F extends FunctionsTable<C>, Ignore>
 (expression: Expression<C, F, Ignore>, context: C, functionsTable: F, validation: true): void;
 function _run<C extends Context, F extends FunctionsTable<C>, Ignore>
 (expression: Expression<C, F, Ignore>, context: C, functionsTable: F, validation: boolean): boolean | void {
+    // TODO reduce code complexity
     const keys = Object.keys(expression);
     if (keys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
@@ -121,12 +135,15 @@ function _run<C extends Context, F extends FunctionsTable<C>, Ignore>
     } else if (isFunctionCompareOp<C, F, Ignore>(expression, functionsTable, key)) {
         return validation ? undefined : functionsTable[key](expression[key], context);
     } else {
-        const value = getFromPath(context, key);
+        // TODO on validate we should throw here
+        const contextValue = getFromPath(context, key);
         if (validation) {
-            evaluateCompareOp((expression as any)[key], value, true)
+            // TODO fix the TS error here
+            evaluateCompareOp(expression[key], contextValue, key, true)
             return;
         } else {
-            return evaluateCompareOp((expression as any)[key], value, false)
+            // TODO fix the TS error here
+            return evaluateCompareOp(expression[key], contextValue, key, false);
         }
     }
 }
@@ -137,6 +154,7 @@ export const evaluate = <C extends Context, F extends FunctionsTable<C>, Ignore 
 };
 
 // Throws in case of validation error. Does not run functions or compare fields
+// TODO ask for non nullable context so we can verify all the context paths exist
 export const validate = <C extends Context, F extends FunctionsTable<C>, Ignore = never>
 (expression: Expression<C, F, Ignore>, dummyContext: C, functionsTable: F): void => {
     _run<C, F, Ignore>(expression, dummyContext, functionsTable, true);
