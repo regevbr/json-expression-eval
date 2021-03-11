@@ -14,9 +14,7 @@ describe('evaluator', () => {
 
     it('should evaluate short eq compare op true to on nested properties', () => {
         const expression = {
-            nested: {
-                value: 7,
-            },
+            'nested.value': 7,
         };
         const context = {
             timesCounter: 5,
@@ -37,16 +35,10 @@ describe('evaluator', () => {
         const expression = {
             or: [
                 {
-                    nested: {
-                        nested2: {
-                            value: 7,
-                        },
-                    },
+                    'nested.nested2.value': 7,
                 },
                 {
-                    nested: {
-                        value: 4,
-                    },
+                    'nested.value': 4,
                 },
             ],
         };
@@ -61,7 +53,6 @@ describe('evaluator', () => {
             },
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -74,7 +65,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -87,7 +77,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -100,16 +89,13 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
     it('should evaluate eq compare op to true on nested properties', () => {
         const expression = {
-            nested: {
-                value: {
-                    eq: 7,
-                },
+            'nested.value': {
+                eq: 7,
             },
         };
         const context = {
@@ -120,7 +106,6 @@ describe('evaluator', () => {
             },
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -128,19 +113,13 @@ describe('evaluator', () => {
         const expression = {
             or: [
                 {
-                    nested: {
-                        nested2: {
-                            value: {
-                                eq: 7,
-                            },
-                        },
+                    'nested.nested2.value': {
+                        eq: 7,
                     },
                 },
                 {
-                    nested: {
-                        value: {
-                            eq: 4,
-                        },
+                    'nested.value': {
+                        eq: 4,
                     },
                 },
             ],
@@ -156,7 +135,6 @@ describe('evaluator', () => {
             },
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -169,7 +147,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -182,7 +159,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -195,7 +171,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -208,7 +183,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -221,7 +195,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -234,7 +207,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -247,7 +219,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -260,7 +231,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -273,7 +243,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -286,7 +255,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -299,7 +267,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -312,7 +279,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -325,7 +291,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 

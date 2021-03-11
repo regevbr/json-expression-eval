@@ -2,10 +2,12 @@
 
 import {functionsTable} from './functionsFactory';
 import {Expression, ExpressionEval} from '../..';
+import {Moment} from 'moment';
 
 export interface ExpressionContext {
     userId: string;
     times: number;
+    date: Moment;
     nested: {
         value: number;
         nested2: {
@@ -16,6 +18,6 @@ export interface ExpressionContext {
 
 export type ExpressionFunction = typeof functionsTable;
 
-export const getEvaluator = (expression: Expression<ExpressionContext, ExpressionFunction>) =>
-    new ExpressionEval<ExpressionContext, ExpressionFunction>(expression, functionsTable);
+export const getEvaluator = (expression: Expression<ExpressionContext, ExpressionFunction, Moment>) =>
+    new ExpressionEval<ExpressionContext, ExpressionFunction, Moment>(expression, functionsTable);
 

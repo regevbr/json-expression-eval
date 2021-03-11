@@ -1,65 +1,69 @@
-import {O as tObject} from 'ts-toolbelt';
+import {Object, String} from 'ts-toolbelt';
+import {Paths} from './paths';
 
 export type FuncCompareOp<C, F extends FunctionsTable<C>, K extends keyof F> = Parameters<F[K]>[0];
 
-export interface EqualCompareOp<C, K extends keyof C> {
-    eq: C[K];
+export interface EqualCompareOp<V> {
+    eq: V;
 }
 
-export interface NotEqualCompareOp<C, K extends keyof C> {
-    neq: C[K];
+export interface NotEqualCompareOp<V> {
+    neq: V;
 }
 
-export interface GtCompareOp<C, K extends keyof C> {
-    gt: C[K] extends number ? number : never;
+export interface GtCompareOp {
+    gt: number;
 }
 
-export interface GteCompareOp<C, K extends keyof C> {
-    gte: C[K] extends number ? number : never;
+export interface GteCompareOp {
+    gte: number;
 }
 
-export interface LtCompareOp<C, K extends keyof C> {
-    lt: C[K] extends number ? number : never;
+export interface LtCompareOp {
+    lt: number;
 }
 
-export interface LteCompareOp<C, K extends keyof C> {
-    lte: C[K] extends number ? number : never;
+export interface LteCompareOp {
+    lte: number;
 }
 
 export type FuncCompares<C, F extends FunctionsTable<C>> = {
     [K in keyof F]: FuncCompareOp<C, F, K>;
 }
 
-export type ExtendedCompareOp<C, K extends keyof C> = EqualCompareOp<C, K>
-    | NotEqualCompareOp<C, K>
-    | GtCompareOp<C, K>
-    | GteCompareOp<C, K>
-    | LtCompareOp<C, K>
-    | LteCompareOp<C, K>;
+export type NumberCompareOps<V> = V extends number ? GtCompareOp | GteCompareOp | LtCompareOp | LteCompareOp : never;
 
-export type PropertyCompareOp<C> = {
-    [K in keyof C]: C[K] extends string | number | boolean ?
-        (C[K] | ExtendedCompareOp<C, K>) : RequireOnlyOne<PropertyCompareOp<C[K]>>;
+export type ExtendedCompareOp<V> = EqualCompareOp<V> | NotEqualCompareOp<V> | NumberCompareOps<V>;
+
+export type StringPaths<O extends object, Ignore = never> =
+    String.Join<Paths<O, [], 'required', Ignore | any[], string>, '.'>;
+
+export type Primitive = string | number | boolean;
+
+export type PropertyCompareOps<C extends Context, Ignore = never> = {
+    [K in StringPaths<C, Ignore>]:
+    Object.Path<C, String.Split<K, '.'>> extends Primitive ?
+        (Object.Path<C, String.Split<K, '.'>> | ExtendedCompareOp<Object.Path<C, String.Split<K, '.'>>>)
+        : never;
 };
 
-export type CompareOp<C, F extends FunctionsTable<C>> = PropertyCompareOp<C> & FuncCompares<C, F>;
-
-export interface AndCompareOp<C, F extends FunctionsTable<C>> {
-    and: Expression<C, F>[];
+export interface AndCompareOp<C, F extends FunctionsTable<C>, Ignore> {
+    and: Expression<C, F, Ignore>[];
 }
 
-export interface OrCompareOp<C, F extends FunctionsTable<C>> {
-    or: Expression<C, F>[];
+export interface OrCompareOp<C, F extends FunctionsTable<C>, Ignore> {
+    or: Expression<C, F, Ignore>[];
 }
 
-export interface NotCompareOp<C, F extends FunctionsTable<C>> {
-    not: Expression<C, F>;
+export interface NotCompareOp<C, F extends FunctionsTable<C>, Ignore> {
+    not: Expression<C, F, Ignore>;
 }
 
-export type RequireOnlyOne<T extends object> = tObject.Either<T, keyof T>;
+export type RequireOnlyOne<T extends object> = Object.Either<T, keyof T>;
 
-export type Expression<C, F extends FunctionsTable<C>> = NotCompareOp<C, F> | OrCompareOp<C, F> | AndCompareOp<C, F> |
-    RequireOnlyOne<CompareOp<C, F>>;
+export type Expression<C, F extends FunctionsTable<C>, Ignore = never> =
+    NotCompareOp<C, F, Ignore> | OrCompareOp<C, F, Ignore> | AndCompareOp<C, F, Ignore> |
+    RequireOnlyOne<FuncCompares<C, F>> | RequireOnlyOne<PropertyCompareOps<C, Ignore>>;
 
 export type Func<T> = (param: any, context: T) => boolean;
 
@@ -68,3 +72,9 @@ export interface FunctionsTable<T> {
 }
 
 export type Context = Record<string, any>;
+
+export type RequiredDeep<O> = {
+    [K in keyof O]-?: O[K] extends Primitive ? O[K] : RequiredDeep<O[K]>;
+}
+
+export type ValidationContext<C extends Context> = RequiredDeep<C>

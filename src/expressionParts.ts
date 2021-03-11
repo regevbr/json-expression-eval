@@ -1,6 +1,8 @@
 /* tslint:disable:array-type */
-import {Context, FunctionsTable} from './types';
+import {Context, FunctionsTable, Primitive, StringPaths} from './types';
 import {Function, String, Object, List} from 'ts-toolbelt';
+import {Pick} from 'ts-toolbelt/out/Object/Pick';
+import {FilterKeys} from 'ts-toolbelt/out/Object/FilterKeys';
 
 type GetPartType<V> = V extends string ? 'string' : V extends number ? 'number' : V extends boolean ? 'boolean'
     : V extends Array<infer N> ? GetPartType<N> : never;
@@ -23,16 +25,12 @@ interface ExpressionContextPart<V, P extends string> {
     isFunction: false;
 }
 
-type Primitive = string | number | boolean;
-
-type StringPaths<O extends object> = String.Join<List.Required<Object.Paths<O>>, '.'>;
-
-type ExpressionContextParts<C extends object, Extra extends object> = {
-    [K in StringPaths<C>]:
+type ExpressionContextParts<C extends object, Extra extends object, Ignore> = {
+    [K in StringPaths<C, Ignore>]:
     Object.Path<C, String.Split<K, '.'>> extends Primitive
         ? ExpressionContextPart<Object.Path<C, String.Split<K, '.'>>, K> & Extra
         : never;
 }
 
-export type ExpressionParts<C extends Context, F extends FunctionsTable<C>, Extra extends object = {}> =
-    ExpressionFunctionParts<C, F, Extra> & ExpressionContextParts<C, Extra>;
+export type ExpressionParts<C extends Context, F extends FunctionsTable<C>, Extra extends object = {}, Ignore = never> =
+    ExpressionFunctionParts<C, F, Extra> & Object.Filter<ExpressionContextParts<C, Extra, Ignore>, never, 'equals'>;

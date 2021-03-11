@@ -1,17 +1,18 @@
 import {
     isAndCompareOp, isEqualCompareOp, isGtCompareOp, isGteCompareOp, isLtCompareOp, isLteCompareOp,
     isNotCompareOp,
-    isNotEqualCompareOp, isOrCompareOp, _isObject
+    isNotEqualCompareOp, isOrCompareOp, _isObject, isFunctionCompareOp
 } from './typeGuards';
-import {CompareOp, Context, Expression, FunctionsTable, RequireOnlyOne} from './types';
+import {Context, Expression, FunctionsTable, ExtendedCompareOp} from './types';
+import {getFromPath} from './getFromPath';
 
-function evaluateCompareOp<C, F extends FunctionsTable<C>, K extends keyof RequireOnlyOne<CompareOp<C, F>>>(
-    op: RequireOnlyOne<CompareOp<C, F>>, key: K, param: any, validation: false): boolean;
-function evaluateCompareOp<C, F extends FunctionsTable<C>, K extends keyof RequireOnlyOne<CompareOp<C, F>>>(
-    op: RequireOnlyOne<CompareOp<C, F>>, key: K, param: any, validation: true): void;
-function evaluateCompareOp<C, F extends FunctionsTable<C>, K extends keyof RequireOnlyOne<CompareOp<C, F>>>(
-    op: RequireOnlyOne<CompareOp<C, F>>, key: K, param: any, validation: boolean): boolean | void {
-    const value = op[key];
+const assertUnreachable = <T = never>(x: never, message: string): T => {
+    throw new Error(message);
+};
+
+function evaluateCompareOp(value: ExtendedCompareOp<any>, param: any, validation: false): boolean;
+function evaluateCompareOp(value: ExtendedCompareOp<any>, param: any, validation: true): void;
+function evaluateCompareOp(value: ExtendedCompareOp<any>, param: any, validation: boolean): boolean | void {
     if (!_isObject(value)) {
         return validation ? undefined : param === value;
     }
@@ -32,32 +33,28 @@ function evaluateCompareOp<C, F extends FunctionsTable<C>, K extends keyof Requi
         return validation ? undefined : param === value.eq;
     } else if (isNotEqualCompareOp(value)) {
         return validation ? undefined : param !== value.neq;
-    } else if (_isObject(param) && valueKey in param) {
-        if (validation) {
-            evaluateCompareOp(value, valueKey, param[valueKey], true);
-            return;
-        } else {
-            return evaluateCompareOp(value, valueKey, param[valueKey], false);
-        }
+    } else {
+        assertUnreachable(value, `Invalid expression - unknown op ${valueKey}`);
     }
-    throw new Error(`Invalid expression - unknown op ${valueKey}`);
 }
 
-function handleAndOp<C extends Context, F extends FunctionsTable<C>>(andExpression: Expression<C, F>[], context: C,
-                                                                     functionsTable: F, validation: false): boolean;
-function handleAndOp<C extends Context, F extends FunctionsTable<C>>(andExpression: Expression<C, F>[], context: C,
-                                                                     functionsTable: F, validation: true): void;
-function handleAndOp<C extends Context, F extends FunctionsTable<C>>(andExpression: Expression<C, F>[], context: C,
-                                                                     functionsTable: F, validation: boolean)
+function handleAndOp<C extends Context, F extends FunctionsTable<C>, Ignore>
+(andExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: false): boolean;
+function handleAndOp<C extends Context, F extends FunctionsTable<C>, Ignore>
+(andExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: true): void;
+function handleAndOp<C extends Context, F extends FunctionsTable<C>, Ignore>
+(andExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: boolean)
     : boolean | void {
     if (andExpression.length === 0) {
         throw new Error('Invalid expression - and operator must have at least one expression');
     }
     if (validation) {
-        andExpression.forEach((currExpression) => validate(currExpression, context, functionsTable));
+        andExpression.forEach(
+            (currExpression) => validate<C, F, Ignore>(currExpression, context, functionsTable)
+        );
     } else {
         for (const currExpression of andExpression) {
-            if (!evaluate(currExpression, context, functionsTable)) {
+            if (!evaluate<C, F, Ignore>(currExpression, context, functionsTable)) {
                 return false
             }
         }
@@ -65,21 +62,23 @@ function handleAndOp<C extends Context, F extends FunctionsTable<C>>(andExpressi
     }
 }
 
-function handleOrOp<C extends Context, F extends FunctionsTable<C>>(orExpression: Expression<C, F>[], context: C,
-                                                                    functionsTable: F, validation: false): boolean;
-function handleOrOp<C extends Context, F extends FunctionsTable<C>>(orExpression: Expression<C, F>[], context: C,
-                                                                    functionsTable: F, validation: true): void;
-function handleOrOp<C extends Context, F extends FunctionsTable<C>>(orExpression: Expression<C, F>[], context: C,
-                                                                    functionsTable: F, validation: boolean)
+function handleOrOp<C extends Context, F extends FunctionsTable<C>, Ignore>
+(orExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: false): boolean;
+function handleOrOp<C extends Context, F extends FunctionsTable<C>, Ignore>
+(orExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: true): void;
+function handleOrOp<C extends Context, F extends FunctionsTable<C>, Ignore>
+(orExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: boolean)
     : boolean | void {
     if (orExpression.length === 0) {
         throw new Error('Invalid expression - or operator must have at least one expression');
     }
     if (validation) {
-        orExpression.forEach((currExpression) => validate(currExpression, context, functionsTable));
+        orExpression.forEach(
+            (currExpression) => validate<C, F, Ignore>(currExpression, context, functionsTable)
+        );
     } else {
         for (const currExpression of orExpression) {
-            if (evaluate(currExpression, context, functionsTable)) {
+            if (evaluate<C, F, Ignore>(currExpression, context, functionsTable)) {
                 return true
             }
         }
@@ -87,58 +86,58 @@ function handleOrOp<C extends Context, F extends FunctionsTable<C>>(orExpression
     }
 }
 
-function _run<C extends Context, F extends FunctionsTable<C>>(expression: Expression<C, F>, context: C,
-                                                              functionsTable: F, validation: false): boolean;
-function _run<C extends Context, F extends FunctionsTable<C>>(expression: Expression<C, F>, context: C,
-                                                              functionsTable: F, validation: true): void;
-function _run<C extends Context, F extends FunctionsTable<C>>(expression: Expression<C, F>, context: C,
-                                                              functionsTable: F, validation: boolean): boolean | void {
+function _run<C extends Context, F extends FunctionsTable<C>, Ignore>
+(expression: Expression<C, F, Ignore>, context: C, functionsTable: F, validation: false): boolean;
+function _run<C extends Context, F extends FunctionsTable<C>, Ignore>
+(expression: Expression<C, F, Ignore>, context: C, functionsTable: F, validation: true): void;
+function _run<C extends Context, F extends FunctionsTable<C>, Ignore>
+(expression: Expression<C, F, Ignore>, context: C, functionsTable: F, validation: boolean): boolean | void {
     const keys = Object.keys(expression);
     if (keys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
     }
     const key = keys[0];
-    if (isAndCompareOp<C, F>(expression)) {
+    if (isAndCompareOp<C, F, Ignore>(expression)) {
         if (validation) {
-            handleAndOp(expression.and, context, functionsTable, true);
+            handleAndOp<C, F, Ignore>(expression.and, context, functionsTable, true);
             return;
         } else {
-            return handleAndOp(expression.and, context, functionsTable, false);
+            return handleAndOp<C, F, Ignore>(expression.and, context, functionsTable, false);
         }
-    } else if (isOrCompareOp<C, F>(expression)) {
+    } else if (isOrCompareOp<C, F, Ignore>(expression)) {
         if (validation) {
-            handleOrOp(expression.or, context, functionsTable, true);
+            handleOrOp<C, F, Ignore>(expression.or, context, functionsTable, true);
             return;
         } else {
-            return handleOrOp(expression.or, context, functionsTable, false);
+            return handleOrOp<C, F, Ignore>(expression.or, context, functionsTable, false);
         }
-    } else if (isNotCompareOp<C, F>(expression)) {
+    } else if (isNotCompareOp<C, F, Ignore>(expression)) {
         if (validation) {
-            _run(expression.not, context, functionsTable, true);
+            _run<C, F, Ignore>(expression.not, context, functionsTable, true);
             return;
         } else {
-            return !_run(expression.not, context, functionsTable, false);
+            return !_run<C, F, Ignore>(expression.not, context, functionsTable, false);
         }
-    } else if (key in functionsTable) {
+    } else if (isFunctionCompareOp<C, F, Ignore>(expression, functionsTable, key)) {
         return validation ? undefined : functionsTable[key](expression[key], context);
-    } else if (key in context) {
+    } else {
+        const value = getFromPath(context, key);
         if (validation) {
-            evaluateCompareOp<C, F, typeof key>(expression, key, context[key], true)
+            evaluateCompareOp((expression as any)[key], value, true)
             return;
         } else {
-            return evaluateCompareOp<C, F, typeof key>(expression, key, context[key], false)
+            return evaluateCompareOp((expression as any)[key], value, false)
         }
     }
-    throw new Error(`Invalid expression - unknown function ${key}`);
 }
 
-export const evaluate = <C extends Context, F extends FunctionsTable<C>>(expression: Expression<C, F>, context: C,
-                                                                         functionsTable: F): boolean => {
-    return _run(expression, context, functionsTable, false);
+export const evaluate = <C extends Context, F extends FunctionsTable<C>, Ignore = never>
+(expression: Expression<C, F, Ignore>, context: C, functionsTable: F): boolean => {
+    return _run<C, F, Ignore>(expression, context, functionsTable, false);
 };
 
 // Throws in case of validation error. Does not run functions or compare fields
-export const validate = <C extends Context, F extends FunctionsTable<C>>(expression: Expression<C, F>, dummyContext: C,
-                                                                         functionsTable: F): void => {
-    _run(expression, dummyContext, functionsTable, true);
+export const validate = <C extends Context, F extends FunctionsTable<C>, Ignore = never>
+(expression: Expression<C, F, Ignore>, dummyContext: C, functionsTable: F): void => {
+    _run<C, F, Ignore>(expression, dummyContext, functionsTable, true);
 };

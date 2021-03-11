@@ -93,6 +93,12 @@ type Expected = {
     },
 };
 
+declare var r: Result;
+declare var e: Expected;
+
+r = e;
+e = r;
+
 type ResultExtended = Any.Compute<ExpressionParts<ExpressionContext, ExpressionFunction, { description: string }>>;
 
 type ExpectedExtended = {
