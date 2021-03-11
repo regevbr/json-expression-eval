@@ -1,10 +1,13 @@
 'use strict';
 
 import {ExpressionContext, ExpressionFunction, getEvaluator} from './lib/evaluator';
-import {Expression, GetExpressionParts} from '../';
+import {Expression, ExpressionParts} from '../';
+import {Moment} from 'moment';
+import moment = require('moment');
 
 const context: ExpressionContext = {
     userId: 'a@b.com',
+    date: moment(),
     times: 3,
     nested: {
         value: 5,
@@ -14,13 +17,13 @@ const context: ExpressionContext = {
     },
 };
 
-const run = (expr: Expression<ExpressionContext, ExpressionFunction>, ctx: ExpressionContext) => {
+const run = (expr: Expression<ExpressionContext, ExpressionFunction, Moment>, ctx: ExpressionContext) => {
     const result = getEvaluator(expression).evaluate(ctx);
     console.log(`Evaluating expression ${JSON.stringify(expr)} using context ${JSON.stringify(ctx)}`);
     console.log(`Result: ${result}`);
 };
 
-let expression: Expression<ExpressionContext, ExpressionFunction> = {
+let expression: Expression<ExpressionContext, ExpressionFunction, Moment> = {
     user: 'a@b.com',
 };
 
@@ -84,15 +87,11 @@ expression = {
     or: [
         {times: 3},
         {
-            nested: {
-                value: 5,
-            },
+            'nested.value': 5,
         },
         {
-            nested: {
-                value: {
-                    gt: 6,
-                },
+            'nested.value': {
+                gt: 6,
             },
         },
     ],
@@ -100,9 +99,7 @@ expression = {
 
 run(expression, context);
 
-const evaluator = getEvaluator(expression);
-
-const expressionParts: GetExpressionParts<typeof evaluator, { description: string }> = {
+const expressionParts: ExpressionParts<ExpressionContext, ExpressionFunction, { description: string }, Moment> = {
     'nested.value': {
         isArray: false,
         isFunction: false,

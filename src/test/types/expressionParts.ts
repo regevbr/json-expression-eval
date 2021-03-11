@@ -1,4 +1,4 @@
-import {ExpressionParts} from '../expressionParts';
+import {ExpressionParts} from '../../types';
 import {Any, Test} from 'ts-toolbelt';
 
 interface ExpressionContext {
@@ -92,6 +92,12 @@ type Expected = {
         type: 'boolean',
     },
 };
+
+declare var r: Result;
+declare var e: Expected;
+
+r = e;
+e = r;
 
 type ResultExtended = Any.Compute<ExpressionParts<ExpressionContext, ExpressionFunction, { description: string }>>;
 

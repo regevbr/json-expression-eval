@@ -1,7 +1,7 @@
 import {
     AndCompareOp,
     EqualCompareOp,
-    Expression,
+    ExtendedCompareOp, FuncCompares,
     FunctionsTable,
     GtCompareOp,
     GteCompareOp,
@@ -9,7 +9,7 @@ import {
     LteCompareOp,
     NotCompareOp,
     NotEqualCompareOp,
-    OrCompareOp
+    OrCompareOp, RequireOnlyOne
 } from './types';
 
 export const _isObject = (obj: unknown): boolean => {
@@ -17,47 +17,53 @@ export const _isObject = (obj: unknown): boolean => {
     return type === 'function' || type === 'object' && !!obj;
 };
 
-export const isAndCompareOp = <C, F extends FunctionsTable<C>>(expression: Expression<C, F>):
-    expression is AndCompareOp<C, F> => {
-    return Array.isArray((expression as AndCompareOp<C, F>).and);
+export const isFunctionCompareOp =
+    <C, F extends FunctionsTable<C>, Ignore>(expression: unknown, functionsTable: F, key: string):
+        expression is RequireOnlyOne<FuncCompares<C, F>> => {
+        return key in functionsTable;
+    }
+
+export const isAndCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expression: unknown):
+    expression is AndCompareOp<C, F, Ignore> => {
+    return Array.isArray((expression as AndCompareOp<C, F, Ignore>).and);
 }
 
-export const isOrCompareOp = <C, F extends FunctionsTable<C>>(expression: Expression<C, F>):
-    expression is OrCompareOp<C, F> => {
-    return Array.isArray((expression as OrCompareOp<C, F>).or);
+export const isOrCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expression: unknown):
+    expression is OrCompareOp<C, F, Ignore> => {
+    return Array.isArray((expression as OrCompareOp<C, F, Ignore>).or);
 }
 
-export const isNotCompareOp = <C, F extends FunctionsTable<C>>(expression: Expression<C, F>):
-    expression is NotCompareOp<C, F> => {
-    return _isObject((expression as NotCompareOp<C, F>).not);
+export const isNotCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expression: unknown):
+    expression is NotCompareOp<C, F, Ignore> => {
+    return _isObject((expression as NotCompareOp<C, F, Ignore>).not);
 }
 
-export const isGtCompareOp = <C, F extends FunctionsTable<C>, K extends keyof C>(op: unknown)
-    : op is GtCompareOp<C, K> => {
-    return (op as GtCompareOp<C, K>).gt !== undefined;
+export const isGtCompareOp = (op: ExtendedCompareOp)
+    : op is GtCompareOp => {
+    return (op as GtCompareOp).gt !== undefined;
 }
 
-export const isGteCompareOp = <C, F extends FunctionsTable<C>, K extends keyof C>(op: unknown)
-    : op is GteCompareOp<C, K> => {
-    return (op as GteCompareOp<C, K>).gte !== undefined;
+export const isGteCompareOp = (op: ExtendedCompareOp)
+    : op is GteCompareOp => {
+    return (op as GteCompareOp).gte !== undefined;
 }
 
-export const isLteCompareOp = <C, F extends FunctionsTable<C>, K extends keyof C>(op: unknown)
-    : op is LteCompareOp<C, K> => {
-    return (op as LteCompareOp<C, K>).lte !== undefined;
+export const isLteCompareOp = (op: ExtendedCompareOp)
+    : op is LteCompareOp => {
+    return (op as LteCompareOp).lte !== undefined;
 }
 
-export const isLtCompareOp = <C, F extends FunctionsTable<C>, K extends keyof C>(op: unknown)
-    : op is LtCompareOp<C, K> => {
-    return (op as LtCompareOp<C, K>).lt !== undefined;
+export const isLtCompareOp = (op: ExtendedCompareOp)
+    : op is LtCompareOp => {
+    return (op as LtCompareOp).lt !== undefined;
 }
 
-export const isEqualCompareOp = <C, F extends FunctionsTable<C>, K extends keyof C>(op: unknown)
-    : op is EqualCompareOp<C, K> => {
-    return (op as EqualCompareOp<C, K>).eq !== undefined;
+export const isEqualCompareOp = <V>(op: ExtendedCompareOp)
+    : op is EqualCompareOp<V> => {
+    return (op as EqualCompareOp<V>).eq !== undefined;
 }
 
-export const isNotEqualCompareOp = <C, F extends FunctionsTable<C>, K extends keyof C>(op: unknown)
-    : op is NotEqualCompareOp<C, K> => {
-    return (op as NotEqualCompareOp<C, K>).neq !== undefined;
+export const isNotEqualCompareOp = <V>(op: ExtendedCompareOp)
+    : op is NotEqualCompareOp<V> => {
+    return (op as NotEqualCompareOp<V>).neq !== undefined;
 }

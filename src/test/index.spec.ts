@@ -14,11 +14,24 @@ describe('evaluator', () => {
 
     it('should evaluate short eq compare op true to on nested properties', () => {
         const expression = {
+            'nested.value': 7,
+        };
+        type Con = {
+            timesCounter?: number;
+            userId: string,
             nested: {
+                value2: number | undefined,
+                value: number | null,
+            },
+        }
+        const context = {
+            userId: 'a',
+            nested: {
+                value2: 9,
                 value: 7,
             },
         };
-        const context = {
+        const validationContext = {
             timesCounter: 5,
             userId: 'a',
             nested: {
@@ -26,9 +39,9 @@ describe('evaluator', () => {
                 value: 7,
             },
         };
-        const exp = new ExpressionEval<typeof context, ExpressionFunction>(expression, functionsTable);
-        expect(exp.validate(context)).to.be.an('undefined');
-        expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+        const exp = new ExpressionEval<Con, ExpressionFunction>(expression, functionsTable);
+        expect(exp.validate(validationContext)).to.be.an('undefined');
+        expect(validate<Con, ExpressionFunction>(expression, validationContext, functionsTable)).to.be.an('undefined');
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
         expect(exp.evaluate(context)).to.eql(true);
     });
@@ -37,16 +50,10 @@ describe('evaluator', () => {
         const expression = {
             or: [
                 {
-                    nested: {
-                        nested2: {
-                            value: 7,
-                        },
-                    },
+                    'nested.nested2.value': 7,
                 },
                 {
-                    nested: {
-                        value: 4,
-                    },
+                    'nested.value': 4,
                 },
             ],
         };
@@ -61,7 +68,6 @@ describe('evaluator', () => {
             },
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -74,7 +80,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -87,7 +92,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -100,16 +104,13 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
     it('should evaluate eq compare op to true on nested properties', () => {
         const expression = {
-            nested: {
-                value: {
-                    eq: 7,
-                },
+            'nested.value': {
+                eq: 7,
             },
         };
         const context = {
@@ -120,7 +121,6 @@ describe('evaluator', () => {
             },
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -128,19 +128,13 @@ describe('evaluator', () => {
         const expression = {
             or: [
                 {
-                    nested: {
-                        nested2: {
-                            value: {
-                                eq: 7,
-                            },
-                        },
+                    'nested.nested2.value': {
+                        eq: 7,
                     },
                 },
                 {
-                    nested: {
-                        value: {
-                            eq: 4,
-                        },
+                    'nested.value': {
+                        eq: 4,
                     },
                 },
             ],
@@ -156,7 +150,6 @@ describe('evaluator', () => {
             },
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -169,7 +162,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -182,7 +174,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -195,7 +186,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -208,7 +198,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -221,7 +210,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -234,7 +222,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -247,7 +234,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -260,7 +246,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -273,7 +258,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -286,7 +270,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -299,7 +282,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -312,7 +294,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
@@ -325,7 +306,6 @@ describe('evaluator', () => {
             userId: 'a',
         };
         expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        ;
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
     });
 
@@ -441,22 +421,36 @@ describe('evaluator', () => {
             .to.throw('Invalid expression - and operator must have at least one expression');
     });
 
-    it('should fail on non existing function', () => {
+    it('should fail on non existing property', () => {
         const expression: any = {and: [{dummy: 1}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
         expect(() => validate(expression, context, functionsTable))
-            .to.throw('Invalid expression - unknown function dummy');
-        expect(() => evaluate(expression, context, functionsTable))
-            .to.throw('Invalid expression - unknown function dummy');
+            .to.throw('Invalid expression - unknown context key dummy');
+        expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
-    it('should fail on non existing function 2', () => {
+    it('should fail on non existing nested property', () => {
+        const expression: any = {and: [{'dummy.value': 1}]};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        expect(() => validate(expression, context, functionsTable))
+            .to.throw('Invalid expression - unknown context key dummy');
+        expect(evaluate(expression, context, functionsTable)).to.eql(false);
+    });
+
+    it('should fail on non existing nested property 2', () => {
+        const expression: any = {and: [{'dummy.value': 1}]};
+        const context = {userId: 'r@a.com', timesCounter: 8, dummy: {value2: 5}};
+        expect(() => validate(expression, context, functionsTable))
+            .to.throw('Invalid expression - unknown context key dummy');
+        expect(evaluate(expression, context, functionsTable)).to.eql(false);
+    });
+
+    it('should fail on non existing property 2', () => {
         const expression: any = {dummy: 1};
         const context = {userId: 'r@a.com', timesCounter: 8};
         expect(() => validate(expression, context, functionsTable))
-            .to.throw('Invalid expression - unknown function dummy');
-        expect(() => evaluate(expression, context, functionsTable))
-            .to.throw('Invalid expression - unknown function dummy');
+            .to.throw('Invalid expression - unknown context key dummy');
+        expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
     it('should fail on non existing op', () => {
@@ -466,6 +460,15 @@ describe('evaluator', () => {
             .to.throw('Invalid expression - unknown op bk');
         expect(() => evaluate(expression, context, functionsTable))
             .to.throw('Invalid expression - unknown op bk');
+    });
+
+    it('should fail on non number op', () => {
+        const expression: any = {timesCounter: {gt: 'sdf'}};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        expect(() => validate(expression, context, functionsTable))
+            .to.throw('Invalid expression - timesCounter must be a number');
+        expect(() => evaluate(expression, context, functionsTable))
+            .to.throw('Invalid expression - timesCounter must be a number');
     });
 
     it('should fail too many keys to op', () => {
@@ -551,7 +554,7 @@ describe('evaluator', () => {
                 ],
             };
             const context = {};
-            validate(expression, context, fnTable);
+            validate<typeof context, typeof fnTable>(expression, context, fnTable);
             expect(fnCounter).to.eql(0);
             evaluate(expression, context, fnTable);
             expect(fnCounter).to.eql(3);
