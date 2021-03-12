@@ -1,11 +1,10 @@
 'use strict';
 
 import {evaluate, validate} from './evaluator';
-import {Context, Expression, FunctionsTable} from './types';
+import {Context, Expression, FunctionsTable, ValidationContext} from './types';
 
-export * from './types';
+export * from './types/index';
 export * from './evaluator';
-export * from './expressionParts';
 
 export class ExpressionEval<C extends Context, F extends FunctionsTable<C>, Ignore = never> {
 
@@ -16,8 +15,8 @@ export class ExpressionEval<C extends Context, F extends FunctionsTable<C>, Igno
         return evaluate<C, F, Ignore>(this.expression, context, this.functionsTable);
     }
 
-    public validate(dummyContext: C): void {
-        validate<C, F, Ignore>(this.expression, dummyContext, this.functionsTable);
+    public validate(validationContext: C): void {
+        validate<C, F, Ignore>(this.expression, validationContext, this.functionsTable);
     }
 
 }

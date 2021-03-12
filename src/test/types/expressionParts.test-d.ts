@@ -1,4 +1,4 @@
-import {ExpressionParts} from '../expressionParts';
+import {ExpressionParts} from '../../types';
 import {Any, Test} from 'ts-toolbelt';
 
 interface ExpressionContext {

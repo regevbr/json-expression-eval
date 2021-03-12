@@ -1,5 +1,5 @@
 /* tslint:disable:array-type */
-import {Context, FunctionsTable, Primitive, StringPaths} from './types';
+import {Context, FunctionsTable, Primitive, StringPaths} from './evaluator';
 import {Function, String, Object, List} from 'ts-toolbelt';
 
 type GetPartType<V> = V extends string ? 'string' : V extends number ? 'number' : V extends boolean ? 'boolean'

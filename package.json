@@ -3,7 +3,7 @@
   "version": "4.0.0",
   "description": "evaluate a json described boolean expression using dynamic functions",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "engines": {
     "node": ">=6"
   },
