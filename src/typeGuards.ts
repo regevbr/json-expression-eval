@@ -38,32 +38,32 @@ export const isNotCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expressio
     return _isObject((expression as NotCompareOp<C, F, Ignore>).not);
 }
 
-export const isGtCompareOp = (op: ExtendedCompareOp<any>)
+export const isGtCompareOp = (op: ExtendedCompareOp)
     : op is GtCompareOp => {
     return (op as GtCompareOp).gt !== undefined;
 }
 
-export const isGteCompareOp = (op: ExtendedCompareOp<any>)
+export const isGteCompareOp = (op: ExtendedCompareOp)
     : op is GteCompareOp => {
     return (op as GteCompareOp).gte !== undefined;
 }
 
-export const isLteCompareOp = (op: ExtendedCompareOp<any>)
+export const isLteCompareOp = (op: ExtendedCompareOp)
     : op is LteCompareOp => {
     return (op as LteCompareOp).lte !== undefined;
 }
 
-export const isLtCompareOp = (op: ExtendedCompareOp<any>)
+export const isLtCompareOp = (op: ExtendedCompareOp)
     : op is LtCompareOp => {
     return (op as LtCompareOp).lt !== undefined;
 }
 
-export const isEqualCompareOp = <V>(op: ExtendedCompareOp<any>)
+export const isEqualCompareOp = <V>(op: ExtendedCompareOp)
     : op is EqualCompareOp<V> => {
     return (op as EqualCompareOp<V>).eq !== undefined;
 }
 
-export const isNotEqualCompareOp = <V>(op: ExtendedCompareOp<any>)
+export const isNotEqualCompareOp = <V>(op: ExtendedCompareOp)
     : op is NotEqualCompareOp<V> => {
     return (op as NotEqualCompareOp<V>).neq !== undefined;
 }

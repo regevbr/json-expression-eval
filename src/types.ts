@@ -33,7 +33,7 @@ export type FuncCompares<C, F extends FunctionsTable<C>> = {
 
 export type NumberCompareOps<V> = V extends number ? GtCompareOp | GteCompareOp | LtCompareOp | LteCompareOp : never;
 
-export type ExtendedCompareOp<V> = EqualCompareOp<V> | NotEqualCompareOp<V> | NumberCompareOps<V>;
+export type ExtendedCompareOp<V = any> = EqualCompareOp<V> | NotEqualCompareOp<V> | NumberCompareOps<V>;
 
 export type StringPaths<O extends object, Ignore = never> =
     String.Join<Paths<O, [], 'required', Ignore | any[], string>, '.'>;

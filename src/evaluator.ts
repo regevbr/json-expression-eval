@@ -4,22 +4,18 @@ import {
     isNotEqualCompareOp, isOrCompareOp, _isObject, isFunctionCompareOp
 } from './typeGuards';
 import {Context, Expression, FunctionsTable, ExtendedCompareOp} from './types';
-import {getFromPath} from './getFromPath';
-
-const assertUnreachable = <T = never>(x: never, message: string): T => {
-    throw new Error(message);
-};
+import {assertUnreachable, objectKeys, getFromPath, getNumberAsserter} from './helpers';
 
 function evaluateCompareOp
-(expressionValue: ExtendedCompareOp<any>, contextValue: any, key: string, validation: false): boolean;
+(expressionValue: ExtendedCompareOp, contextValue: any, key: string, validation: false): boolean;
 function evaluateCompareOp
-(expressionValue: ExtendedCompareOp<any>, contextValue: any, key: string, validation: true): void;
+(expressionValue: ExtendedCompareOp, contextValue: any, key: string, validation: true): void;
 function evaluateCompareOp
-(expressionValue: ExtendedCompareOp<any>, contextValue: any, key: string, validation: boolean): boolean | void {
+(expressionValue: ExtendedCompareOp, contextValue: any, key: string, validation: boolean): boolean | void {
     if (!_isObject(expressionValue)) {
         return validation ? undefined : contextValue === expressionValue;
     }
-    const keys = Object.keys(expressionValue);
+    const keys = objectKeys(expressionValue);
     if (keys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
     }
@@ -28,11 +24,7 @@ function evaluateCompareOp
     } else if (isNotEqualCompareOp(expressionValue)) {
         return validation ? undefined : contextValue !== expressionValue.neq;
     } else {
-        const assertNumber = (value: any) => {
-            if (typeof value !== 'number') {
-                throw new Error(`Invalid expression - ${key} must be a number`);
-            }
-        }
+        const assertNumber = getNumberAsserter(key);
         if (isGtCompareOp(expressionValue)) {
             assertNumber(expressionValue.gt);
             return validation ? undefined : contextValue > expressionValue.gt;
@@ -106,7 +98,7 @@ function _run<C extends Context, F extends FunctionsTable<C>, Ignore>
 function _run<C extends Context, F extends FunctionsTable<C>, Ignore>
 (expression: Expression<C, F, Ignore>, context: C, functionsTable: F, validation: boolean): boolean | void {
     // TODO reduce code complexity
-    const keys = Object.keys(expression);
+    const keys = objectKeys(expression);
     if (keys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
     }
