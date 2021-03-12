@@ -127,14 +127,14 @@ function _run<C extends Context, F extends FunctionsTable<C>, Ignore>
     } else if (isFunctionCompareOp<C, F, Ignore>(expression, functionsTable, key)) {
         return validation ? undefined : functionsTable[key](expression[key], context);
     } else {
-        // TODO on validate we should throw here
         const contextValue = getFromPath(context, key);
         if (validation) {
-            // TODO fix the TS error here
+            if (!contextValue) {
+                throw new Error(`Invalid expression - unknown context key ${key}`);
+            }
             evaluateCompareOp(expression[key], contextValue, key, true)
             return;
         } else {
-            // TODO fix the TS error here
             return evaluateCompareOp(expression[key], contextValue, key, false);
         }
     }
