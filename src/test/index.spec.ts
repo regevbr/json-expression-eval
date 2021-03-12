@@ -1,7 +1,8 @@
 'use strict';
 
 import {expect} from 'chai';
-import {evaluate, ExpressionEval, validate} from '../';
+import {evaluate, Expression, ExpressionEval, validate} from '../';
+import {Any} from 'ts-toolbelt';
 
 const functionsTable = {
     user: (user: string, context: { userId: string }): boolean => {
@@ -17,11 +18,11 @@ describe('evaluator', () => {
             'nested.value': 7,
         };
         type Con = {
-            timesCounter?: number,
+            timesCounter?: number;
             userId: string,
             nested: {
-                value2: number | null,
-                value: number | undefined,
+                value2: number | undefined,
+                value: number | null,
             },
         }
         const context = {

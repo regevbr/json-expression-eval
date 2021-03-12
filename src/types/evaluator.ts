@@ -1,4 +1,4 @@
-import {Object, String, Any} from 'ts-toolbelt';
+import {Object, String, Union} from 'ts-toolbelt';
 import {Paths} from './paths';
 import {NonNullable} from './required';
 
@@ -38,13 +38,13 @@ export type NumberCompareOps<V = any> =
 export type ExtendedCompareOp<V = any> = EqualCompareOp<V> | NotEqualCompareOp<V> | NumberCompareOps<V>;
 
 export type StringPaths<O extends object, Ignore = never> =
-    String.Join<Paths<O, [], 'required', Ignore | any[], string>, '.'>;
+    String.Join<Paths<O, [], Ignore | any[], string>, '.'>;
 
 export type Primitive = string | number | boolean;
 
 export type PropertyCompareOps<C extends Context, Ignore = never> = {
     [K in StringPaths<C, Ignore>]:
-    Object.Path<C, String.Split<K, '.'>> extends Primitive ?
+    Union.NonNullable<Object.Path<C, String.Split<K, '.'>>> extends Primitive ?
         (Object.Path<C, String.Split<K, '.'>> | ExtendedCompareOp<Object.Path<C, String.Split<K, '.'>>>)
         : never;
 };
