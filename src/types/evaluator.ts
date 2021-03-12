@@ -1,5 +1,6 @@
 import {Object, String, Any} from 'ts-toolbelt';
 import {Paths} from './paths';
+import {NonNullable} from './required';
 
 export type FuncCompareOp<C, F extends FunctionsTable<C>, K extends keyof F> = Parameters<F[K]>[0];
 
@@ -74,8 +75,4 @@ export interface FunctionsTable<T> {
 
 export type Context = Record<string, any>;
 
-export type RequiredDeep<O> = {
-    [K in keyof O]-?: O[K] extends Primitive ? O[K] : RequiredDeep<O[K]>;
-}
-
-export type ValidationContext<C extends Context> = Object.NonNullable<C, Any.Key, 'deep'>;
+export type ValidationContext<C extends Context, Ignore> = NonNullable<C, Ignore>;

@@ -16,17 +16,32 @@ describe('evaluator', () => {
         const expression = {
             'nested.value': 7,
         };
+        type Con = {
+            timesCounter?: number,
+            userId: string,
+            nested: {
+                value2: number | null,
+                value: number | undefined,
+            },
+        }
         const context = {
-            timesCounter: 5,
             userId: 'a',
             nested: {
                 value2: 9,
                 value: 7,
             },
         };
-        const exp = new ExpressionEval<typeof context, ExpressionFunction>(expression, functionsTable);
-        expect(exp.validate(context)).to.be.an('undefined');
-        expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+        const validationContext = {
+            // timesCounter: 5,
+            userId: 'a',
+            nested: {
+                value2: 9,
+                value: 7,
+            },
+        };
+        const exp = new ExpressionEval<Con, ExpressionFunction>(expression, functionsTable);
+        expect(exp.validate(validationContext)).to.be.an('undefined');
+        expect(validate(expression, validationContext, functionsTable)).to.be.an('undefined');
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
         expect(exp.evaluate(context)).to.eql(true);
     });
