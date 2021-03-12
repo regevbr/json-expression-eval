@@ -1,8 +1,7 @@
 'use strict';
 
 import {expect} from 'chai';
-import {evaluate, Expression, ExpressionEval, validate} from '../';
-import {Any} from 'ts-toolbelt';
+import {evaluate, ExpressionEval, validate} from '../';
 
 const functionsTable = {
     user: (user: string, context: { userId: string }): boolean => {
