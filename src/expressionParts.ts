@@ -1,8 +1,6 @@
 /* tslint:disable:array-type */
 import {Context, FunctionsTable, Primitive, StringPaths} from './types';
 import {Function, String, Object, List} from 'ts-toolbelt';
-import {Pick} from 'ts-toolbelt/out/Object/Pick';
-import {FilterKeys} from 'ts-toolbelt/out/Object/FilterKeys';
 
 type GetPartType<V> = V extends string ? 'string' : V extends number ? 'number' : V extends boolean ? 'boolean'
     : V extends Array<infer N> ? GetPartType<N> : never;

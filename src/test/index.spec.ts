@@ -410,18 +410,16 @@ describe('evaluator', () => {
         const expression: any = {and: [{dummy: 1}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
         expect(() => validate(expression, context, functionsTable))
-            .to.throw('Invalid expression - unknown function dummy');
-        expect(() => evaluate(expression, context, functionsTable))
-            .to.throw('Invalid expression - unknown function dummy');
+            .to.throw('Invalid expression - unknown context key dummy');
+        expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
     it('should fail on non existing function 2', () => {
         const expression: any = {dummy: 1};
         const context = {userId: 'r@a.com', timesCounter: 8};
         expect(() => validate(expression, context, functionsTable))
-            .to.throw('Invalid expression - unknown function dummy');
-        expect(() => evaluate(expression, context, functionsTable))
-            .to.throw('Invalid expression - unknown function dummy');
+            .to.throw('Invalid expression - unknown context key dummy');
+        expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
     it('should fail on non existing op', () => {
