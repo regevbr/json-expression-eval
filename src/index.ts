@@ -1,7 +1,12 @@
 'use strict';
 
 import {evaluate, validate} from './evaluator';
-import {Context, Expression, FunctionsTable, ValidationContext} from './types';
+import {
+    Context,
+    Expression,
+    FunctionsTable,
+    ValidationContext
+} from './types';
 
 export * from './types/index';
 export * from './evaluator';

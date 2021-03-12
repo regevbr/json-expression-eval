@@ -63,9 +63,14 @@ export interface NotCompareOp<C, F extends FunctionsTable<C>, Ignore> {
 
 export type RequireOnlyOne<T extends object> = Object.Either<T, keyof T>;
 
-export type Expression<C, F extends FunctionsTable<C>, Ignore = never> =
-    NotCompareOp<C, F, Ignore> | OrCompareOp<C, F, Ignore> | AndCompareOp<C, F, Ignore> |
-    RequireOnlyOne<FuncCompares<C, F>> | RequireOnlyOne<PropertyCompareOps<C, Ignore>>;
+export type FullExpression<C, F extends FunctionsTable<C>, Ignore = never> =
+    NotCompareOp<C, F, Ignore> &
+    OrCompareOp<C, F, Ignore> &
+    AndCompareOp<C, F, Ignore> &
+    FuncCompares<C, F> &
+    PropertyCompareOps<C, Ignore>;
+
+export type Expression<C, F extends FunctionsTable<C>, Ignore = never> = RequireOnlyOne<FullExpression<C, F, Ignore>>;
 
 export type Func<T> = (param: any, context: T) => boolean;
 

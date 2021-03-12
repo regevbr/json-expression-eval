@@ -1,7 +1,7 @@
 import {
     AndCompareOp,
     EqualCompareOp,
-    Expression, ExtendedCompareOp, FuncCompares,
+    ExtendedCompareOp, FuncCompares,
     FunctionsTable,
     GtCompareOp,
     GteCompareOp,
@@ -18,22 +18,22 @@ export const _isObject = (obj: unknown): boolean => {
 };
 
 export const isFunctionCompareOp =
-    <C, F extends FunctionsTable<C>, Ignore>(expression: Expression<C, F, Ignore>, functionsTable: F, key: string):
+    <C, F extends FunctionsTable<C>, Ignore>(expression: unknown, functionsTable: F, key: string):
         expression is RequireOnlyOne<FuncCompares<C, F>> => {
         return key in functionsTable;
     }
 
-export const isAndCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expression: Expression<C, F, Ignore>):
+export const isAndCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expression: unknown):
     expression is AndCompareOp<C, F, Ignore> => {
     return Array.isArray((expression as AndCompareOp<C, F, Ignore>).and);
 }
 
-export const isOrCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expression: Expression<C, F, Ignore>):
+export const isOrCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expression: unknown):
     expression is OrCompareOp<C, F, Ignore> => {
     return Array.isArray((expression as OrCompareOp<C, F, Ignore>).or);
 }
 
-export const isNotCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expression: Expression<C, F, Ignore>):
+export const isNotCompareOp = <C, F extends FunctionsTable<C>, Ignore>(expression: unknown):
     expression is NotCompareOp<C, F, Ignore> => {
     return _isObject((expression as NotCompareOp<C, F, Ignore>).not);
 }
