@@ -3,7 +3,7 @@ import {
     isNotCompareOp,
     isNotEqualCompareOp, isOrCompareOp, _isObject, isFunctionCompareOp
 } from './typeGuards';
-import {Context, Expression, FunctionsTable, ExtendedCompareOp, NumberCompareOps, ValidationContext} from './types';
+import {Context, Expression, FunctionsTable, ExtendedCompareOp, NumberCompareOps, ValidationContext} from '../types';
 import {assertUnreachable, objectKeys, getFromPath, getNumberAsserter} from './helpers';
 
 function evaluateNumberCompareOp

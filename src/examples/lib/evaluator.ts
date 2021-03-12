@@ -1,7 +1,7 @@
 'use strict';
 
 import {functionsTable} from './functionsFactory';
-import {Expression, ExpressionEval} from '../..';
+import {Expression, ExpressionHandler} from '../..';
 import {Moment} from 'moment';
 
 export interface ExpressionContext {
@@ -19,5 +19,5 @@ export interface ExpressionContext {
 export type ExpressionFunction = typeof functionsTable;
 
 export const getEvaluator = (expression: Expression<ExpressionContext, ExpressionFunction, Moment>) =>
-    new ExpressionEval<ExpressionContext, ExpressionFunction, Moment>(expression, functionsTable);
+    new ExpressionHandler<ExpressionContext, ExpressionFunction, Moment>(expression, functionsTable);
 

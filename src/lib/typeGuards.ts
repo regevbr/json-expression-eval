@@ -10,7 +10,7 @@ import {
     NotCompareOp,
     NotEqualCompareOp,
     OrCompareOp, RequireOnlyOne
-} from './types';
+} from '../types';
 
 export const _isObject = (obj: unknown): boolean => {
     const type = typeof obj;
