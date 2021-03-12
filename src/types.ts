@@ -31,7 +31,8 @@ export type FuncCompares<C, F extends FunctionsTable<C>> = {
     [K in keyof F]: FuncCompareOp<C, F, K>;
 }
 
-export type NumberCompareOps<V> = V extends number ? GtCompareOp | GteCompareOp | LtCompareOp | LteCompareOp : never;
+export type NumberCompareOps<V = any> =
+    V extends number ? GtCompareOp | GteCompareOp | LtCompareOp | LteCompareOp : never;
 
 export type ExtendedCompareOp<V = any> = EqualCompareOp<V> | NotEqualCompareOp<V> | NumberCompareOps<V>;
 
