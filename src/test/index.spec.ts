@@ -406,7 +406,7 @@ describe('evaluator', () => {
             .to.throw('Invalid expression - and operator must have at least one expression');
     });
 
-    it('should fail on non existing function', () => {
+    it('should fail on non existing property', () => {
         const expression: any = {and: [{dummy: 1}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
         expect(() => validate(expression, context, functionsTable))
@@ -414,7 +414,23 @@ describe('evaluator', () => {
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
-    it('should fail on non existing function 2', () => {
+    it('should fail on non existing nested property', () => {
+        const expression: any = {and: [{'dummy.value': 1}]};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        expect(() => validate(expression, context, functionsTable))
+            .to.throw('Invalid expression - unknown context key dummy');
+        expect(evaluate(expression, context, functionsTable)).to.eql(false);
+    });
+
+    it('should fail on non existing nested property 2', () => {
+        const expression: any = {and: [{'dummy.value': 1}]};
+        const context = {userId: 'r@a.com', timesCounter: 8, dummy: {value2: 5}};
+        expect(() => validate(expression, context, functionsTable))
+            .to.throw('Invalid expression - unknown context key dummy');
+        expect(evaluate(expression, context, functionsTable)).to.eql(false);
+    });
+
+    it('should fail on non existing property 2', () => {
         const expression: any = {dummy: 1};
         const context = {userId: 'r@a.com', timesCounter: 8};
         expect(() => validate(expression, context, functionsTable))
@@ -429,6 +445,15 @@ describe('evaluator', () => {
             .to.throw('Invalid expression - unknown op bk');
         expect(() => evaluate(expression, context, functionsTable))
             .to.throw('Invalid expression - unknown op bk');
+    });
+
+    it('should fail on non number op', () => {
+        const expression: any = {timesCounter: {gt: 'sdf'}};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        expect(() => validate(expression, context, functionsTable))
+            .to.throw('Invalid expression - timesCounter must be a number');
+        expect(() => evaluate(expression, context, functionsTable))
+            .to.throw('Invalid expression - timesCounter must be a number');
     });
 
     it('should fail too many keys to op', () => {
