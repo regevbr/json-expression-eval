@@ -37,12 +37,12 @@ export type NumberCompareOps<V = any> =
 
 export type ExtendedCompareOp<V = any> = EqualCompareOp<V> | NotEqualCompareOp<V> | NumberCompareOps<V>;
 
-export type StringPaths<O extends object, Ignore = never> =
+export type StringPaths<O extends object, Ignore> =
     String.Join<Paths<O, [], Ignore | any[], string>, '.'>;
 
 export type Primitive = string | number | boolean;
 
-export type PropertyCompareOps<C extends Context, Ignore = never> = {
+export type PropertyCompareOps<C extends Context, Ignore> = {
     [K in StringPaths<C, Ignore>]:
     Union.NonNullable<Object.Path<C, String.Split<K, '.'>>> extends Primitive ?
         (Object.Path<C, String.Split<K, '.'>> | ExtendedCompareOp<Object.Path<C, String.Split<K, '.'>>>)
@@ -63,7 +63,7 @@ export interface NotCompareOp<C extends Context, F extends FunctionsTable<C>, Ig
 
 export type RequireOnlyOne<T extends object> = Object.Either<T, keyof T>;
 
-export type FullExpression<C extends Context, F extends FunctionsTable<C>, Ignore = never> =
+export type FullExpression<C extends Context, F extends FunctionsTable<C>, Ignore> =
     NotCompareOp<C, F, Ignore> &
     OrCompareOp<C, F, Ignore> &
     AndCompareOp<C, F, Ignore> &

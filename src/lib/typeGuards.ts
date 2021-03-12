@@ -9,7 +9,7 @@ import {
     LteCompareOp,
     NotCompareOp,
     NotEqualCompareOp,
-    OrCompareOp, RequireOnlyOne
+    OrCompareOp
 } from '../types';
 
 export const _isObject = (obj: unknown): boolean => {
@@ -19,14 +19,15 @@ export const _isObject = (obj: unknown): boolean => {
 
 export const isFunctionCompareOp =
     <C extends Context, F extends FunctionsTable<C>, Ignore>(expression: unknown, functionsTable: F, key: string):
-        expression is RequireOnlyOne<FuncCompares<C, F>> => {
+        expression is FuncCompares<C, F> => {
         return key in functionsTable;
     }
 
-export const isAndCompareOp = <C extends Context, F extends FunctionsTable<C>, Ignore>(expression: unknown):
-    expression is AndCompareOp<C, F, Ignore> => {
-    return Array.isArray((expression as AndCompareOp<C, F, Ignore>).and);
-}
+export const isAndCompareOp =
+    <C extends Context, F extends FunctionsTable<C>, Ignore>(expression: unknown):
+        expression is AndCompareOp<C, F, Ignore> => {
+        return Array.isArray((expression as AndCompareOp<C, F, Ignore>).and);
+    }
 
 export const isOrCompareOp = <C extends Context, F extends FunctionsTable<C>, Ignore>(expression: unknown):
     expression is OrCompareOp<C, F, Ignore> => {
