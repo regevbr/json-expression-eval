@@ -33,7 +33,7 @@ describe('evaluator', () => {
             },
         };
         const validationContext = {
-            // timesCounter: 5,
+            timesCounter: 5,
             userId: 'a',
             nested: {
                 value2: 9,
@@ -42,7 +42,7 @@ describe('evaluator', () => {
         };
         const exp = new ExpressionEval<Con, ExpressionFunction>(expression, functionsTable);
         expect(exp.validate(validationContext)).to.be.an('undefined');
-        expect(validate(expression, validationContext, functionsTable)).to.be.an('undefined');
+        expect(validate<Con, ExpressionFunction>(expression, validationContext, functionsTable)).to.be.an('undefined');
         expect(evaluate(expression, context, functionsTable)).to.eql(true);
         expect(exp.evaluate(context)).to.eql(true);
     });
@@ -555,7 +555,7 @@ describe('evaluator', () => {
                 ],
             };
             const context = {};
-            validate(expression, context, fnTable);
+            validate<typeof context, typeof fnTable>(expression, context, fnTable);
             expect(fnCounter).to.eql(0);
             evaluate(expression, context, fnTable);
             expect(fnCounter).to.eql(3);

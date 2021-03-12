@@ -3,7 +3,7 @@ import {
     isNotCompareOp,
     isNotEqualCompareOp, isOrCompareOp, _isObject, isFunctionCompareOp
 } from './typeGuards';
-import {Context, Expression, FunctionsTable, ExtendedCompareOp, NumberCompareOps} from './types';
+import {Context, Expression, FunctionsTable, ExtendedCompareOp, NumberCompareOps, ValidationContext} from './types';
 import {assertUnreachable, objectKeys, getFromPath, getNumberAsserter} from './helpers';
 
 function evaluateNumberCompareOp
@@ -102,6 +102,6 @@ export const evaluate = <C extends Context, F extends FunctionsTable<C>, Ignore 
 
 // Throws in case of validation error. Does not run functions or compare fields
 export const validate = <C extends Context, F extends FunctionsTable<C>, Ignore = never>
-(expression: Expression<C, F, Ignore>, validationContext: C, functionsTable: F): void => {
-    run<C, F, Ignore>(expression, validationContext, functionsTable, true);
+(expression: Expression<C, F, Ignore>, validationContext: ValidationContext<C, Ignore>, functionsTable: F): void => {
+    run<C, F, Ignore>(expression, validationContext as C, functionsTable, true);
 };
