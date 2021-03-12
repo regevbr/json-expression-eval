@@ -23,7 +23,7 @@ interface ExpressionContextPart<V, P extends string> {
     isFunction: false;
 }
 
-type ExpressionContextParts<C extends object, Extra extends object, Ignore> = {
+type ExpressionContextParts<C extends Context, Extra extends object, Ignore> = {
     [K in StringPaths<C, Ignore>]:
     Object.Path<C, String.Split<K, '.'>> extends Primitive
         ? ExpressionContextPart<Object.Path<C, String.Split<K, '.'>>, K> & Extra

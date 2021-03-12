@@ -33,7 +33,7 @@ CONTRIBUTING.md
 **/*.js.map
 **/*.spec.*
 dist/test/
-dist/example/
+dist/examples/
 package-lock.json
 # config files
 tslint.json

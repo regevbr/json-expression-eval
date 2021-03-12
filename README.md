@@ -1,4 +1,5 @@
 [![Npm Version](https://img.shields.io/npm/v/json-expression-eval.svg?style=popout)](https://www.npmjs.com/package/json-expression-eval)
+![node](https://img.shields.io/node/v-lts/json-expression-eval)
 [![Build Status](https://travis-ci.org/regevbr/json-expression-eval.svg?branch=master)](https://travis-ci.org/regevbr/json-expression-eval)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/test_coverage)](https://codeclimate.com/github/regevbr/json-expression-eval/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/maintainability)](https://codeclimate.com/github/regevbr/json-expression-eval/maintainability)
@@ -7,7 +8,7 @@
 [![devDependencies Status](https://david-dm.org/regevbr/json-expression-eval/dev-status.svg)](https://david-dm.org/regevbr/json-expression-eval?type=dev)
 
 # json-expression-eval
-A Node.js module that evaluates a json described boolean expressions using dynamic functions and a given context.
+A Fully typed Node.js module that evaluates a json described boolean expressions using dynamic functions and a given context.
 
 The module is strictly typed, ensuring that passed expressions are 100% valid at compile time.
 
@@ -24,65 +25,103 @@ yarn add json-expression-eval
 
 ## Usage
 
- *Please see tests and examples dir for more usages and example (under /src)* 
+ *Please see tests and examples dir for more usages and examples (under /src)* 
 
 ```typescript
-import { Expression, evaluate, validate, ExpressionEval } from 'json-expression-eval';
+import {evaluate, Expression, ExpressionHandler, validate, ValidationContext} from 'json-expression-eval';
+import {Moment} from 'moment';
+import moment = require('moment');
 
 interface IExampleContext {
-  userId: string;
-  times: number;
+    userId: string;
+    times: number | undefined;
+    date: Moment;
+    nested: {
+        value: number | null;
+        nested2: {
+            value2?: number;
+            value3: boolean;
+        };
+    };
 }
 
-const exampleContext: IExampleContext = {
-  userId: 'a2@b.com',
-  times: 5,
+type IExampleContextIgnore = Moment;
+
+type IExampleFunctionTable = {
+    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }) => boolean;
+}
+
+type IExampleExpression = Expression<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>; // We pass Moment here to avoid TS exhaustion
+
+const context: IExampleContext = {
+    userId: 'a@b.com',
+    times: 3,
+    date: moment(),
+    nested: {
+        value: null,
+        nested2: {
+            value3: true,
+        },
+    },
 };
 
-const functionsTable = {
-  countRange: ([min, max]: [number, number], context: IExampleContext): boolean => {
-    return context.times >= min && context.times < max;
-  },
+// For validation we must provide a full example context
+const validationContext: ValidationContext<IExampleContext, Moment> = {
+    userId: 'a@b.com',
+    times: 3,
+    date: moment(),
+    nested: {
+        value: 5,
+        nested2: {
+            value2: 6,
+            value3: true,
+        },
+    },
 };
 
-type ExpressionFunction = typeof functionsTable;
+const functionsTable: IExampleFunctionTable = {
+    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }): boolean => {
+        return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
+    },
+};
 
-const expression: Expression<IExampleContext, ExpressionFunction> = {
-  or: [
-    {
-      userId: 'a@b.com',
-    },
-    {
-      and: [
+const expression: IExampleExpression = {
+    or: [
         {
-          countRange: [2, 6],
+            userId: 'a@b.com',
         },
         {
-          userId: 'a2@b.com',
+            and: [
+                {
+                    countRange: [2, 6],
+                },
+                {
+                    'nested.nested2.value3': true,
+                },
+            ],
         },
-      ],
-    },
-  ],
+    ],
 };
 
 // Example usage 1
-const exp = new ExpressionEval<IExampleContext, ExpressionFunction>(expression, functionsTable);
-exp.validate(exampleContext); // Should not throw
-console.log(exp.evaluate(exampleContext)); // true
+const handler =
+    new ExpressionHandler<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, functionsTable);
+handler.validate(validationContext); // Should not throw
+console.log(handler.evaluate(context)); // true
 
 // Example usage 2
-validate(expression, exampleContext, functionsTable); // Should not throw
-console.log(evaluate(expression, exampleContext, functionsTable)); // true
+validate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, validationContext, functionsTable); // Should not throw
+console.log(evaluate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, context, functionsTable)); // true
 ```
 
 ### Expression
 
 There are 4 types of operators you can use (evaluated in that order of precedence):
-- `and` - accepts a non empty list of operators
-- `or` - accepts a non empty list of operators
-- `not` - accepts another operator
-- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions and given context.
-- `<compare funcs>` - operates on one of the context properties and compare it to a given value.
+- `and` - accepts a non-empty list of expressions
+- `or` - accepts a non-empty list of expressions
+- `not` - accepts another expressions
+- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions and the given context.
+- `<compare funcs>` - operates on one of the context properties and compares it to a given value.
     - `{property: {op: value}}`
         - available ops:
             - `gt` - >
@@ -93,7 +132,8 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
             - `neq` - !==
     - `{property: value}`
         - compares the property to that value (shorthand to the `eq` op)
-> Note that nested properties in the context are also supported starting version 3
+> Nested properties in the context can also be accessed using a dot notation (see example above)
+> In each expression level, you can only define 1 operator, and 1 only
 
 Example expressions, assuming we have the `user` and `maxCount` user defined functions in place can be:
 ```json

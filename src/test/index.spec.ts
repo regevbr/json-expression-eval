@@ -1,7 +1,7 @@
 'use strict';
 
 import {expect} from 'chai';
-import {evaluate, ExpressionEval, validate} from '../';
+import {evaluate, ExpressionHandler, validate} from '../';
 
 const functionsTable = {
     user: (user: string, context: { userId: string }): boolean => {
@@ -39,7 +39,7 @@ describe('evaluator', () => {
                 value: 7,
             },
         };
-        const exp = new ExpressionEval<Con, ExpressionFunction>(expression, functionsTable);
+        const exp = new ExpressionHandler<Con, ExpressionFunction>(expression, functionsTable);
         expect(exp.validate(validationContext)).to.be.an('undefined');
         expect(validate<Con, ExpressionFunction>(expression, validationContext, functionsTable)).to.be.an('undefined');
         expect(evaluate(expression, context, functionsTable)).to.eql(true);

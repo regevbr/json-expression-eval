@@ -3,9 +3,9 @@
   "version": "4.0.0",
   "description": "evaluate a json described boolean expression using dynamic functions",
   "main": "dist/index.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "engines": {
-    "node": ">=6"
+    "node": "^6 || ^8 || ^10 || ^12 || ^14 || ^15"
   },
   "scripts": {
     "test": "npm run lint && npm run test:tsd && npm run test:cover",
