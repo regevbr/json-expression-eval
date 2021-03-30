@@ -66,7 +66,7 @@ const context: IExampleContext = {
 };
 
 // For validation we must provide a full example context
-const validationContext: ValidationContext<IExampleContext, Moment> = {
+const validationContext: ValidationContext<IExampleContext, IExampleContextIgnore> = {
     userId: 'a@b.com',
     times: 3,
     date: moment(),
