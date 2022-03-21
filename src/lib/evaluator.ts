@@ -1,30 +1,39 @@
 import {
-    isAndCompareOp, isEqualCompareOp, isGtCompareOp, isGteCompareOp, isLtCompareOp, isLteCompareOp,
+    isAndCompareOp,
+    isEqualCompareOp,
+    isBetweenCompareOp,
+    isGtCompareOp,
+    isGteCompareOp,
+    isLtCompareOp,
+    isLteCompareOp,
     isNotCompareOp,
-    isNotEqualCompareOp, isOrCompareOp, _isObject, isFunctionCompareOp
+    isNotEqualCompareOp,
+    isOrCompareOp,
+    _isObject,
+    isFunctionCompareOp,
+    isInqCompareOp,
+    isNinCompareOp,
+    isRegexCompareOp,
+    isRegexiCompareOp
 } from './typeGuards';
-import {Context, Expression, FunctionsTable, ExtendedCompareOp, NumberCompareOps, ValidationContext} from '../types';
-import {assertUnreachable, objectKeys, getFromPath, getNumberAsserter} from './helpers';
+import {
+    Context,
+    Expression,
+    FunctionsTable,
+    ExtendedCompareOp,
+    ValidationContext,
+    PropertyCompareOps
+} from '../types';
+import {
+    assertUnreachable,
+    objectKeys,
+    getFromPath,
+    contextNumberAssertion,
+    contextStringAssertion,
+    expressionStringAssertion,
+    expressionNumberAssertion
+} from './helpers';
 
-function evaluateNumberCompareOp
-(expressionValue: NumberCompareOps, expressionKey: string, contextValue: any, compareKey: string): boolean {
-    const assertNumber = getNumberAsserter(expressionKey);
-    if (isGtCompareOp(expressionValue)) {
-        assertNumber(expressionValue.gt);
-        return contextValue > expressionValue.gt;
-    } else if (isGteCompareOp(expressionValue)) {
-        assertNumber(expressionValue.gte);
-        return contextValue >= expressionValue.gte;
-    } else if (isLteCompareOp(expressionValue)) {
-        assertNumber(expressionValue.lte);
-        return contextValue <= expressionValue.lte;
-    } else if (isLtCompareOp(expressionValue)) {
-        assertNumber(expressionValue.lt);
-        return contextValue < expressionValue.lt;
-    } else {
-        return assertUnreachable(expressionValue, `Invalid expression - unknown op ${compareKey}`);
-    }
-}
 
 function evaluateCompareOp(expressionValue: ExtendedCompareOp, expressionKey: string, contextValue: any): boolean {
     if (!_isObject(expressionValue)) {
@@ -38,8 +47,49 @@ function evaluateCompareOp(expressionValue: ExtendedCompareOp, expressionKey: st
         return contextValue === expressionValue.eq;
     } else if (isNotEqualCompareOp(expressionValue)) {
         return contextValue !== expressionValue.neq;
+    } else if (isInqCompareOp(expressionValue)) {
+        return expressionValue.inq.indexOf(contextValue) >= 0;
+    } else if (isNinCompareOp(expressionValue)) {
+        return expressionValue.nin.indexOf(contextValue) < 0;
+    } else if (isRegexCompareOp(expressionValue)) {
+        contextStringAssertion(expressionKey, contextValue);
+        expressionStringAssertion(expressionKey, expressionValue.regexp);
+        return Boolean(contextValue.match(new RegExp(expressionValue.regexp)));
+    } else if (isRegexiCompareOp(expressionValue)) {
+        contextStringAssertion(expressionKey, contextValue);
+        expressionStringAssertion(expressionKey, expressionValue.regexpi);
+        return Boolean(contextValue.match(new RegExp(expressionValue.regexpi, `i`)));
+    } else if (isGtCompareOp(expressionValue)) {
+        contextNumberAssertion(expressionKey, contextValue);
+        expressionNumberAssertion(expressionKey, expressionValue.gt);
+        return contextValue > expressionValue.gt;
+    } else if (isGteCompareOp(expressionValue)) {
+        contextNumberAssertion(expressionKey, contextValue);
+        expressionNumberAssertion(expressionKey, expressionValue.gte);
+        return contextValue >= expressionValue.gte;
+    } else if (isLteCompareOp(expressionValue)) {
+        contextNumberAssertion(expressionKey, contextValue);
+        expressionNumberAssertion(expressionKey, expressionValue.lte);
+        return contextValue <= expressionValue.lte;
+    } else if (isLtCompareOp(expressionValue)) {
+        contextNumberAssertion(expressionKey, contextValue);
+        expressionNumberAssertion(expressionKey, expressionValue.lt);
+        return contextValue < expressionValue.lt;
+    } else if (isBetweenCompareOp(expressionValue)) {
+        contextNumberAssertion(expressionKey, contextValue);
+        if (expressionValue.between.length !== 2) {
+            throw new Error(`Invalid expression - ${expressionKey}.length must be 2`);
+        }
+        expressionValue.between.forEach((value, ind) => {
+            expressionNumberAssertion(`${expressionKey}[${ind}]`, value);
+        });
+        const [low, high] = expressionValue.between;
+        if (low > high) {
+            throw new Error(`Invalid expression - ${expressionKey} first value is higher than second value`);
+        }
+        return contextValue >= low && contextValue <= high;
     } else {
-        return evaluateNumberCompareOp(expressionValue, expressionKey, contextValue, compareKeys[0]);
+        return assertUnreachable(expressionValue, `Invalid expression - unknown op ${compareKeys[0]}`);
     }
 }
 
@@ -91,7 +141,10 @@ function run<C extends Context, F extends FunctionsTable<C>, Ignore>
         if (validation && !exists) {
             throw new Error(`Invalid expression - unknown context key ${expressionKey}`);
         }
-        return evaluateCompareOp(expression[expressionKey], expressionKey, contextValue);
+        return evaluateCompareOp(
+            (expression as PropertyCompareOps<C, Ignore>)
+                [expressionKey as any as keyof PropertyCompareOps<C, Ignore>] as ExtendedCompareOp,
+            expressionKey, contextValue);
     }
 }
 

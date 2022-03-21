@@ -12,6 +12,18 @@ export interface NotEqualCompareOp<V> {
     neq: V;
 }
 
+export interface InqCompareOp<V> {
+    inq: V[];
+}
+
+export interface NinCompareOp<V> {
+    nin: V[];
+}
+
+export interface BetweenCompareOp {
+    between: readonly [number, number];
+}
+
 export interface GtCompareOp {
     gt: number;
 }
@@ -28,14 +40,27 @@ export interface LteCompareOp {
     lte: number;
 }
 
+export interface RegexCompareOp {
+    regexp: string;
+}
+
+export interface RegexiCompareOp {
+    regexpi: string;
+}
+
 export type FuncCompares<C extends Context, F extends FunctionsTable<C>> = {
     [K in keyof F]: FuncCompareOp<C, F, K>;
 }
 
 export type NumberCompareOps<V = any> =
-    V extends number ? GtCompareOp | GteCompareOp | LtCompareOp | LteCompareOp : never;
+    V extends number ? BetweenCompareOp | GtCompareOp | GteCompareOp | LtCompareOp | LteCompareOp : never;
 
-export type ExtendedCompareOp<V = any> = EqualCompareOp<V> | NotEqualCompareOp<V> | NumberCompareOps<V>;
+export type StringCompareOps<V = any> =
+    V extends string ? RegexCompareOp | RegexiCompareOp : never;
+
+export type ExtendedCompareOp<V = any> =
+    EqualCompareOp<V> | NotEqualCompareOp<V> | InqCompareOp<V> | NinCompareOp<V> |
+    NumberCompareOps<V>| StringCompareOps<V>;
 
 export type StringPaths<O extends object, Ignore> =
     String.Join<Paths<O, [], Ignore | any[], string>, '.'>;

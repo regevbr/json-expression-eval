@@ -130,6 +130,11 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
             - `lte` - <=
             - `eq` - ===
             - `neq` - !==
+            - `regexp: RegExp` - True if matches the compiled regular expression.
+            - `regexpi: RegExp` - True if matches the compiled regular expression with the `i` flag set.
+            - `nin: any[]` - True if *not* in an array of values. Comparison is done using the `===` operator
+            - `inq: any[]` - True if in an array of values. Comparison is done using the `===` operator
+            - `between: readonly [number, number] (as const)` - True if the value is between the two specified values: greater than or equal to first value and less than or equal to second value.
     - `{property: value}`
         - compares the property to that value (shorthand to the `eq` op)
 > Nested properties in the context can also be accessed using a dot notation (see example above)

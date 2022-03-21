@@ -3,13 +3,16 @@ import {
     EqualCompareOp,
     ExtendedCompareOp, FuncCompares,
     FunctionsTable,
+    BetweenCompareOp,
     GtCompareOp,
     GteCompareOp,
     LtCompareOp,
     LteCompareOp,
+    RegexCompareOp,
+    RegexiCompareOp,
     NotCompareOp,
     NotEqualCompareOp,
-    OrCompareOp
+    OrCompareOp, InqCompareOp, NinCompareOp
 } from '../types';
 
 export const _isObject = (obj: unknown): boolean => {
@@ -39,6 +42,11 @@ export const isNotCompareOp = <C extends Context, F extends FunctionsTable<C>, I
     return _isObject((expression as NotCompareOp<C, F, Ignore>).not);
 }
 
+export const isBetweenCompareOp = (op: ExtendedCompareOp)
+    : op is BetweenCompareOp => {
+    return Array.isArray((op as BetweenCompareOp).between);
+}
+
 export const isGtCompareOp = (op: ExtendedCompareOp)
     : op is GtCompareOp => {
     return (op as GtCompareOp).gt !== undefined;
@@ -59,6 +67,16 @@ export const isLtCompareOp = (op: ExtendedCompareOp)
     return (op as LtCompareOp).lt !== undefined;
 }
 
+export const isRegexCompareOp = (op: ExtendedCompareOp)
+    : op is RegexCompareOp => {
+    return (op as RegexCompareOp).regexp !== undefined;
+}
+
+export const isRegexiCompareOp = (op: ExtendedCompareOp)
+    : op is RegexiCompareOp => {
+    return (op as RegexiCompareOp).regexpi !== undefined;
+}
+
 export const isEqualCompareOp = <V>(op: ExtendedCompareOp)
     : op is EqualCompareOp<V> => {
     return (op as EqualCompareOp<V>).eq !== undefined;
@@ -67,4 +85,14 @@ export const isEqualCompareOp = <V>(op: ExtendedCompareOp)
 export const isNotEqualCompareOp = <V>(op: ExtendedCompareOp)
     : op is NotEqualCompareOp<V> => {
     return (op as NotEqualCompareOp<V>).neq !== undefined;
+}
+
+export const isInqCompareOp = <V>(op: ExtendedCompareOp)
+    : op is InqCompareOp<V> => {
+    return Array.isArray((op as InqCompareOp<V>).inq);
+}
+
+export const isNinCompareOp = <V>(op: ExtendedCompareOp)
+    : op is NinCompareOp<V> => {
+    return Array.isArray((op as NinCompareOp<V>).nin);
 }

@@ -68,6 +68,12 @@ run(expression, context);
 expression = {
     or: [
         {times: {lt: 5}},
+        {times: {between: [7, 9] as const}},
+        {times: {inq: [7, 9]}},
+        {userId: {inq: ['a', 'b']}},
+        {userId: {nin: ['a', 'b']}},
+        {userId: {regexp: '^a'}},
+        {userId: {regexpi: '^a'}},
         {times: {gte: 10}},
     ],
 };
