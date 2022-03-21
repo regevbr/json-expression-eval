@@ -63,3 +63,38 @@ expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {gte: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {lt: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {lte: 5}}, functions));
+
+// inq
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+({timesCounter: {inq: [4, 5, 6]}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+({userId: {inq: ['a', 'b', 'c']}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {inq: ['s']}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({userId: {inq: [5]}}, functions));
+
+// nin
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+({timesCounter: {nin: [4, 5, 6]}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+({userId: {nin: ['a', 'b', 'c']}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {nin: ['s']}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({userId: {nin: [5]}}, functions));
+
+// regexp
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+({userId: {regexp: 'sdf'}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {regexp: 'sdf'}}, functions));
+
+// regexpi
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+({userId: {regexpi: 'sdf'}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {regexpi: 'sdf'}}, functions));
+
+// between
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+({timesCounter: {between: [4, 5]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {between: [4]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {between: [4, 5, 6]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {userId: [4, 5]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {between: []}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {between: ['s']}}, functions));

@@ -225,40 +225,346 @@ describe('evaluator', () => {
         expect(evaluate(expression, context, functionsTable)).to.eql(false);
     });
 
-    it('should evaluate gte compare op to true', () => {
-        const expression = {
-            timesCounter: {gte: 5},
-        };
-        const context = {
-            timesCounter: 8,
-            userId: 'a',
-        };
-        expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        expect(evaluate(expression, context, functionsTable)).to.eql(true);
+    describe(`gte`, () => {
+        it('should evaluate gte compare op to true', () => {
+            const expression = {
+                timesCounter: {gte: 5},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate gte compare op to true 2', () => {
+            const expression = {
+                timesCounter: {gte: 5},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate gte compare op to false', () => {
+            const expression = {
+                timesCounter: {gte: 5},
+            };
+            const context = {
+                timesCounter: 3,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(false);
+        });
     });
 
-    it('should evaluate gte compare op to true 2', () => {
-        const expression = {
-            timesCounter: {gte: 5},
-        };
-        const context = {
-            timesCounter: 5,
-            userId: 'a',
-        };
-        expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        expect(evaluate(expression, context, functionsTable)).to.eql(true);
+    describe(`between`, () => {
+        it('should evaluate between compare op to true when low=high', () => {
+            const expression = {
+                timesCounter: {between: [8, 8] as const},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate between compare op to true', () => {
+            const expression = {
+                timesCounter: {between: [5, 10] as const},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate between compare op to true low equal', () => {
+            const expression = {
+                timesCounter: {between: [5, 10] as const},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate between compare op to true high equal', () => {
+            const expression = {
+                timesCounter: {between: [5, 10] as const},
+            };
+            const context = {
+                timesCounter: 10,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate between compare op to false', () => {
+            const expression = {
+                timesCounter: {between: [5, 10] as const},
+            };
+            const context = {
+                timesCounter: 3,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(false);
+        });
+
+        it('should fail on empty between compare op', () => {
+            const expression = {
+                timesCounter: {between: [] as any},
+            };
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            expect(() => validate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter.length must be 2');
+            expect(() => evaluate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter.length must be 2');
+        });
+
+        it('should fail on single value between compare op', () => {
+            const expression = {
+                timesCounter: {between: [1] as any},
+            };
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            expect(() => validate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter.length must be 2');
+            expect(() => evaluate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter.length must be 2');
+        });
+
+        it('should fail on too many values value between compare op', () => {
+            const expression = {
+                timesCounter: {between: [1, 2, 3] as any},
+            };
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            expect(() => validate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter.length must be 2');
+            expect(() => evaluate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter.length must be 2');
+        });
+
+        it('should fail on non number value between compare op', () => {
+            const expression = {
+                timesCounter: {between: ['s', 4] as any},
+            };
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            expect(() => validate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter[0] must be a number');
+            expect(() => evaluate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter[0] must be a number');
+        });
+
+        it('should fail on non number value between compare op 2', () => {
+            const expression = {
+                timesCounter: {between: [4, 's'] as any},
+            };
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            expect(() => validate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter[1] must be a number');
+            expect(() => evaluate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter[1] must be a number');
+        });
+
+        it('should fail on bad high/low values between compare op', () => {
+            const expression = {
+                timesCounter: {between: [4, 3] as any},
+            };
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            expect(() => validate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter first value is higher than second value');
+            expect(() => evaluate(expression, context, functionsTable))
+                .to.throw('Invalid expression - timesCounter first value is higher than second value');
+        });
     });
 
-    it('should evaluate gte compare op to false', () => {
-        const expression = {
-            timesCounter: {gte: 5},
-        };
-        const context = {
-            timesCounter: 3,
-            userId: 'a',
-        };
-        expect(validate(expression, context, functionsTable)).to.be.an('undefined');
-        expect(evaluate(expression, context, functionsTable)).to.eql(false);
+    describe(`inq`, () => {
+        it('should evaluate inq op to true (number)', () => {
+            const expression = {
+                timesCounter: {inq: [5, 8, 10]},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate inq op to true (string)', () => {
+            const expression = {
+                userId: {inq: ['f', 'a']},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate inq op to false (number)', () => {
+            const expression = {
+                timesCounter: {inq: [5, 10]},
+            };
+            const context = {
+                timesCounter: 3,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(false);
+        });
+
+        it('should evaluate inq op to false (string)', () => {
+            const expression = {
+                userId: {inq: ['t', 'e']},
+            };
+            const context = {
+                timesCounter: 3,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(false);
+        });
+
+    });
+
+    describe(`nin`, () => {
+        it('should evaluate nin op to true (number)', () => {
+            const expression = {
+                timesCounter: {nin: [5, 10]},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate nin op to true (string)', () => {
+            const expression = {
+                userId: {nin: ['f', 'd']},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate nin op to false (number)', () => {
+            const expression = {
+                timesCounter: {nin: [5, 3, 10]},
+            };
+            const context = {
+                timesCounter: 3,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(false);
+        });
+
+        it('should evaluate nin op to false (string)', () => {
+            const expression = {
+                userId: {nin: ['t', 'e', 'a']},
+            };
+            const context = {
+                timesCounter: 3,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(false);
+        });
+
+    });
+
+    describe(`regexp`, () => {
+        it('should evaluate regexp op to true', () => {
+            const expression = {
+                userId: {regexp: '^a.+C$'},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'aBdC',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+        it('should evaluate regexpi op to false case sensitive', () => {
+            const expression = {
+                userId: {regexp: '^a.+C$'},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'aBdc',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(false);
+        });
+        it('should evaluate regexp op to false', () => {
+            const expression = {
+                userId: {regexp: '^a.+C$'},
+            };
+            const context = {
+                timesCounter: 3,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(false);
+        });
+
+    });
+
+    describe(`regexpi`, () => {
+        it('should evaluate regexpi op to true', () => {
+            const expression = {
+                userId: {regexpi: '^a.+C$'},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'aBdC',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+        it('should evaluate regexpi op to true case insensitive', () => {
+            const expression = {
+                userId: {regexpi: '^a.+C$'},
+            };
+            const context = {
+                timesCounter: 8,
+                userId: 'aBdc',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+        it('should evaluate regexpi op to false', () => {
+            const expression = {
+                userId: {regexpi: '^a.+C$'},
+            };
+            const context = {
+                timesCounter: 3,
+                userId: 'a',
+            };
+            expect(validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(evaluate(expression, context, functionsTable)).to.eql(false);
+        });
+
     });
 
     it('should evaluate lt compare op to true', () => {
@@ -469,6 +775,33 @@ describe('evaluator', () => {
             .to.throw('Invalid expression - timesCounter must be a number');
         expect(() => evaluate(expression, context, functionsTable))
             .to.throw('Invalid expression - timesCounter must be a number');
+    });
+
+    it('should fail on non string op', () => {
+        const expression: any = {userId: {regexp: 5}};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        expect(() => validate(expression, context, functionsTable))
+            .to.throw('Invalid expression - userId must be a string');
+        expect(() => evaluate(expression, context, functionsTable))
+            .to.throw('Invalid expression - userId must be a string');
+    });
+
+    it('should fail on non string context', () => {
+        const expression: any = {timesCounter: {regexp: 's'}};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        expect(() => validate(expression, context, functionsTable))
+            .to.throw('Invalid context - timesCounter must be a string');
+        expect(() => evaluate(expression, context, functionsTable))
+            .to.throw('Invalid context - timesCounter must be a string');
+    });
+
+    it('should fail on non number context', () => {
+        const expression: any = {userId: {gte: 5}};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        expect(() => validate(expression, context, functionsTable))
+            .to.throw('Invalid context - userId must be a number');
+        expect(() => evaluate(expression, context, functionsTable))
+            .to.throw('Invalid context - userId must be a number');
     });
 
     it('should fail too many keys to op', () => {

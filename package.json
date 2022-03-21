@@ -1,11 +1,11 @@
 {
   "name": "json-expression-eval",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "evaluate a json described boolean expression using dynamic functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
-    "node": "^6 || ^8 || ^10 || ^12 || ^14 || ^15"
+    "node": "^6 || ^8 || ^10 || ^12 || ^14 || ^16"
   },
   "scripts": {
     "test": "npm run lint && npm run test:tsd && npm run test:cover",
@@ -42,20 +42,20 @@
     "directory": "src/test/types"
   },
   "devDependencies": {
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@types/chai": "^4.2.15",
-    "@types/mocha": "^8.2.1",
-    "@types/node": "^14.14.34",
-    "@types/underscore": "^1.11.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@types/chai": "^4.2.16",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^14.14.37",
+    "@types/underscore": "^1.11.1",
     "chai": "^4.3.4",
     "mocha": "^6.2.3",
     "moment": "^2.29.1",
     "nyc": "^15.1.0",
-    "source-map-support": "^0.5.19",
+    "source-map-support": "^0.5.21",
     "ts-node": "^9.1.1",
-    "tsd": "^0.14.0",
+    "tsd": "^0.19.1",
     "tslint": "^6.1.3",
-    "typescript": "^4.2.3"
+    "typescript": "^4.6.2"
   },
   "dependencies": {
     "ts-toolbelt": "^9.6.0"

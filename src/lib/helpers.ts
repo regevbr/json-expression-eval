@@ -18,8 +18,26 @@ export const assertUnreachable = <T = never>(x: never, message: string): T => {
     throw new Error(message);
 };
 
-export const getNumberAsserter = (key: string) => (value: any) => {
+export function contextNumberAssertion(key: string, value: any): asserts value is number {
+    if (typeof value !== 'number') {
+        throw new Error(`Invalid context - ${key} must be a number`);
+    }
+}
+
+export function contextStringAssertion(key: string, value: any): asserts value is string {
+    if (typeof value !== 'string') {
+        throw new Error(`Invalid context - ${key} must be a string`);
+    }
+}
+
+export function expressionNumberAssertion(key: string, value: any): asserts value is number {
     if (typeof value !== 'number') {
         throw new Error(`Invalid expression - ${key} must be a number`);
+    }
+}
+
+export function expressionStringAssertion(key: string, value: any): asserts value is string {
+    if (typeof value !== 'string') {
+        throw new Error(`Invalid expression - ${key} must be a string`);
     }
 }
