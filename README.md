@@ -1,11 +1,9 @@
 [![Npm Version](https://img.shields.io/npm/v/json-expression-eval.svg?style=popout)](https://www.npmjs.com/package/json-expression-eval)
-![node](https://img.shields.io/node/v-lts/json-expression-eval)
-[![Build Status](https://github.com/regevbr/json-expression-eval/actions/workflows/ci.yml/badge.svg?branch=master)]
+[![node](https://img.shields.io/node/v-lts/json-expression-eval)](https://www.npmjs.com/package/json-expression-eval)
+[![Build status](https://github.com/regevbr/json-expression-eval/actions/workflows/ci.yml/badge.svg?branch=master)](https://www.npmjs.com/package/json-expression-eval)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/test_coverage)](https://codeclimate.com/github/regevbr/json-expression-eval/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/maintainability)](https://codeclimate.com/github/regevbr/json-expression-eval/maintainability)
 [![Known Vulnerabilities](https://snyk.io/test/github/regevbr/json-expression-eval/badge.svg?targetFile=package.json)](https://snyk.io/test/github/regevbr/json-expression-eval?targetFile=package.json)
-[![dependencies Status](https://david-dm.org/regevbr/json-expression-eval/status.svg)](https://david-dm.org/regevbr/json-expression-eval)
-[![devDependencies Status](https://david-dm.org/regevbr/json-expression-eval/dev-status.svg)](https://david-dm.org/regevbr/json-expression-eval?type=dev)
 
 # json-expression-eval
 A Fully typed Node.js module that evaluates a json described boolean expressions using dynamic functions and a given context.
