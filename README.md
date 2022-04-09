@@ -10,7 +10,7 @@ A Fully typed Node.js module that evaluates a json described boolean expressions
 
 The module is strictly typed, ensuring that passed expressions are 100% valid at compile time.
 
-This module is especially useful if you need to serialize complex expressions (to be saved in DB for example) 
+This module is especially useful if you need to serialize complex expressions (to be saved in a DB for example) 
   
 ## Installation 
 ```sh
