@@ -1,5 +1,3 @@
-'use strict';
-
 import {evaluate, validate} from './evaluator';
 import {
     Context,

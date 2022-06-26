@@ -1,7 +1,5 @@
-'use strict';
-
 import {functionsTable} from './functionsFactory';
-import {Expression, ExpressionHandler} from '../..';
+import {Expression, ExpressionHandler} from '../../..';
 import {Moment} from 'moment';
 
 export interface ExpressionContext {

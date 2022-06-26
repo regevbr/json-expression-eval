@@ -104,4 +104,4 @@ export type FunctionsTable<T> = Record<string, Func<T>>;
 
 export type Context = Record<string, any>;
 
-export type ValidationContext<C extends Context, Ignore> = NonNullable<C, Ignore>;
+export type ValidationContext<C extends Context, Ignore = never> = NonNullable<C, Ignore>;

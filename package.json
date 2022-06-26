@@ -1,7 +1,7 @@
 {
   "name": "json-expression-eval",
-  "version": "4.1.0",
-  "description": "evaluate a json described boolean expression using dynamic functions",
+  "version": "4.2.0",
+  "description": "json serializable rule engine / boolean expression evaluator",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
@@ -22,6 +22,7 @@
   },
   "keywords": [
     "evaluate",
+    "serializable",
     "expression",
     "json",
     "dynamic",
@@ -30,7 +31,11 @@
     "node",
     "js",
     "javascript",
-    "eval"
+    "eval",
+    "rule",
+    "engine",
+    "rule-engine",
+    "typescript"
   ],
   "author": "Regev Brody <regevbr@gmail.com>",
   "license": "GPL-3.0",

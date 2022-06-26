@@ -34,7 +34,6 @@ import {
     expressionNumberAssertion
 } from './helpers';
 
-
 function evaluateCompareOp(expressionValue: ExtendedCompareOp, expressionKey: string, contextValue: any): boolean {
     if (!_isObject(expressionValue)) {
         return contextValue === expressionValue;
