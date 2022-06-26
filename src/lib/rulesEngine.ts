@@ -17,7 +17,7 @@ export class RulesEngine<ConsequencePayload, C extends Context,
       this.functionsTable, this.ruleFunctionsTable, true)?.[0];
   }
 
-  public evaluateAll(rules: Rule<ConsequencePayload, RF, C, F, Ignore>[], context: C, haltOnFirstMatch?: boolean)
+  public evaluateAll(rules: Rule<ConsequencePayload, RF, C, F, Ignore>[], context: C)
     : void | ResolvedConsequence<ConsequencePayload>[] {
     return evaluateRules<ConsequencePayload, C, RF, F, Ignore>(rules, context,
       this.functionsTable, this.ruleFunctionsTable, false);
