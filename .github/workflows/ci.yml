@@ -60,7 +60,7 @@ jobs:
 
       - name: Install dependencies and build
         run: |
-          yarn install
+          yarn install --ignore-engines
           yarn build
 
       - name: Snyk security check
@@ -125,7 +125,7 @@ jobs:
 
       - name: Install dependencies and build
         run: |
-          yarn install
+          yarn install --ignore-engines
           yarn build
 
       - name: Publish
