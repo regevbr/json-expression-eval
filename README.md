@@ -5,12 +5,13 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/maintainability)](https://codeclimate.com/github/regevbr/json-expression-eval/maintainability)
 [![Known Vulnerabilities](https://snyk.io/test/github/regevbr/json-expression-eval/badge.svg?targetFile=package.json)](https://snyk.io/test/github/regevbr/json-expression-eval?targetFile=package.json)
 
-# json-expression-eval
+# json-expression-eval (and rule engine)
 A Fully typed Node.js module that evaluates a json described boolean expressions using dynamic functions and a given context.
+Expressions can also be evaluated in a [`rule engine`](#rule-engine) manner.  
 
 The module is strictly typed, ensuring that passed expressions are 100% valid at compile time.
 
-This module is especially useful if you need to serialize complex expressions (to be saved in a DB for example) 
+This module is especially useful if you need to serialize complex expressions / rules (to be saved in a DB for example) 
   
 ## Installation 
 ```sh
@@ -158,4 +159,127 @@ Example expressions, assuming we have the `user` and `maxCount` user defined fun
       }
    ]
 }
+```
+
+### Rule Engine
+
+*Please see tests and examples dir for more usages and examples (under /src)* 
+
+```typescript
+import {ValidationContext, validateRules, evaluateRules, RulesEngine, Rule, ResolvedConsequence} from 'json-expression-eval';
+import {Moment} from 'moment';
+import moment = require('moment');
+
+interface IExampleContext {
+  userId: string;
+  times: number | undefined;
+  date: Moment;
+  nested: {
+    value: number | null;
+    nested2: {
+      value2?: number;
+      value3: boolean;
+    };
+  };
+}
+
+type IExampleContextIgnore = Moment;
+type IExamplePayload = number;
+
+type IExampleFunctionTable = {
+  countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }) => boolean;
+}
+
+type IExampleRuleFunctionTable = {
+  userRule: (user: string, ctx: IExampleContext) => void | ResolvedConsequence<IExamplePayload>;
+}
+
+type IExampleRule = Rule<IExamplePayload, IExampleRuleFunctionTable, IExampleContext,
+  IExampleFunctionTable, IExampleContextIgnore>;
+
+const context: IExampleContext = {
+  userId: 'a@b.com',
+  times: 3,
+  date: moment(),
+  nested: {
+    value: null,
+    nested2: {
+      value3: true,
+    },
+  },
+};
+
+// For validation we must provide a full example context
+const validationContext: ValidationContext<IExampleContext, IExampleContextIgnore> = {
+  userId: 'a@b.com',
+  times: 3,
+  date: moment(),
+  nested: {
+    value: 5,
+    nested2: {
+      value2: 6,
+      value3: true,
+    },
+  },
+};
+
+const functionsTable: IExampleFunctionTable = {
+  countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }): boolean => {
+    return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
+  },
+};
+
+const ruleFunctionsTable: IExampleRuleFunctionTable = {
+  userRule: (user: string, ctx: IExampleContext): void | ResolvedConsequence<number> => {
+    if (ctx.userId === user) {
+      return {
+        message: `Username ${user} is not allowed`,
+        custom: 543,
+      }
+    }
+  },
+};
+
+const rules: IExampleRule[] = [
+  {
+    condition: {
+      or: [
+        {
+          userId: 'a@b.com',
+        },
+        {
+          and: [
+            {
+              countRange: [2, 6],
+            },
+            {
+              'nested.nested2.value3': true,
+            },
+          ],
+        },
+      ],
+    },
+    consequence: {
+      message: ['user', {
+        ref: 'userId',
+      }, 'should not equal a@b.com'],
+      custom: 579,
+    },
+  },
+  {
+    userRule: 'b@c.com',
+  },
+];
+
+// Example usage 1
+const engine = new RulesEngine<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
+  IExampleFunctionTable, IExampleContextIgnore>(functionsTable, ruleFunctionsTable);
+engine.validate(rules, validationContext); // Should not throw
+console.log(JSON.stringify(engine.evaluateAll(rules, context))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
+
+// Example usage 2
+validateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
+  IExampleFunctionTable, IExampleContextIgnore>(rules, validationContext, functionsTable, ruleFunctionsTable); // Should not throw
+console.log(JSON.stringify(evaluateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
+  IExampleFunctionTable, IExampleContextIgnore>(rules, context, functionsTable, ruleFunctionsTable, false))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
 ```

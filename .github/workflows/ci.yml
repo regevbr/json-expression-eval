@@ -45,23 +45,23 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Get npm cache directory
-        id: npm-cache-dir
+      - name: Get yarn cache directory
+        id: yarn-cache-dir
         run: |
-          echo "::set-output name=dir::$(npm config get cache)"
+          echo "::set-output name=dir::$(yarn cache dir)"
 
       - uses: actions/cache@v2
-        id: npm-cache
+        id: yarn-cache
         with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ matrix.os }}-${{ matrix.node-version }}-node
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.node-version }}-node
+            ${{ matrix.os }}-${{ matrix.node-version }}-yarn-
 
       - name: Install dependencies and build
         run: |
-          npm install
-          npm run build
+          yarn install --ignore-engines
+          yarn build
 
       - name: Snyk security check
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
@@ -72,7 +72,7 @@ jobs:
       - name: Run types tests
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
         run: |
-          npm run test:tsd
+          yarn test:tsd
 
       - name: Run unit tests with coverage
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
@@ -80,11 +80,11 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
-          coverageCommand: npm run test:cover
+          coverageCommand: yarn test:cover
 
       - name: Run unit tests
         if: "!(matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS)"
-        run: npm run test:unit
+        run: yarn test:unit
 
   publish_version:
     name: Publish
@@ -110,23 +110,23 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: ${{ env.REGISTRY }}
 
-      - name: Get npm cache directory
-        id: npm-cache-dir
+      - name: Get yarn cache directory
+        id: yarn-cache-dir
         run: |
-          echo "::set-output name=dir::$(npm config get cache)"
+          echo "::set-output name=dir::$(yarn cache dir)"
 
       - uses: actions/cache@v2
-        id: npm-cache
+        id: yarn-cache
         with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ matrix.os }}-${{ matrix.node-version }}-node
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.node-version }}-node
+            ${{ matrix.os }}-${{ matrix.node-version }}-yarn-
 
       - name: Install dependencies and build
         run: |
-          npm install
-          npm run build
+          yarn install --ignore-engines
+          yarn build
 
       - name: Publish
         uses: JS-DevTools/npm-publish@v1

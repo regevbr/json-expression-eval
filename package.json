@@ -1,19 +1,19 @@
 {
   "name": "json-expression-eval",
-  "version": "4.1.0",
-  "description": "evaluate a json described boolean expression using dynamic functions",
+  "version": "4.2.0",
+  "description": "json serializable rule engine / boolean expression evaluator",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
     "node": "^6 || ^8 || ^10 || ^12 || ^14 || ^16"
   },
   "scripts": {
-    "test": "npm run lint && npm run test:tsd && npm run test:cover",
+    "test": "yarn lint && yarn test:tsd && yarn test:cover",
     "test:tsd": "tsd",
     "test:unit": "mocha --opts src/test/mocha.opts",
-    "build": "npm run lint && npm run compile",
+    "build": "yarn lint && yarn compile",
     "compile": "./node_modules/.bin/tsc",
-    "test:cover": "nyc --reporter=lcov --reporter=text-summary npm run test:unit",
+    "test:cover": "nyc --reporter=lcov --reporter=text-summary mocha --opts src/test/mocha.opts",
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'"
   },
   "repository": {
@@ -22,6 +22,7 @@
   },
   "keywords": [
     "evaluate",
+    "serializable",
     "expression",
     "json",
     "dynamic",
@@ -30,7 +31,11 @@
     "node",
     "js",
     "javascript",
-    "eval"
+    "eval",
+    "rule",
+    "engine",
+    "rule-engine",
+    "typescript"
   ],
   "author": "Regev Brody <regevbr@gmail.com>",
   "license": "GPL-3.0",
@@ -42,7 +47,7 @@
     "directory": "src/test/types"
   },
   "devDependencies": {
-    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@istanbuljs/nyc-config-typescript": "0.1.3",
     "@types/chai": "^4.2.16",
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.37",
@@ -50,14 +55,17 @@
     "chai": "^4.3.4",
     "mocha": "^6.2.3",
     "moment": "^2.29.1",
-    "nyc": "^15.1.0",
+    "nyc": "^14.1.1",
     "source-map-support": "^0.5.21",
-    "ts-node": "^9.1.1",
-    "tsd": "^0.19.1",
+    "ts-node": "^8.10.2",
+    "tsd": "^0.21.0",
     "tslint": "^6.1.3",
-    "typescript": "^4.6.2"
+    "typescript": "4.6.4"
   },
   "dependencies": {
     "ts-toolbelt": "^9.6.0"
+  },
+  "resolutions": {
+    "merge2": "1.3.0"
   }
 }

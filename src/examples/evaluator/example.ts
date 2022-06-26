@@ -1,7 +1,5 @@
-'use strict';
-
 import {ExpressionContext, ExpressionFunction, getEvaluator} from './lib/evaluator';
-import {Expression, ExpressionParts} from '../';
+import {Expression, ExpressionParts} from '../..';
 import {Moment} from 'moment';
 import moment = require('moment');
 
