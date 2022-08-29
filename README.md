@@ -37,6 +37,7 @@ interface IExampleContext {
     date: Moment;
     nested: {
         value: number | null;
+        value4: number;
         nested2: {
             value2?: number;
             value3: boolean;
@@ -58,6 +59,7 @@ const context: IExampleContext = {
     date: moment(),
     nested: {
         value: null,
+        value4: 5,
         nested2: {
             value3: true,
         },
@@ -71,6 +73,7 @@ const validationContext: ValidationContext<IExampleContext, IExampleContextIgnor
     date: moment(),
     nested: {
         value: 5,
+        value4: 6,
         nested2: {
             value2: 6,
             value3: true,
@@ -96,6 +99,13 @@ const expression: IExampleExpression = {
                 },
                 {
                     'nested.nested2.value3': true,
+                },
+                {
+                    times: {
+                        lte: {
+                            ref: 'nested.value4'
+                        }
+                    },
                 },
             ],
         },
@@ -136,8 +146,12 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
             - `between: readonly [number, number] (as const)` - True if the value is between the two specified values: greater than or equal to first value and less than or equal to second value.
     - `{property: value}`
         - compares the property to that value (shorthand to the `eq` op)
+
 > Nested properties in the context can also be accessed using a dot notation (see example above)
 > In each expression level, you can only define 1 operator, and 1 only
+
+> You can reference values (and nested values) from the context using the {"ref":"<dot notation path>"}
+> (see example above) on the right-hand side of expressions (not in parameters to user defined functions though)
 
 Example expressions, assuming we have the `user` and `maxCount` user defined functions in place can be:
 ```json
@@ -153,6 +167,9 @@ Example expressions, assuming we have the `user` and `maxCount` user defined fun
       },
       {  
          "times": { "eq" : 5}
+      },
+      {  
+         "times": { "eq" : { "ref": "nested.preoprty"}}
       },
       {  
          "country": "USA"

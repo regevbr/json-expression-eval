@@ -49,6 +49,7 @@ rules = [
       and: [
         {user: 'a@b.com'},
         {maxCount: 5},
+        {times: {eq:{ref:'nested.value'}}},
       ],
     },
     consequence: {

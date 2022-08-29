@@ -22,7 +22,7 @@ import {
     FunctionsTable,
     ExtendedCompareOp,
     ValidationContext,
-    PropertyCompareOps
+    PropertyCompareOps, Primitive
 } from '../types';
 import {
     assertUnreachable,
@@ -34,7 +34,27 @@ import {
     expressionNumberAssertion
 } from './helpers';
 
-function evaluateCompareOp(expressionValue: ExtendedCompareOp, expressionKey: string, contextValue: any): boolean {
+type WithRef = {
+    ref: string
+}
+
+const isWithRef = (x: unknown): x is WithRef => Boolean((x as WithRef).ref);
+
+const extractValueOrRef = <C extends Context>(context: C, validation: boolean, valueOrRef: Primitive | WithRef) => {
+    if (isWithRef(valueOrRef)) {
+        const {value, exists} = getFromPath(context, valueOrRef.ref);
+        if (validation && !exists) {
+            throw new Error(`Invalid expression - unknown context key ${valueOrRef.ref}`);
+        }
+        return value;
+    } else {
+        return valueOrRef;
+    }
+}
+
+function evaluateCompareOp<C extends Context>(expressionValue: ExtendedCompareOp<any, any, any>, expressionKey: string,
+                                              contextValue: any, context: C, validation: boolean)
+    : boolean {
     if (!_isObject(expressionValue)) {
         return contextValue === expressionValue;
     }
@@ -43,46 +63,55 @@ function evaluateCompareOp(expressionValue: ExtendedCompareOp, expressionKey: st
         throw new Error('Invalid expression - too may keys');
     }
     if (isEqualCompareOp(expressionValue)) {
-        return contextValue === expressionValue.eq;
+        return contextValue === extractValueOrRef(context, validation, expressionValue.eq);
     } else if (isNotEqualCompareOp(expressionValue)) {
-        return contextValue !== expressionValue.neq;
+        return contextValue !== extractValueOrRef(context, validation, expressionValue.neq);
     } else if (isInqCompareOp(expressionValue)) {
-        return expressionValue.inq.indexOf(contextValue) >= 0;
+        return expressionValue.inq.map((value) => extractValueOrRef(context, validation, value))
+            .indexOf(contextValue) >= 0;
     } else if (isNinCompareOp(expressionValue)) {
-        return expressionValue.nin.indexOf(contextValue) < 0;
+        return expressionValue.nin.map((value) => extractValueOrRef(context, validation, value))
+            .indexOf(contextValue) < 0;
     } else if (isRegexCompareOp(expressionValue)) {
         contextStringAssertion(expressionKey, contextValue);
-        expressionStringAssertion(expressionKey, expressionValue.regexp);
-        return Boolean(contextValue.match(new RegExp(expressionValue.regexp)));
+        const regexpValue = extractValueOrRef(context, validation, expressionValue.regexp);
+        expressionStringAssertion(expressionKey, regexpValue);
+        return Boolean(contextValue.match(new RegExp(regexpValue)));
     } else if (isRegexiCompareOp(expressionValue)) {
         contextStringAssertion(expressionKey, contextValue);
-        expressionStringAssertion(expressionKey, expressionValue.regexpi);
-        return Boolean(contextValue.match(new RegExp(expressionValue.regexpi, `i`)));
+        const regexpiValue = extractValueOrRef(context, validation, expressionValue.regexpi);
+        expressionStringAssertion(expressionKey, regexpiValue);
+        return Boolean(contextValue.match(new RegExp(regexpiValue, `i`)));
     } else if (isGtCompareOp(expressionValue)) {
         contextNumberAssertion(expressionKey, contextValue);
-        expressionNumberAssertion(expressionKey, expressionValue.gt);
-        return contextValue > expressionValue.gt;
+        const gtValue = extractValueOrRef(context, validation, expressionValue.gt);
+        expressionNumberAssertion(expressionKey, gtValue);
+        return contextValue > gtValue;
     } else if (isGteCompareOp(expressionValue)) {
         contextNumberAssertion(expressionKey, contextValue);
-        expressionNumberAssertion(expressionKey, expressionValue.gte);
-        return contextValue >= expressionValue.gte;
+        const gteValue = extractValueOrRef(context, validation, expressionValue.gte);
+        expressionNumberAssertion(expressionKey, gteValue);
+        return contextValue >= gteValue;
     } else if (isLteCompareOp(expressionValue)) {
         contextNumberAssertion(expressionKey, contextValue);
-        expressionNumberAssertion(expressionKey, expressionValue.lte);
-        return contextValue <= expressionValue.lte;
+        const lteValue = extractValueOrRef(context, validation, expressionValue.lte);
+        expressionNumberAssertion(expressionKey, lteValue);
+        return contextValue <= lteValue;
     } else if (isLtCompareOp(expressionValue)) {
         contextNumberAssertion(expressionKey, contextValue);
-        expressionNumberAssertion(expressionKey, expressionValue.lt);
-        return contextValue < expressionValue.lt;
+        const ltValue = extractValueOrRef(context, validation, expressionValue.lt);
+        expressionNumberAssertion(expressionKey, ltValue);
+        return contextValue < ltValue;
     } else if (isBetweenCompareOp(expressionValue)) {
         contextNumberAssertion(expressionKey, contextValue);
         if (expressionValue.between.length !== 2) {
             throw new Error(`Invalid expression - ${expressionKey}.length must be 2`);
         }
-        expressionValue.between.forEach((value, ind) => {
-            expressionNumberAssertion(`${expressionKey}[${ind}]`, value);
-        });
-        const [low, high] = expressionValue.between;
+        const [lowRaw, highRaw] = expressionValue.between;
+        const low = extractValueOrRef(context, validation, lowRaw);
+        const high = extractValueOrRef(context, validation, highRaw);
+        expressionNumberAssertion(`${expressionKey}[0]`, low);
+        expressionNumberAssertion(`${expressionKey}[1]`, high);
         if (low > high) {
             throw new Error(`Invalid expression - ${expressionKey} first value is higher than second value`);
         }
@@ -140,10 +169,11 @@ function run<C extends Context, F extends FunctionsTable<C>, Ignore>
         if (validation && !exists) {
             throw new Error(`Invalid expression - unknown context key ${expressionKey}`);
         }
-        return evaluateCompareOp(
+        return evaluateCompareOp<C>(
             (expression as PropertyCompareOps<C, Ignore>)
-                [expressionKey as any as keyof PropertyCompareOps<C, Ignore>] as ExtendedCompareOp,
-            expressionKey, contextValue);
+                [expressionKey as any as keyof PropertyCompareOps<C, Ignore>] as
+                unknown as ExtendedCompareOp<any, any, any>,
+            expressionKey, contextValue, context, validation);
     }
 }
 
