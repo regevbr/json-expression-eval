@@ -82,7 +82,7 @@ const validationContext: ValidationContext<IExampleContext, IExampleContextIgnor
 };
 
 const functionsTable: IExampleFunctionTable = {
-    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }): boolean => {
+    countRange: async ([min, max]: [min: number, max: number], ctx: { times: number | undefined }): Promise<boolean> => {
         return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
     },
 };
@@ -115,12 +115,12 @@ const expression: IExampleExpression = {
 // Example usage 1
 const handler =
     new ExpressionHandler<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, functionsTable);
-handler.validate(validationContext); // Should not throw
-console.log(handler.evaluate(context)); // true
+await handler.validate(validationContext); // Should not throw
+console.log(await handler.evaluate(context)); // true
 
 // Example usage 2
-validate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, validationContext, functionsTable); // Should not throw
-console.log(evaluate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, context, functionsTable)); // true
+await validate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, validationContext, functionsTable); // Should not throw
+console.log(await evaluate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, context, functionsTable)); // true
 ```
 
 ### Expression
@@ -129,7 +129,7 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
 - `and` - accepts a non-empty list of expressions
 - `or` - accepts a non-empty list of expressions
 - `not` - accepts another expressions
-- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions and the given context.
+- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions and the given context. Can be async.
 - `<compare funcs>` - operates on one of the context properties and compares it to a given value.
     - `{property: {op: value}}`
         - available ops:
@@ -208,7 +208,7 @@ type IExampleFunctionTable = {
 }
 
 type IExampleRuleFunctionTable = {
-  userRule: (user: string, ctx: IExampleContext) => void | ResolvedConsequence<IExamplePayload>;
+  userRule: (user: string, ctx: IExampleContext) => Promise<void | ResolvedConsequence<IExamplePayload>>;
 }
 
 type IExampleRule = Rule<IExamplePayload, IExampleRuleFunctionTable, IExampleContext,
@@ -247,7 +247,7 @@ const functionsTable: IExampleFunctionTable = {
 };
 
 const ruleFunctionsTable: IExampleRuleFunctionTable = {
-  userRule: (user: string, ctx: IExampleContext): void | ResolvedConsequence<number> => {
+  userRule: async (user: string, ctx: IExampleContext): Promise<void | ResolvedConsequence<number>> => {
     if (ctx.userId === user) {
       return {
         message: `Username ${user} is not allowed`,
@@ -291,12 +291,12 @@ const rules: IExampleRule[] = [
 // Example usage 1
 const engine = new RulesEngine<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
   IExampleFunctionTable, IExampleContextIgnore>(functionsTable, ruleFunctionsTable);
-engine.validate(rules, validationContext); // Should not throw
-console.log(JSON.stringify(engine.evaluateAll(rules, context))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
+await engine.validate(rules, validationContext); // Should not throw
+console.log(JSON.stringify(await engine.evaluateAll(rules, context))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
 
 // Example usage 2
-validateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
+await validateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
   IExampleFunctionTable, IExampleContextIgnore>(rules, validationContext, functionsTable, ruleFunctionsTable); // Should not throw
-console.log(JSON.stringify(evaluateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
+console.log(JSON.stringify(await evaluateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
   IExampleFunctionTable, IExampleContextIgnore>(rules, context, functionsTable, ruleFunctionsTable, false))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
 ```
