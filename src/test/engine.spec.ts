@@ -12,10 +12,10 @@ const functionsTable = {
 };
 
 const ruleFunctionsTable = {
-    userRule: (user: string, context: { userId: string }): void | {
+    userRule: async (user: string, context: { userId: string }): Promise<void | {
         message: string;
         custom: number;
-    } => {
+    }> => {
         if (context.userId === user) {
             return {
                 message: `Username ${user} is not allowed`,
