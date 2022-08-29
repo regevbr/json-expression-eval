@@ -52,9 +52,10 @@ const extractValueOrRef = <C extends Context>(context: C, validation: boolean, v
     }
 }
 
-function evaluateCompareOp<C extends Context>(expressionValue: ExtendedCompareOp<any, any, any>, expressionKey: string,
-                                              contextValue: any, context: C, validation: boolean)
-    : boolean {
+async function evaluateCompareOp<C extends Context>(expressionValue: ExtendedCompareOp<any, any, any>,
+                                                    expressionKey: string, contextValue: any,
+                                                    context: C, validation: boolean)
+    : Promise<boolean> {
     if (!_isObject(expressionValue)) {
         return contextValue === expressionValue;
     }
@@ -121,13 +122,13 @@ function evaluateCompareOp<C extends Context>(expressionValue: ExtendedCompareOp
     }
 }
 
-function handleAndOp<C extends Context, F extends FunctionsTable<C>, Ignore>
-(andExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: boolean): boolean {
+async function handleAndOp<C extends Context, F extends FunctionsTable<C>, Ignore>
+(andExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: boolean): Promise<boolean> {
     if (andExpression.length === 0) {
         throw new Error('Invalid expression - and operator must have at least one expression');
     }
     for (const currExpression of andExpression) {
-        const result = run<C, F, Ignore>(currExpression, context, functionsTable, validation);
+        const result = await run<C, F, Ignore>(currExpression, context, functionsTable, validation);
         if (!validation && !result) {
             return false;
         }
@@ -135,13 +136,13 @@ function handleAndOp<C extends Context, F extends FunctionsTable<C>, Ignore>
     return true;
 }
 
-function handleOrOp<C extends Context, F extends FunctionsTable<C>, Ignore>
-(orExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: boolean): boolean {
+async function handleOrOp<C extends Context, F extends FunctionsTable<C>, Ignore>
+(orExpression: Expression<C, F, Ignore>[], context: C, functionsTable: F, validation: boolean): Promise<boolean> {
     if (orExpression.length === 0) {
         throw new Error('Invalid expression - or operator must have at least one expression');
     }
     for (const currExpression of orExpression) {
-        const result = run<C, F, Ignore>(currExpression, context, functionsTable, validation);
+        const result = await run<C, F, Ignore>(currExpression, context, functionsTable, validation);
         if (!validation && result) {
             return true;
         }
@@ -149,8 +150,8 @@ function handleOrOp<C extends Context, F extends FunctionsTable<C>, Ignore>
     return false;
 }
 
-function run<C extends Context, F extends FunctionsTable<C>, Ignore>
-(expression: Expression<C, F, Ignore>, context: C, functionsTable: F, validation: boolean): boolean {
+async function run<C extends Context, F extends FunctionsTable<C>, Ignore>
+(expression: Expression<C, F, Ignore>, context: C, functionsTable: F, validation: boolean): Promise<boolean> {
     const expressionKeys = objectKeys(expression);
     if (expressionKeys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
@@ -161,9 +162,9 @@ function run<C extends Context, F extends FunctionsTable<C>, Ignore>
     } else if (isOrCompareOp<C, F, Ignore>(expression)) {
         return handleOrOp<C, F, Ignore>(expression.or, context, functionsTable, validation);
     } else if (isNotCompareOp<C, F, Ignore>(expression)) {
-        return !run<C, F, Ignore>(expression.not, context, functionsTable, validation);
+        return !(await run<C, F, Ignore>(expression.not, context, functionsTable, validation));
     } else if (isFunctionCompareOp<C, F, Ignore>(expression, functionsTable, expressionKey)) {
-        return validation ? true : functionsTable[expressionKey](expression[expressionKey], context);
+        return validation ? true : await functionsTable[expressionKey](expression[expressionKey], context);
     } else {
         const {value: contextValue, exists} = getFromPath(context, expressionKey);
         if (validation && !exists) {
@@ -177,13 +178,14 @@ function run<C extends Context, F extends FunctionsTable<C>, Ignore>
     }
 }
 
-export const evaluate = <C extends Context, F extends FunctionsTable<C>, Ignore = never>
-(expression: Expression<C, F, Ignore>, context: C, functionsTable: F): boolean => {
+export const evaluate = async <C extends Context, F extends FunctionsTable<C>, Ignore = never>
+(expression: Expression<C, F, Ignore>, context: C, functionsTable: F): Promise<boolean> => {
     return run<C, F, Ignore>(expression, context, functionsTable, false);
 };
 
 // Throws in case of validation error. Does not run functions or compare fields
-export const validate = <C extends Context, F extends FunctionsTable<C>, Ignore = never>
-(expression: Expression<C, F, Ignore>, validationContext: ValidationContext<C, Ignore>, functionsTable: F): void => {
-    run<C, F, Ignore>(expression, validationContext as C, functionsTable, true);
+export const validate = async <C extends Context, F extends FunctionsTable<C>, Ignore = never>
+(expression: Expression<C, F, Ignore>, validationContext: ValidationContext<C, Ignore>, functionsTable: F)
+    : Promise<void> => {
+    await run<C, F, Ignore>(expression, validationContext as C, functionsTable, true);
 };

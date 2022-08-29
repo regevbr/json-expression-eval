@@ -11,12 +11,12 @@ export class ExpressionHandler<C extends Context, F extends FunctionsTable<C>, I
     constructor(private readonly expression: Expression<C, F, Ignore>, private readonly functionsTable: F) {
     }
 
-    public evaluate(context: C): boolean {
+    public async evaluate(context: C): Promise<boolean> {
         return evaluate<C, F, Ignore>(this.expression, context, this.functionsTable);
     }
 
-    public validate(validationContext: ValidationContext<C, Ignore>): void {
-        validate<C, F, Ignore>(this.expression, validationContext, this.functionsTable);
+    public async validate(validationContext: ValidationContext<C, Ignore>): Promise<void> {
+        await validate<C, F, Ignore>(this.expression, validationContext, this.functionsTable);
     }
 
 }
