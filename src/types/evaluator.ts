@@ -4,73 +4,91 @@ import {NonNullable} from './required';
 
 export type FuncCompareOp<C extends Context, F extends FunctionsTable<C>, K extends keyof F> = Parameters<F[K]>[0];
 
-export interface EqualCompareOp<V> {
-    eq: V;
+export type StringPaths<O extends object, Ignore> =
+    String.Join<Paths<O, [], Ignore | any[], string>, '.'>;
+
+export type Primitive = string | number | boolean;
+
+export type PropertyPathsOfType<C extends Context, Ignore, V extends Primitive> = {
+    [K in StringPaths<C, Ignore>]:
+    Union.NonNullable<Object.Path<C, String.Split<K, '.'>>> extends V ? 1 : 0;
+};
+
+export type ExtractPropertyPathsOfType<T extends Record<string, 1 | 0>> = {
+    [K in keyof T]: T[K] extends 1 ? K : never
+}[keyof T];
+
+export type PropertyRef<C extends Context, Ignore, V extends Primitive> = {
+    ref: ExtractPropertyPathsOfType<PropertyPathsOfType<C, Ignore, V>>
 }
 
-export interface NotEqualCompareOp<V> {
-    neq: V;
+export interface EqualCompareOp<C extends Context, Ignore, V extends Primitive> {
+    eq: V | PropertyRef<C, Ignore, V>;
 }
 
-export interface InqCompareOp<V> {
-    inq: V[];
+export interface NotEqualCompareOp<C extends Context, Ignore, V extends Primitive> {
+    neq: V | PropertyRef<C, Ignore, V>;
 }
 
-export interface NinCompareOp<V> {
-    nin: V[];
+export interface InqCompareOp<C extends Context, Ignore, V extends Primitive> {
+    inq: (V | PropertyRef<C, Ignore, V>)[];
 }
 
-export interface BetweenCompareOp {
-    between: readonly [number, number];
+export interface NinCompareOp<C extends Context, Ignore, V extends Primitive> {
+    nin: (V | PropertyRef<C, Ignore, V>)[];
 }
 
-export interface GtCompareOp {
-    gt: number;
+export interface BetweenCompareOp<C extends Context, Ignore> {
+    between: readonly [number | PropertyRef<C, Ignore, number>, number | PropertyRef<C, Ignore, number>];
 }
 
-export interface GteCompareOp {
-    gte: number;
+export interface GtCompareOp<C extends Context, Ignore> {
+    gt: number | PropertyRef<C, Ignore, number>;
 }
 
-export interface LtCompareOp {
-    lt: number;
+export interface GteCompareOp<C extends Context, Ignore> {
+    gte: number | PropertyRef<C, Ignore, number>;
 }
 
-export interface LteCompareOp {
-    lte: number;
+export interface LtCompareOp<C extends Context, Ignore> {
+    lt: number | PropertyRef<C, Ignore, number>;
 }
 
-export interface RegexCompareOp {
-    regexp: string;
+export interface LteCompareOp<C extends Context, Ignore> {
+    lte: number | PropertyRef<C, Ignore, number>;
 }
 
-export interface RegexiCompareOp {
-    regexpi: string;
+export interface RegexCompareOp<C extends Context, Ignore> {
+    regexp: string | PropertyRef<C, Ignore, string>;
+}
+
+export interface RegexiCompareOp<C extends Context, Ignore> {
+    regexpi: string | PropertyRef<C, Ignore, string>;
 }
 
 export type FuncCompares<C extends Context, F extends FunctionsTable<C>> = {
     [K in keyof F]: FuncCompareOp<C, F, K>;
 }
 
-export type NumberCompareOps<V = any> =
-    V extends number ? BetweenCompareOp | GtCompareOp | GteCompareOp | LtCompareOp | LteCompareOp : never;
+export type NumberCompareOps<C extends Context, Ignore, V extends Primitive> =
+    V extends number ? BetweenCompareOp<C, Ignore> |
+        GtCompareOp<C, Ignore> |
+        GteCompareOp<C, Ignore> |
+        LtCompareOp<C, Ignore> |
+        LteCompareOp<C, Ignore> : never;
 
-export type StringCompareOps<V = any> =
-    V extends string ? RegexCompareOp | RegexiCompareOp : never;
+export type StringCompareOps<C extends Context, Ignore, V extends Primitive> =
+    V extends string ? RegexCompareOp<C, Ignore> | RegexiCompareOp<C, Ignore> : never;
 
-export type ExtendedCompareOp<V = any> =
-    EqualCompareOp<V> | NotEqualCompareOp<V> | InqCompareOp<V> | NinCompareOp<V> |
-    NumberCompareOps<V>| StringCompareOps<V>;
-
-export type StringPaths<O extends object, Ignore> =
-    String.Join<Paths<O, [], Ignore | any[], string>, '.'>;
-
-export type Primitive = string | number | boolean;
+export type ExtendedCompareOp<C extends Context, Ignore, V extends Primitive> =
+    EqualCompareOp<C, Ignore, V> | NotEqualCompareOp<C, Ignore, V> | InqCompareOp<C, Ignore, V> |
+    NinCompareOp<C, Ignore, V> | NumberCompareOps<C, Ignore, V> | StringCompareOps<C, Ignore, V>;
 
 export type PropertyCompareOps<C extends Context, Ignore> = {
     [K in StringPaths<C, Ignore>]:
     Union.NonNullable<Object.Path<C, String.Split<K, '.'>>> extends Primitive ?
-        (Object.Path<C, String.Split<K, '.'>> | ExtendedCompareOp<Object.Path<C, String.Split<K, '.'>>>)
+        (Object.Path<C, String.Split<K, '.'>> |
+            ExtendedCompareOp<C, Ignore, Union.NonNullable<Object.Path<C, String.Split<K, '.'>>>>)
         : never;
 };
 
