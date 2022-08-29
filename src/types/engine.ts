@@ -30,12 +30,13 @@ export interface RuleDefinition<ConsequencePayload, C extends Context, F extends
 }
 
 export type RuleFunc<C, ConsequencePayload> = (
-  param: any, context: C) => (void | ResolvedConsequence<ConsequencePayload>);
+  param: any, context: C) => void | ResolvedConsequence<ConsequencePayload>
+    | Promise<(void | ResolvedConsequence<ConsequencePayload>)>;
 
 export type RuleFunctionsTable<C, ConsequencePayload> = Record<string, RuleFunc<C, ConsequencePayload>>;
 
 export type RuleFunctionParam<ConsequencePayload, C extends Context,
-  RF extends RuleFunctionsTable<C, ConsequencePayload>, K extends keyof RF> = Parameters<RF[K]>[0];
+  RF extends RuleFunctionsTable<C, ConsequencePayload>, K extends keyof RF> = Awaited<Parameters<RF[K]>[0]>;
 
 export type RuleFunctionsParams<ConsequencePayload, C extends Context,
   RF extends RuleFunctionsTable<C, ConsequencePayload>> = {

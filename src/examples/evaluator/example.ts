@@ -15,8 +15,8 @@ const context: ExpressionContext = {
     },
 };
 
-const run = (expr: Expression<ExpressionContext, ExpressionFunction, Moment>, ctx: ExpressionContext) => {
-    const result = getEvaluator(expression).evaluate(ctx);
+const run = async (expr: Expression<ExpressionContext, ExpressionFunction, Moment>, ctx: ExpressionContext) => {
+    const result = await getEvaluator(expression).evaluate(ctx);
     console.log(`Evaluating expression ${JSON.stringify(expr)} using context ${JSON.stringify(ctx)}`);
     console.log(`Result: ${result}`);
 };

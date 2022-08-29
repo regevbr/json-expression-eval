@@ -1,6 +1,7 @@
 import {ResolvedConsequence} from '../../../../types';
 
-export const userRule = (user: string, context: { userId: string }): void | ResolvedConsequence<number> => {
+export const userRule = async (user: string, context: { userId: string })
+    : Promise<void | ResolvedConsequence<number>> => {
   if (context.userId === user) {
     return {
       message: `Username ${user} is not allowed`,

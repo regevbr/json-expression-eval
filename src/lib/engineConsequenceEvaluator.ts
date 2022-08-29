@@ -1,9 +1,9 @@
 import {ResolvedConsequence, Context, RuleConsequence, RuleConsequenceMessagePart} from '../types';
 import {getFromPath} from './helpers';
 
-export const evaluateEngineConsequence = <ConsequencePayload, C extends Context, Ignore = never>
+export const evaluateEngineConsequence = async <ConsequencePayload, C extends Context, Ignore = never>
 (context: C, consequence: RuleConsequence<ConsequencePayload, C, Ignore>)
-  : ResolvedConsequence<ConsequencePayload> => {
+  : Promise<ResolvedConsequence<ConsequencePayload>> => {
   let messageParts: RuleConsequenceMessagePart<C, Ignore>[];
   if (typeof consequence.message === 'string') {
     messageParts = [consequence.message];
