@@ -12,7 +12,7 @@ import {
     RegexiCompareOp,
     NotCompareOp,
     NotEqualCompareOp,
-    OrCompareOp, InqCompareOp, NinCompareOp, RuleFunctionsTable, RuleFunctionsParams, Primitive
+    OrCompareOp, InqCompareOp, NinCompareOp, RuleFunctionsTable, RuleFunctionsParams, Primitive, MathOp
 } from '../types';
 
 export const _isObject = (obj: unknown): boolean => {
@@ -103,3 +103,10 @@ export const isNinCompareOp = (op: ExtendedCompareOp<any, any, any>)
     : op is NinCompareOp<any, any, any> => {
     return Array.isArray((op as NinCompareOp<any, any, any>).nin);
 }
+
+export type WithRef = {
+    ref: string
+}
+
+export const isWithRef = (x: unknown): x is WithRef => Boolean((x as WithRef).ref);
+export const isMathOp = (x: unknown): x is MathOp<any, any> => Boolean((x as MathOp<any, any>).op);
