@@ -59,7 +59,25 @@ expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction
 expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {neq: 'sdf'}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction>(
     {timesCounter: {neq: {ref:'nested.value333'}}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>(
+    {timesCounter: {neq: {op: '+', lhs:5, rhs: {ref:'nested.value333'}}}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>(
+    {userId: {inq: [{op: '+', lhs:5, rhs: 4}]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>(
+    {userId: {nin: [{op: '+', lhs:5, rhs: 4}]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>(
+    {userId: {eq: {op: '+', lhs:5, rhs: 4}}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>(
+    {userId: {neq: {op: '+', lhs:5, rhs: 4}}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>(
+    {userId: {regexp: {op: '+', lhs:5, rhs: 4}}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>(
+    {userId: {regexpi: {op: '+', lhs:5, rhs: 4}}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>(
+    {timesCounter: {neq: {op: 'dummy', lhs:5, rhs: 6}}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {neq: {ref:'nested.value'}}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>(
+    {timesCounter: {neq: {op: '+', lhs: {ref:'nested.value'}, rhs: 5}}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {neq: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {eq: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {gt: 5}}, functions));

@@ -48,6 +48,15 @@ run(expression, context);
 expression = {
     and: [
         {user: 'a@b.com'},
+        {times: {eq:{op:'+', lhs: {ref:'nested.value'}, rhs: 1}}},
+    ],
+};
+
+run(expression, context);
+
+expression = {
+    and: [
+        {user: 'a@b.com'},
         {maxCount: 1},
     ],
 };

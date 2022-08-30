@@ -23,40 +23,51 @@ export type PropertyRef<C extends Context, Ignore, V extends Primitive> = {
     ref: ExtractPropertyPathsOfType<PropertyPathsOfType<C, Ignore, V>>
 }
 
+export type MathOps = '+' | '-' | '*' | '/' | '%' | 'pow';
+
+export interface MathOp<C extends Context, Ignore> {
+    op: MathOps;
+    rhs: number | PropertyRef<C, Ignore, number>;
+    lhs: number | PropertyRef<C, Ignore, number>;
+}
+
 export interface EqualCompareOp<C extends Context, Ignore, V extends Primitive> {
-    eq: V | PropertyRef<C, Ignore, V>;
+    eq: V | PropertyRef<C, Ignore, V> | (V extends number ? MathOp<C, Ignore> : never);
 }
 
 export interface NotEqualCompareOp<C extends Context, Ignore, V extends Primitive> {
-    neq: V | PropertyRef<C, Ignore, V>;
+    neq: V | PropertyRef<C, Ignore, V> | (V extends number ? MathOp<C, Ignore> : never);
 }
 
 export interface InqCompareOp<C extends Context, Ignore, V extends Primitive> {
-    inq: (V | PropertyRef<C, Ignore, V>)[];
+    inq: (V | PropertyRef<C, Ignore, V> | (V extends number ? MathOp<C, Ignore> : never))[];
 }
 
 export interface NinCompareOp<C extends Context, Ignore, V extends Primitive> {
-    nin: (V | PropertyRef<C, Ignore, V>)[];
+    nin: (V | PropertyRef<C, Ignore, V> | (V extends number ? MathOp<C, Ignore> : never))[];
 }
 
 export interface BetweenCompareOp<C extends Context, Ignore> {
-    between: readonly [number | PropertyRef<C, Ignore, number>, number | PropertyRef<C, Ignore, number>];
+    between: readonly [
+            number | PropertyRef<C, Ignore, number> | MathOp<C, Ignore>,
+            number | PropertyRef<C, Ignore, number> | MathOp<C, Ignore>
+    ];
 }
 
 export interface GtCompareOp<C extends Context, Ignore> {
-    gt: number | PropertyRef<C, Ignore, number>;
+    gt: number | PropertyRef<C, Ignore, number> | MathOp<C, Ignore>;
 }
 
 export interface GteCompareOp<C extends Context, Ignore> {
-    gte: number | PropertyRef<C, Ignore, number>;
+    gte: number | PropertyRef<C, Ignore, number> | MathOp<C, Ignore>;
 }
 
 export interface LtCompareOp<C extends Context, Ignore> {
-    lt: number | PropertyRef<C, Ignore, number>;
+    lt: number | PropertyRef<C, Ignore, number> | MathOp<C, Ignore>;
 }
 
 export interface LteCompareOp<C extends Context, Ignore> {
-    lte: number | PropertyRef<C, Ignore, number>;
+    lte: number | PropertyRef<C, Ignore, number> | MathOp<C, Ignore>;
 }
 
 export interface RegexCompareOp<C extends Context, Ignore> {

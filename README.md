@@ -93,6 +93,17 @@ const expression: IExampleExpression = {
             userId: 'a@b.com',
         },
         {
+            times: {
+                lte: {
+                    op: '+',
+                    lhs: {
+                        ref: 'nested.value4'
+                    },
+                    rhs: 2,
+                },
+            },
+        },
+        {
             and: [
                 {
                     countRange: [2, 6],
@@ -129,7 +140,7 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
 - `and` - accepts a non-empty list of expressions
 - `or` - accepts a non-empty list of expressions
 - `not` - accepts another expressions
-- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions and the given context. Can be async.
+- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions, and the given context (can be async).
 - `<compare funcs>` - operates on one of the context properties and compares it to a given value.
     - `{property: {op: value}}`
         - available ops:
@@ -145,13 +156,36 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
             - `inq: any[]` - True if in an array of values. Comparison is done using the `===` operator
             - `between: readonly [number, number] (as const)` - True if the value is between the two specified values: greater than or equal to first value and less than or equal to second value.
     - `{property: value}`
-        - compares the property to that value (shorthand to the `eq` op)
+        - compares the property to that value (shorthand to the `eq` op, without the option to user math or refs to other properties)
 
 > Nested properties in the context can also be accessed using a dot notation (see example above)
+
 > In each expression level, you can only define 1 operator, and 1 only
 
-> You can reference values (and nested values) from the context using the {"ref":"<dot notation path>"}
-> (see example above) on the right-hand side of expressions (not in parameters to user defined functions though)
+The right-hand side of compare (not user defined) functions can be a:
+- literal - number/string/boolean (depending on the left-hand side of the function)
+- reference to a property (or nested property) in the context.  
+  This can be achieved by using `{"ref":"<dot notation path>"}`
+- A math operation that can reference properties in the context.  
+  The valid operations are `+,-,*,/,%,pow`.  
+  This can be achieved by using  
+  ```json
+  {
+    "op": "<+,-,*,/,%,pow>",
+    "lhs": {"ref": "<dot notation path>"}, // or a number literal
+    "rhs": {"ref": "<dot notation path>"} // or a number literal
+  }
+  ```
+  which will be computed as `<lhs> <op> <rhs>` where lhs is left-hand-side and rhs is right-hand-side. So for example
+  ```json
+  {
+    "op": "/",
+    "lhs": 10,
+    "rhs": 2
+  }
+  ```
+  will equal `10 / 2 = 5`
+
 
 Example expressions, assuming we have the `user` and `maxCount` user defined functions in place can be:
 ```json

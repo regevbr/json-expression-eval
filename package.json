@@ -1,6 +1,6 @@
 {
   "name": "json-expression-eval",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "json serializable rule engine / boolean expression evaluator",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,8 @@
     "build": "yarn lint && yarn compile",
     "compile": "./node_modules/.bin/tsc",
     "test:cover": "nyc --reporter=lcov --reporter=text-summary mocha --opts src/test/mocha.opts",
-    "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'"
+    "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'",
+    "ci": "yarn lint && yarn compile && yarn test:tsd && yarn test:cover"
   },
   "repository": {
     "type": "git",
