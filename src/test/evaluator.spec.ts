@@ -123,6 +123,19 @@ describe('evaluator', () => {
             expect(await evaluate(expression, context, functionsTable)).to.eql(true);
         });
 
+        it('should evaluate math ref eq compare op to true', async () => {
+            const expression = {
+                timesCounter: {eq: {op: '+' as const, lhs: 1, rhs: {ref: 'timesCounterToCompare' as const}}},
+            };
+            const context = {
+                timesCounter: 5,
+                timesCounterToCompare: 4,
+                userId: 'a',
+            };
+            expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
         it('should evaluate eq compare op to true on nested properties', async () => {
             const expression = {
                 'nested.value': {
@@ -302,6 +315,19 @@ describe('evaluator', () => {
             expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable)).to.eql(false);
         });
+
+        it('should evaluate math ref neq compare op to false', async () => {
+            const expression = {
+                timesCounter: {neq: {op: '-' as const, lhs: {ref: 'timesCounterRef' as const}, rhs: 1}},
+            };
+            const context = {
+                timesCounter: 5,
+                timesCounterRef: 6,
+                userId: 'a',
+            };
+            expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable)).to.eql(false);
+        });
     });
 
     describe(`gt`, () => {
@@ -325,6 +351,19 @@ describe('evaluator', () => {
             const context = {
                 timesCounter: 8,
                 timesCounterRef: 4,
+                userId: 'a',
+            };
+            expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate math ref gt compare op to true', async () => {
+            const expression = {
+                timesCounter: {gt: {op: '*' as const, lhs: {ref: 'timesCounterRef' as const}, rhs: 2}},
+            };
+            const context = {
+                timesCounter: 8,
+                timesCounterRef: 1,
                 userId: 'a',
             };
             expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
@@ -396,6 +435,25 @@ describe('evaluator', () => {
             expect(await evaluate(expression, context, functionsTable)).to.eql(true);
         });
 
+        it('should evaluate math ref gte compare op to true', async () => {
+            const expression = {
+                timesCounter: {
+                    gte: {
+                        op: '/' as const, lhs: {ref: 'timesCounterRef' as const},
+                        rhs: {ref: 'timesCounterRefDivider' as const},
+                    },
+                },
+            };
+            const context = {
+                timesCounter: 8,
+                timesCounterRef: 10,
+                timesCounterRefDivider: 2,
+                userId: 'a',
+            };
+            expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
         it('should evaluate gte compare op to true 2', async () => {
             const expression = {
                 timesCounter: {gte: 5},
@@ -449,6 +507,25 @@ describe('evaluator', () => {
         it('should evaluate between left ref compare op to true', async () => {
             const expression = {
                 timesCounter: {between: [{ref: 'timesCounterRefLeft' as const}, 10] as const},
+            };
+            const context = {
+                timesCounter: 8,
+                timesCounterRefLeft: 5,
+                userId: 'a',
+            };
+            expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate between left ref compare op and right math op to true', async () => {
+            const expression = {
+                timesCounter: {
+                    between: [{op: '-' as const, rhs: {ref: 'timesCounterRefLeft' as const}, lhs: 10}, {
+                        op: '+' as const,
+                        lhs: 4,
+                        rhs: 6,
+                    }] as const,
+                },
             };
             const context = {
                 timesCounter: 8,
@@ -601,6 +678,19 @@ describe('evaluator', () => {
             expect(await evaluate(expression, context, functionsTable)).to.eql(true);
         });
 
+        it('should evaluate math ref inq op to true (number)', async () => {
+            const expression = {
+                timesCounter: {inq: [5, {op: 'pow' as const, rhs: {ref: 'timesCounterRef' as const}, lhs: 2}, 10]},
+            };
+            const context = {
+                timesCounter: 8,
+                timesCounterRef: 3,
+                userId: 'a',
+            };
+            expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
         it('should evaluate inq op to true (string)', async () => {
             const expression = {
                 userId: {inq: ['f', 'a']},
@@ -696,6 +786,19 @@ describe('evaluator', () => {
             const context = {
                 timesCounter: 3,
                 timesCounterRef: 3,
+                userId: 'a',
+            };
+            expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable)).to.eql(false);
+        });
+
+        it('should evaluate math ref nin op to false (number)', async () => {
+            const expression = {
+                timesCounter: {nin: [5, {op: '+' as const, rhs: 1, lhs: {ref: 'timesCounterRef' as const}}, 10]},
+            };
+            const context = {
+                timesCounter: 3,
+                timesCounterRef: 2,
                 userId: 'a',
             };
             expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
@@ -840,6 +943,19 @@ describe('evaluator', () => {
             expect(await evaluate(expression, context, functionsTable)).to.eql(true);
         });
 
+        it('should evaluate math ref lt compare op to true', async () => {
+            const expression = {
+                timesCounter: {lt: {op: '+' as const, rhs: {ref: 'timesCounterRef' as const}, lhs: 1}},
+            };
+            const context = {
+                timesCounter: 3,
+                timesCounterRef: 4,
+                userId: 'a',
+            };
+            expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
         it('should evaluate lt compare lt to false', async () => {
             const expression = {
                 timesCounter: {lt: 5},
@@ -885,6 +1001,19 @@ describe('evaluator', () => {
             const context = {
                 timesCounter: 3,
                 timesCounterRef: 5,
+                userId: 'a',
+            };
+            expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable)).to.eql(true);
+        });
+
+        it('should evaluate math ref lte compare op to true', async () => {
+            const expression = {
+                timesCounter: {lte: {op: '+' as const, rhs: {ref: 'timesCounterRef' as const}, lhs: 1}},
+            };
+            const context = {
+                timesCounter: 3,
+                timesCounterRef: 4,
                 userId: 'a',
             };
             expect(await validate(expression, context, functionsTable)).to.be.an('undefined');
@@ -1018,6 +1147,33 @@ describe('evaluator', () => {
         await expect(validate(expression, context, functionsTable))
             .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key fsdf');
         expect(await evaluate(expression, context, functionsTable)).to.eql(false);
+    });
+
+    it('should fail on non existing math op', async () => {
+        const expression: any = {and: [{timesCounter: {eq: {op: 'y', lhs: 1, rhs: 2}}}]};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        await expect(validate(expression, context, functionsTable))
+            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter has invalid math operand y');
+        await expect(evaluate(expression, context, functionsTable))
+            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter has invalid math operand y');
+    });
+
+    it('should fail on non number math parameter', async () => {
+        const expression: any = {and: [{timesCounter: {eq: {op: '+', lhs: 1, rhs: {ref: 'userId'}}}}]};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        await expect(validate(expression, context, functionsTable))
+            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+        await expect(evaluate(expression, context, functionsTable))
+            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+    });
+
+    it('should fail on non number math parameter 2', async () => {
+        const expression: any = {and: [{timesCounter: {eq: {op: '+', rhs: 1, lhs: {ref: 'userId'}}}}]};
+        const context = {userId: 'r@a.com', timesCounter: 8};
+        await expect(validate(expression, context, functionsTable))
+            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+        await expect(evaluate(expression, context, functionsTable))
+            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
     });
 
     it('should fail on non existing nested property', async () => {

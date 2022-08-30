@@ -50,13 +50,13 @@ const extractValueOrRef = <C extends Context>(context: C, validation: boolean, v
 }
 
 const computeValue = <C extends Context>(context: C, validation: boolean,
-                                                 value: Primitive | WithRef | MathOp<any, any>,
-                                                 expressionKey: string): Primitive => {
+                                         value: Primitive | WithRef | MathOp<any, any>,
+                                         expressionKey: string): Primitive => {
     if (isMathOp(value)) {
         const lhs = extractValueOrRef<C>(context, validation, value.lhs);
         const rhs = extractValueOrRef<C>(context, validation, value.rhs);
-        contextNumberAssertion(expressionKey, lhs);
-        contextNumberAssertion(expressionKey, rhs);
+        expressionNumberAssertion(expressionKey, lhs);
+        expressionNumberAssertion(expressionKey, rhs);
         switch (value.op) {
             case '+':
                 return lhs + rhs;
@@ -67,9 +67,9 @@ const computeValue = <C extends Context>(context: C, validation: boolean,
             case '/':
                 return lhs / rhs;
             case 'pow':
-                return lhs ** rhs;
+                return Math.pow(lhs, rhs);
             default:
-                throw new Error(`Invalid context - ${expressionKey} has invalid math operand ${value.op}`);
+                throw new Error(`Invalid expression - ${expressionKey} has invalid math operand ${value.op}`);
         }
     }
     return extractValueOrRef(context, validation, value);
