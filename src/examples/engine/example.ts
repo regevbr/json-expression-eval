@@ -50,6 +50,7 @@ rules = [
         {user: 'a@b.com'},
         {maxCount: 5},
         {times: {eq:{ref:'nested.value'}}},
+        {times: {lte:{op:'+', lhs: {ref:'nested.value'}, rhs: 1}}},
       ],
     },
     consequence: {

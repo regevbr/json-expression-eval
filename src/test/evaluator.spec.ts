@@ -1009,11 +1009,11 @@ describe('evaluator', () => {
 
         it('should evaluate math ref lte compare op to true', async () => {
             const expression = {
-                timesCounter: {lte: {op: '+' as const, rhs: {ref: 'timesCounterRef' as const}, lhs: 1}},
+                timesCounter: {lte: {op: '%' as const, rhs: {ref: 'timesCounterRef' as const}, lhs: 17}},
             };
             const context = {
                 timesCounter: 3,
-                timesCounterRef: 4,
+                timesCounterRef: 6,
                 userId: 'a',
             };
             expect(await validate(expression, context, functionsTable)).to.be.an('undefined');

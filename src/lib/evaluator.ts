@@ -66,6 +66,8 @@ const computeValue = <C extends Context>(context: C, validation: boolean,
                 return lhs * rhs;
             case '/':
                 return lhs / rhs;
+            case '%':
+                return lhs % rhs;
             case 'pow':
                 return Math.pow(lhs, rhs);
             default:

@@ -23,7 +23,7 @@ export type PropertyRef<C extends Context, Ignore, V extends Primitive> = {
     ref: ExtractPropertyPathsOfType<PropertyPathsOfType<C, Ignore, V>>
 }
 
-export type MathOps = '+' | '-' | '*' | '/' | 'pow';
+export type MathOps = '+' | '-' | '*' | '/' | '%' | 'pow';
 
 export interface MathOp<C extends Context, Ignore> {
     op: MathOps;
