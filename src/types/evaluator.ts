@@ -5,8 +5,8 @@ import {NonNullable} from './required';
 export type FuncCompareOp<C extends Context, F extends FunctionsTable<C>, K extends keyof F> =
     Awaited<Parameters<F[K]>[0]>;
 
-export type StringPaths<O extends object, Ignore> =
-    String.Join<Paths<O, [], Ignore | any[], string>, '.'>;
+export type StringPaths<O extends object, Ignore> = any extends O ?
+    never : (any extends Ignore ? never : String.Join<Paths<O, [], Ignore | any[], string>, '.'>);
 
 export type Primitive = string | number | boolean;
 
