@@ -55,6 +55,7 @@ expectError(new ExpressionHandler<Context, ExpressionFunction>({userId: 5}, func
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({userId: 'sdf'}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction>({nested: {value: 5}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction>({'nested.value': 'sdf'}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction>({'nested.valu2e': 'sdf'}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({'nested.value': 5}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {neq: 'sdf'}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction>(
