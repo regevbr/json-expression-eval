@@ -29,8 +29,12 @@ export interface RuleDefinition<ConsequencePayload, C extends Context, F extends
   consequence: RuleConsequence<ConsequencePayload, C, Ignore>;
 }
 
+export type EngineRuleFuncRunOptions = {
+  validation: boolean;
+}
+
 export type RuleFunc<C, ConsequencePayload> = (
-  param: any, context: C) => void | ResolvedConsequence<ConsequencePayload>
+  param: any, context: C, runOptions: EngineRuleFuncRunOptions) => void | ResolvedConsequence<ConsequencePayload>
     | Promise<(void | ResolvedConsequence<ConsequencePayload>)>;
 
 export type RuleFunctionsTable<C, ConsequencePayload> = Record<string, RuleFunc<C, ConsequencePayload>>;

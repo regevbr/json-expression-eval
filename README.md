@@ -27,7 +27,7 @@ yarn add json-expression-eval
  *Please see tests and examples dir for more usages and examples (under /src)* 
 
 ```typescript
-import {evaluate, Expression, ExpressionHandler, validate, ValidationContext} from 'json-expression-eval';
+import {evaluate, Expression, ExpressionHandler, validate, ValidationContext, EvaluatorFuncRunOptions} from 'json-expression-eval';
 import {Moment} from 'moment';
 import moment = require('moment');
 
@@ -82,7 +82,7 @@ const validationContext: ValidationContext<IExampleContext, IExampleContextIgnor
 };
 
 const functionsTable: IExampleFunctionTable = {
-    countRange: async ([min, max]: [min: number, max: number], ctx: { times: number | undefined }): Promise<boolean> => {
+    countRange: async ([min, max]: [min: number, max: number], ctx: { times: number | undefined }, runOptions: EvaluatorFuncRunOptions): Promise<boolean> => {
         return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
     },
 };
@@ -140,7 +140,7 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
 - `and` - accepts a non-empty list of expressions
 - `or` - accepts a non-empty list of expressions
 - `not` - accepts another expressions
-- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions, and the given context (can be async).
+- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions, and the given context (can be async) and run options (i.e. validation).
 - `<compare funcs>` - operates on one of the context properties and compares it to a given value.
     - `{property: {op: value}}`
         - available ops:
@@ -217,7 +217,7 @@ Example expressions, assuming we have the `user` and `maxCount` user defined fun
 *Please see tests and examples dir for more usages and examples (under /src)* 
 
 ```typescript
-import {ValidationContext, validateRules, evaluateRules, RulesEngine, Rule, ResolvedConsequence} from 'json-expression-eval';
+import {ValidationContext, validateRules, evaluateRules, RulesEngine, Rule, ResolvedConsequence, EngineRuleFuncRunOptions, EvaluatorFuncRunOptions} from 'json-expression-eval';
 import {Moment} from 'moment';
 import moment = require('moment');
 
@@ -238,11 +238,11 @@ type IExampleContextIgnore = Moment;
 type IExamplePayload = number;
 
 type IExampleFunctionTable = {
-  countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }) => boolean;
+  countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }, runOptions: EvaluatorFuncRunOptions) => boolean;
 }
 
 type IExampleRuleFunctionTable = {
-  userRule: (user: string, ctx: IExampleContext) => Promise<void | ResolvedConsequence<IExamplePayload>>;
+  userRule: (user: string, ctx: IExampleContext, runOptions: EngineRuleFuncRunOptions) => Promise<void | ResolvedConsequence<IExamplePayload>>;
 }
 
 type IExampleRule = Rule<IExamplePayload, IExampleRuleFunctionTable, IExampleContext,
@@ -275,13 +275,13 @@ const validationContext: ValidationContext<IExampleContext, IExampleContextIgnor
 };
 
 const functionsTable: IExampleFunctionTable = {
-  countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }): boolean => {
+  countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }, runOptions: EvaluatorFuncRunOptions): boolean => {
     return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
   },
 };
 
 const ruleFunctionsTable: IExampleRuleFunctionTable = {
-  userRule: async (user: string, ctx: IExampleContext): Promise<void | ResolvedConsequence<number>> => {
+  userRule: async (user: string, ctx: IExampleContext, runOptions: EngineRuleFuncRunOptions): Promise<void | ResolvedConsequence<number>> => {
     if (ctx.userId === user) {
       return {
         message: `Username ${user} is not allowed`,

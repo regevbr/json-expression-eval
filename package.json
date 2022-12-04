@@ -1,6 +1,6 @@
 {
   "name": "json-expression-eval",
-  "version": "5.1.2",
+  "version": "6.0.0",
   "description": "json serializable rule engine / boolean expression evaluator",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

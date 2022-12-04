@@ -25,7 +25,7 @@ async function run<ConsequencePayload, C extends Context,
         const keys = objectKeys(rule);
         const key = keys[0];
         if (keys.length === 1 && key && isRuleFunction<ConsequencePayload, C, RF>(rule, ruleFunctionsTable, key)) {
-            const consequence = await ruleFunctionsTable[key](rule[key], context as C);
+            const consequence = await ruleFunctionsTable[key](rule[key], context as C, {validation});
             if (consequence) {
                 errors.push(consequence);
                 if (haltOnFirstMatch && !validation) {
