@@ -189,7 +189,7 @@ async function run<C extends Context, F extends FunctionsTable<C>, Ignore>
     } else if (isNotCompareOp<C, F, Ignore>(expression)) {
         return !(await run<C, F, Ignore>(expression.not, context, functionsTable, validation));
     } else if (isFunctionCompareOp<C, F, Ignore>(expression, functionsTable, expressionKey)) {
-        return validation ? true : await functionsTable[expressionKey](expression[expressionKey], context);
+        return functionsTable[expressionKey](expression[expressionKey], context, {validation});
     } else {
         const {value: contextValue, exists} = getFromPath(context, expressionKey);
         if (validation && !exists) {

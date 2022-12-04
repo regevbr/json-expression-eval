@@ -1307,7 +1307,8 @@ describe('evaluator', () => {
                 ],
             };
             await validate(expression, context, fnTable);
-            expect(fnCounter).to.eql(0);
+            expect(fnCounter).to.eql(4);
+            fnCounter = 0;
             await evaluate(expression, context, fnTable);
             expect(fnCounter).to.eql(3);
         });
@@ -1338,7 +1339,8 @@ describe('evaluator', () => {
             };
             const context = {};
             await validate<typeof context, typeof fnTable>(expression, context, fnTable);
-            expect(fnCounter).to.eql(0);
+            expect(fnCounter).to.eql(4);
+            fnCounter = 0;
             await evaluate(expression, context, fnTable);
             expect(fnCounter).to.eql(3);
         });

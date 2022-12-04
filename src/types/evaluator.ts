@@ -128,7 +128,10 @@ export type FullExpression<C extends Context, F extends FunctionsTable<C>, Ignor
 export type Expression<C extends Context, F extends FunctionsTable<C>, Ignore = never> =
     RequireOnlyOne<FullExpression<C, F, Ignore>>;
 
-export type Func<T> = (param: any, context: T) => boolean | Promise<boolean>;
+export type EvaluatorFuncRunOptions = {
+    validation: boolean;
+}
+export type Func<T> = (param: any, context: T, runOptions: EvaluatorFuncRunOptions) => boolean | Promise<boolean>;
 
 export type FunctionsTable<T> = Record<string, Func<T>>;
 
