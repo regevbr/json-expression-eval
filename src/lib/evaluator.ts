@@ -147,15 +147,15 @@ async function evaluateCompareOp<C extends Context, Ignore>(expressionValue: Ext
     }
 }
 
-async function handleAndOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions>
-(andExpression: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>[], context: C, functionsTable: F,
- validation: boolean, runOptions: CustomEngineRuleFuncRunOptions): Promise<boolean> {
+async function handleAndOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions>
+(andExpression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[], context: C, functionsTable: F,
+ validation: boolean, runOptions: CustomEvaluatorFuncRunOptions): Promise<boolean> {
     if (andExpression.length === 0) {
         throw new Error('Invalid expression - and operator must have at least one expression');
     }
     for (const currExpression of andExpression) {
-        const result = await run<C, F, Ignore, CustomEngineRuleFuncRunOptions>(currExpression,
+        const result = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(currExpression,
             context, functionsTable, validation, runOptions);
         if (!validation && !result) {
             return false;
@@ -164,16 +164,16 @@ async function handleAndOp<C extends Context, F extends FunctionsTable<C, Custom
     return true;
 }
 
-async function handleOrOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions>(
-        orExpression: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>[],
-        context: C, functionsTable: F, validation: boolean, runOptions: CustomEngineRuleFuncRunOptions)
+async function handleOrOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions>(
+        orExpression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[],
+        context: C, functionsTable: F, validation: boolean, runOptions: CustomEvaluatorFuncRunOptions)
     : Promise<boolean> {
     if (orExpression.length === 0) {
         throw new Error('Invalid expression - or operator must have at least one expression');
     }
     for (const currExpression of orExpression) {
-        const result = await run<C, F, Ignore, CustomEngineRuleFuncRunOptions>(
+        const result = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
             currExpression, context, functionsTable, validation, runOptions);
         if (!validation && result) {
             return true;
@@ -182,25 +182,25 @@ async function handleOrOp<C extends Context, F extends FunctionsTable<C, CustomE
     return false;
 }
 
-async function run<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions>(
-        expression: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>, context: C,
-        functionsTable: F, validation: boolean, runOptions: CustomEngineRuleFuncRunOptions): Promise<boolean> {
+async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions>(
+        expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C,
+        functionsTable: F, validation: boolean, runOptions: CustomEvaluatorFuncRunOptions): Promise<boolean> {
     const expressionKeys = objectKeys(expression);
     if (expressionKeys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
     }
     const expressionKey = expressionKeys[0];
-    if (isAndCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions>(expression)) {
-        return handleAndOp<C, F, Ignore, CustomEngineRuleFuncRunOptions>(expression.and,
+    if (isAndCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression)) {
+        return handleAndOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression.and,
             context, functionsTable, validation, runOptions);
-    } else if (isOrCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions>(expression)) {
-        return handleOrOp<C, F, Ignore, CustomEngineRuleFuncRunOptions>(expression.or, context,
+    } else if (isOrCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression)) {
+        return handleOrOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression.or, context,
             functionsTable, validation, runOptions);
-    } else if (isNotCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions>(expression)) {
-        return !(await run<C, F, Ignore, CustomEngineRuleFuncRunOptions>(expression.not, context,
+    } else if (isNotCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression)) {
+        return !(await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression.not, context,
             functionsTable, validation, runOptions));
-    } else if (isFunctionCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions>(expression,
+    } else if (isFunctionCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression,
         functionsTable, expressionKey)) {
         return functionsTable[expressionKey](expression[expressionKey], context, {
             custom: runOptions,
@@ -219,21 +219,21 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEngineRu
     }
 }
 
-export const evaluate = async <C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore = never, CustomEngineRuleFuncRunOptions = {}>(
-        expression: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>, context: C, functionsTable: F
-        , runOptions: CustomEngineRuleFuncRunOptions)
+export const evaluate = async <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore = never, CustomEvaluatorFuncRunOptions = {}>(
+        expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C, functionsTable: F
+        , runOptions: CustomEvaluatorFuncRunOptions)
     : Promise<boolean> => {
-    return run<C, F, Ignore, CustomEngineRuleFuncRunOptions>(expression, context,
+    return run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression, context,
         functionsTable, false, runOptions);
 };
 
 // Throws in case of validation error. Does not run functions or compare fields
-export const validate = async <C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore = never, CustomEngineRuleFuncRunOptions = {}>(
-        expression: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>,
-        validationContext: ValidationContext<C, Ignore>, functionsTable: F, runOptions: CustomEngineRuleFuncRunOptions)
+export const validate = async <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore = never, CustomEvaluatorFuncRunOptions = {}>(
+        expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+        validationContext: ValidationContext<C, Ignore>, functionsTable: F, runOptions: CustomEvaluatorFuncRunOptions)
     : Promise<void> => {
-    await run<C, F, Ignore, CustomEngineRuleFuncRunOptions>(expression,
+    await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression,
         validationContext as C, functionsTable, true, runOptions);
 };

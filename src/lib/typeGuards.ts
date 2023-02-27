@@ -21,9 +21,9 @@ export const _isObject = (obj: unknown): boolean => {
 };
 
 export const isFunctionCompareOp =
-    <C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-        Ignore, CustomEngineRuleFuncRunOptions>(expression: unknown, functionsTable: F, key: string):
-        expression is FuncCompares<C, F, CustomEngineRuleFuncRunOptions> => {
+    <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+        Ignore, CustomEvaluatorFuncRunOptions>(expression: unknown, functionsTable: F, key: string):
+        expression is FuncCompares<C, F, CustomEvaluatorFuncRunOptions> => {
         return key in functionsTable;
     }
 
@@ -37,22 +37,22 @@ export const isRuleFunction =
     }
 
 export const isAndCompareOp =
-    <C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-        Ignore, CustomEngineRuleFuncRunOptions>(expression: unknown):
-        expression is AndCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions> => {
-        return Array.isArray((expression as AndCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions>).and);
+    <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+        Ignore, CustomEvaluatorFuncRunOptions>(expression: unknown):
+        expression is AndCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions> => {
+        return Array.isArray((expression as AndCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>).and);
     }
 
-export const isOrCompareOp = <C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions>(expression: unknown):
-    expression is OrCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions> => {
-    return Array.isArray((expression as OrCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions>).or);
+export const isOrCompareOp = <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions>(expression: unknown):
+    expression is OrCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions> => {
+    return Array.isArray((expression as OrCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>).or);
 }
 
-export const isNotCompareOp = <C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions>(expression: unknown):
-    expression is NotCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions> => {
-    return _isObject((expression as NotCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions>).not);
+export const isNotCompareOp = <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions>(expression: unknown):
+    expression is NotCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions> => {
+    return _isObject((expression as NotCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>).not);
 }
 
 export const isBetweenCompareOp = (op: ExtendedCompareOp<any, any, any>)

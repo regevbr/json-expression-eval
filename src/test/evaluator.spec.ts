@@ -21,7 +21,7 @@ const functionsTable = {
 type ExpressionFunction = typeof functionsTable;
 
 type Ignore = never;
-type CustomEngineRuleFuncRunOptions = {dryRun: boolean};
+type CustomEvaluatorFuncRunOptions = {dryRun: boolean};
 
 describe('evaluator', () => {
 
@@ -53,11 +53,11 @@ describe('evaluator', () => {
                     value: 7,
                 },
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
-            const exp = new ExpressionHandler<Con, ExpressionFunction, Ignore, CustomEngineRuleFuncRunOptions>(
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            const exp = new ExpressionHandler<Con, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
                 expression, functionsTable);
             expect(await exp.validate(validationContext, runOpts)).to.be.an('undefined');
-            expect(await validate<Con, ExpressionFunction, Ignore, CustomEngineRuleFuncRunOptions>(
+            expect(await validate<Con, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
                 expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
             expect(await exp.evaluate(context, runOpts)).to.eql(true);
@@ -84,7 +84,7 @@ describe('evaluator', () => {
                     },
                 },
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -97,7 +97,7 @@ describe('evaluator', () => {
                 timesCounter: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -110,7 +110,7 @@ describe('evaluator', () => {
                 timesCounter: 7,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -123,7 +123,7 @@ describe('evaluator', () => {
                 timesCounter: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -137,7 +137,7 @@ describe('evaluator', () => {
                 timesCounterToCompare: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -151,7 +151,7 @@ describe('evaluator', () => {
                 timesCounterToCompare: 4,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -169,7 +169,7 @@ describe('evaluator', () => {
                     value: 7,
                 },
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -192,7 +192,7 @@ describe('evaluator', () => {
                     value2: 7,
                 },
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -222,7 +222,7 @@ describe('evaluator', () => {
                     },
                 },
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -258,7 +258,7 @@ describe('evaluator', () => {
                     },
                 },
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -271,7 +271,7 @@ describe('evaluator', () => {
                 timesCounter: 7,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -285,7 +285,7 @@ describe('evaluator', () => {
                 timesCounterRef: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -300,7 +300,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -314,7 +314,7 @@ describe('evaluator', () => {
                 timesCounterRef: 9,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -327,7 +327,7 @@ describe('evaluator', () => {
                 timesCounter: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -341,7 +341,7 @@ describe('evaluator', () => {
                 timesCounterRef: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -355,7 +355,7 @@ describe('evaluator', () => {
                 timesCounterRef: 6,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -371,7 +371,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -385,7 +385,7 @@ describe('evaluator', () => {
                 timesCounterRef: 4,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -399,7 +399,7 @@ describe('evaluator', () => {
                 timesCounterRef: 1,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -412,7 +412,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -426,7 +426,7 @@ describe('evaluator', () => {
                 timesCounterRef: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -439,7 +439,7 @@ describe('evaluator', () => {
                 timesCounter: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -455,7 +455,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -469,7 +469,7 @@ describe('evaluator', () => {
                 timesCounterRef: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -489,7 +489,7 @@ describe('evaluator', () => {
                 timesCounterRefDivider: 2,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -502,7 +502,7 @@ describe('evaluator', () => {
                 timesCounter: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -515,7 +515,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -530,7 +530,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -543,7 +543,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -557,7 +557,7 @@ describe('evaluator', () => {
                 timesCounterRefLeft: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -577,7 +577,7 @@ describe('evaluator', () => {
                 timesCounterRefLeft: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -591,7 +591,7 @@ describe('evaluator', () => {
                 timesCounterRefRight: 10,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -604,7 +604,7 @@ describe('evaluator', () => {
                 timesCounter: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -617,7 +617,7 @@ describe('evaluator', () => {
                 timesCounter: 10,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -630,7 +630,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -639,7 +639,7 @@ describe('evaluator', () => {
             const expression = {
                 timesCounter: {between: [] as any},
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
                 .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter.length must be 2');
@@ -651,7 +651,7 @@ describe('evaluator', () => {
             const expression = {
                 timesCounter: {between: [1] as any},
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
                 .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter.length must be 2');
@@ -663,7 +663,7 @@ describe('evaluator', () => {
             const expression = {
                 timesCounter: {between: [1, 2, 3] as any},
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
                 .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter.length must be 2');
@@ -675,7 +675,7 @@ describe('evaluator', () => {
             const expression = {
                 timesCounter: {between: ['s', 4] as any},
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
                 .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter[0] must be a number');
@@ -687,7 +687,7 @@ describe('evaluator', () => {
             const expression = {
                 timesCounter: {between: [4, 's'] as any},
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
                 .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter[1] must be a number');
@@ -699,7 +699,7 @@ describe('evaluator', () => {
             const expression = {
                 timesCounter: {between: [4, 3] as any},
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
                 .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter first value is higher than second value');
@@ -717,7 +717,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -731,7 +731,7 @@ describe('evaluator', () => {
                 timesCounterRef: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -745,7 +745,7 @@ describe('evaluator', () => {
                 timesCounterRef: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -758,7 +758,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -772,7 +772,7 @@ describe('evaluator', () => {
                 userId: 'a',
                 userIdRef: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -785,7 +785,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -798,7 +798,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -814,7 +814,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -827,7 +827,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -840,7 +840,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -854,7 +854,7 @@ describe('evaluator', () => {
                 timesCounterRef: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -868,7 +868,7 @@ describe('evaluator', () => {
                 timesCounterRef: 2,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -881,7 +881,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -897,7 +897,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'aBdC',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -910,7 +910,7 @@ describe('evaluator', () => {
                 userId: 'aBdC',
                 userIdRegex: '^a.+C$',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -922,7 +922,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'aBdc',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -934,7 +934,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -950,7 +950,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'aBdC',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -963,7 +963,7 @@ describe('evaluator', () => {
                 userId: 'aBdC',
                 userIdRegex: '^a.+C$',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -975,7 +975,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'aBdc',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -987,7 +987,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -1003,7 +1003,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -1017,7 +1017,7 @@ describe('evaluator', () => {
                 timesCounterRef: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -1031,7 +1031,7 @@ describe('evaluator', () => {
                 timesCounterRef: 4,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -1044,7 +1044,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -1057,7 +1057,7 @@ describe('evaluator', () => {
                 timesCounter: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -1072,7 +1072,7 @@ describe('evaluator', () => {
                 timesCounter: 3,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -1086,7 +1086,7 @@ describe('evaluator', () => {
                 timesCounterRef: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -1100,7 +1100,7 @@ describe('evaluator', () => {
                 timesCounterRef: 6,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -1113,7 +1113,7 @@ describe('evaluator', () => {
                 timesCounter: 5,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
@@ -1126,7 +1126,7 @@ describe('evaluator', () => {
                 timesCounter: 8,
                 userId: 'a',
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
@@ -1163,7 +1163,7 @@ describe('evaluator', () => {
             userId: 'r@a.com',
             timesCounter: 8,
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
     });
@@ -1174,7 +1174,7 @@ describe('evaluator', () => {
             userId: 'r@a.com',
             timesCounter: 8,
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
     });
@@ -1185,7 +1185,7 @@ describe('evaluator', () => {
             userId: 'r@a.com',
             timesCounter: 8,
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
     });
@@ -1196,7 +1196,7 @@ describe('evaluator', () => {
             userId: 'r@a.com',
             timesCounter: 8,
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
     });
@@ -1207,7 +1207,7 @@ describe('evaluator', () => {
             userId: 'r@a.com',
             timesCounter: 8,
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
     });
@@ -1218,7 +1218,7 @@ describe('evaluator', () => {
             userId: 'r@a.com',
             timesCounter: 8,
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
     });
@@ -1229,7 +1229,7 @@ describe('evaluator', () => {
             userId: 'r@a.com',
             timesCounter: 8,
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
     });
@@ -1237,7 +1237,7 @@ describe('evaluator', () => {
     it('should fail on empty or op', async () => {
         const expression = {or: []};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - or operator must have at least one expression');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1247,7 +1247,7 @@ describe('evaluator', () => {
     it('should fail on empty and op', async () => {
         const expression = {and: []};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - and operator must have at least one expression');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1257,7 +1257,7 @@ describe('evaluator', () => {
     it('should fail on non existing property', async () => {
         const expression: any = {and: [{dummy: 1}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key dummy');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
@@ -1266,7 +1266,7 @@ describe('evaluator', () => {
     it('should fail on non existing property ref', async () => {
         const expression: any = {and: [{userId: {eq: {ref: 'fsdf'}}}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key fsdf');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
@@ -1275,7 +1275,7 @@ describe('evaluator', () => {
     it('should fail on non existing math op', async () => {
         const expression: any = {and: [{timesCounter: {eq: {op: 'y', lhs: 1, rhs: 2}}}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter has invalid math operand y');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1285,7 +1285,7 @@ describe('evaluator', () => {
     it('should fail on non number math parameter', async () => {
         const expression: any = {and: [{timesCounter: {eq: {op: '+', lhs: 1, rhs: {ref: 'userId'}}}}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1295,7 +1295,7 @@ describe('evaluator', () => {
     it('should fail on non number math parameter 2', async () => {
         const expression: any = {and: [{timesCounter: {eq: {op: '+', rhs: 1, lhs: {ref: 'userId'}}}}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1305,7 +1305,7 @@ describe('evaluator', () => {
     it('should fail on non existing nested property', async () => {
         const expression: any = {and: [{'dummy.value': 1}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key dummy');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
@@ -1314,7 +1314,7 @@ describe('evaluator', () => {
     it('should fail on non existing nested property 2', async () => {
         const expression: any = {and: [{'dummy.value': 1}]};
         const context = {userId: 'r@a.com', timesCounter: 8, dummy: {value2: 5}};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key dummy');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
@@ -1323,7 +1323,7 @@ describe('evaluator', () => {
     it('should fail on non existing property 2', async () => {
         const expression: any = {dummy: 1};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key dummy');
         expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
@@ -1332,7 +1332,7 @@ describe('evaluator', () => {
     it('should fail on non existing op', async () => {
         const expression: any = {userId: {bk: 1}};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - unknown op bk');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1342,7 +1342,7 @@ describe('evaluator', () => {
     it('should fail on non number op', async () => {
         const expression: any = {timesCounter: {gt: 'sdf'}};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1352,7 +1352,7 @@ describe('evaluator', () => {
     it('should fail on non number op ref', async () => {
         const expression: any = {timesCounter: {gt: {ref: 'userId'}}};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1362,7 +1362,7 @@ describe('evaluator', () => {
     it('should fail on non string op', async () => {
         const expression: any = {userId: {regexp: 5}};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - userId must be a string');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1372,7 +1372,7 @@ describe('evaluator', () => {
     it('should fail on non string context', async () => {
         const expression: any = {timesCounter: {regexp: 's'}};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid context - timesCounter must be a string');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1382,7 +1382,7 @@ describe('evaluator', () => {
     it('should fail on non number context', async () => {
         const expression: any = {userId: {gte: 5}};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid context - userId must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1392,7 +1392,7 @@ describe('evaluator', () => {
     it('should fail too many keys to op', async () => {
         const expression: any = {userId: {eq: 1, nq: 2}};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1402,7 +1402,7 @@ describe('evaluator', () => {
     it('should fail too many keys', async () => {
         const expression: any = {timesCounter: 1, userId: 'a'};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1412,7 +1412,7 @@ describe('evaluator', () => {
     it('should fail too many keys 2', async () => {
         const expression: any = {or: [{userId: 1, timesCounter: 'a'}]};
         const context = {userId: 'r@a.com', timesCounter: 8};
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
             .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
         await expect(evaluate(expression, context, functionsTable, runOpts))
@@ -1444,7 +1444,7 @@ describe('evaluator', () => {
                     },
                 ],
             };
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             await validate(expression, context, fnTable, runOpts);
             expect(fnCounter).to.eql(4);
             fnCounter = 0;
@@ -1477,8 +1477,8 @@ describe('evaluator', () => {
                 ],
             };
             const context = {};
-            const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
-            await validate<typeof context, typeof fnTable, Ignore, CustomEngineRuleFuncRunOptions>(
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            await validate<typeof context, typeof fnTable, Ignore, CustomEvaluatorFuncRunOptions>(
                 expression, context, fnTable, runOpts);
             expect(fnCounter).to.eql(4);
             fnCounter = 0;

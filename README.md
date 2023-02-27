@@ -27,7 +27,7 @@ yarn add json-expression-eval
  *Please see tests and examples dir for more usages and examples (under /src)* 
 
 ```typescript
-import {evaluate, Expression, ExpressionHandler, validate, ValidationContext, EvaluatorFuncRunOptions, EngineRuleFuncRunOptions} from 'json-expression-eval';
+import {evaluate, Expression, ExpressionHandler, validate, ValidationContext, EvaluatorFuncRunOptions, EvaluatorFuncRunOptions} from 'json-expression-eval';
 import {Moment} from 'moment';
 import moment = require('moment');
 
@@ -47,14 +47,14 @@ interface IExampleContext {
 
 type IExampleContextIgnore = Moment;
 
-type IExampleCustomEngineRuleFuncRunOptions = {dryRun: boolean};
+type IExampleCustomEvaluatorFuncRunOptions = {dryRun: boolean};
 
 type IExampleFunctionTable = {
     countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
-                 runOpts: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>) => Promise<boolean>;
+                 runOpts: EvaluatorFuncRunOptions<IExampleCustomEvaluatorFuncRunOptions>) => Promise<boolean>;
 }
 
-type IExampleExpression = Expression<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>; // We pass Moment here to avoid TS exhaustion
+type IExampleExpression = Expression<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>; // We pass Moment here to avoid TS exhaustion
 
 const context: IExampleContext = {
     userId: 'a@b.com',
@@ -86,7 +86,7 @@ const validationContext: ValidationContext<IExampleContext, IExampleContextIgnor
 
 const functionsTable: IExampleFunctionTable = {
     countRange: async ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
-                       runOpts: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>): Promise<boolean> => {
+                       runOpts: EvaluatorFuncRunOptions<IExampleCustomEvaluatorFuncRunOptions>): Promise<boolean> => {
         return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
     },
 };
@@ -131,14 +131,14 @@ const expression: IExampleExpression = {
     // Example usage 1
     const handler =
         new ExpressionHandler<IExampleContext, IExampleFunctionTable, IExampleContextIgnore,
-            IExampleCustomEngineRuleFuncRunOptions>(expression, functionsTable);
+            IExampleCustomEvaluatorFuncRunOptions>(expression, functionsTable);
     await handler.validate(validationContext, {dryRun: false}); // Should not throw
     console.log(await handler.evaluate(context, {dryRun: true})); // true
 
     // Example usage 2
     await validate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore,
-        IExampleCustomEngineRuleFuncRunOptions>(expression, validationContext, functionsTable, {dryRun: true}); // Should not throw
-    console.log(await evaluate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>(expression, context, functionsTable, {dryRun: true})); // true
+        IExampleCustomEvaluatorFuncRunOptions>(expression, validationContext, functionsTable, {dryRun: true}); // Should not throw
+    console.log(await evaluate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>(expression, context, functionsTable, {dryRun: true})); // true
 })()
 ```
 
@@ -225,7 +225,7 @@ Example expressions, assuming we have the `user` and `maxCount` user defined fun
 *Please see tests and examples dir for more usages and examples (under /src)* 
 
 ```typescript
-import {ValidationContext, validateRules, evaluateRules, RulesEngine, Rule, ResolvedConsequence, EngineRuleFuncRunOptions, EvaluatorFuncRunOptions} from 'json-expression-eval';
+import {ValidationContext, validateRules, evaluateRules, RulesEngine, Rule, ResolvedConsequence, EngineRuleFuncRunOptions} from 'json-expression-eval';
 import {Moment} from 'moment';
 import moment = require('moment');
 

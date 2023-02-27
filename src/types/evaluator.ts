@@ -2,8 +2,8 @@ import {Object, String, Union} from 'ts-toolbelt';
 import {Paths} from './paths';
 import {NonNullable} from './required';
 
-export type FuncCompareOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    K extends keyof F, CustomEngineRuleFuncRunOptions> =
+export type FuncCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    K extends keyof F, CustomEvaluatorFuncRunOptions> =
     Awaited<Parameters<F[K]>[0]>;
 
 export type StringPaths<O extends object, Ignore> = any extends O ?
@@ -79,9 +79,9 @@ export interface RegexiCompareOp<C extends Context, Ignore> {
     regexpi: string | PropertyRef<C, Ignore, string>;
 }
 
-export type FuncCompares<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    CustomEngineRuleFuncRunOptions> = {
-    [K in keyof F]: FuncCompareOp<C, F, K, CustomEngineRuleFuncRunOptions>;
+export type FuncCompares<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    CustomEvaluatorFuncRunOptions> = {
+    [K in keyof F]: FuncCompareOp<C, F, K, CustomEvaluatorFuncRunOptions>;
 }
 
 export type NumberCompareOps<C extends Context, Ignore, V extends Primitive> =
@@ -106,44 +106,44 @@ export type PropertyCompareOps<C extends Context, Ignore> = {
         : never;
 };
 
-export interface AndCompareOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions> {
-    and: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>[];
+export interface AndCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> {
+    and: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[];
 }
 
-export interface OrCompareOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions> {
-    or: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>[];
+export interface OrCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> {
+    or: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[];
 }
 
-export interface NotCompareOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions> {
-    not: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>;
+export interface NotCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> {
+    not: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
 }
 
 export type RequireOnlyOne<T extends object> = Object.Either<T, keyof T>;
 
-export type FullExpression<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions> =
-    NotCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions> &
-    OrCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions> &
-    AndCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions> &
-    FuncCompares<C, F, CustomEngineRuleFuncRunOptions> &
+export type FullExpression<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> =
+    NotCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions> &
+    OrCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions> &
+    AndCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions> &
+    FuncCompares<C, F, CustomEvaluatorFuncRunOptions> &
     PropertyCompareOps<C, Ignore>;
 
-export type Expression<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions> =
-    RequireOnlyOne<FullExpression<C, F, Ignore, CustomEngineRuleFuncRunOptions>>;
+export type Expression<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> =
+    RequireOnlyOne<FullExpression<C, F, Ignore, CustomEvaluatorFuncRunOptions>>;
 
-export type EvaluatorFuncRunOptions<CustomEngineRuleFuncRunOptions> = {
-    custom: CustomEngineRuleFuncRunOptions;
+export type EvaluatorFuncRunOptions<CustomEvaluatorFuncRunOptions> = {
+    custom: CustomEvaluatorFuncRunOptions;
     validation: boolean;
 }
-export type Func<T, CustomEngineRuleFuncRunOptions> = (
-    param: any, context: T, runOptions: EvaluatorFuncRunOptions<CustomEngineRuleFuncRunOptions>) =>
+export type Func<T, CustomEvaluatorFuncRunOptions> = (
+    param: any, context: T, runOptions: EvaluatorFuncRunOptions<CustomEvaluatorFuncRunOptions>) =>
     boolean | Promise<boolean>;
 
-export type FunctionsTable<T, CustomEngineRuleFuncRunOptions> = Record<string, Func<T, CustomEngineRuleFuncRunOptions>>;
+export type FunctionsTable<T, CustomEvaluatorFuncRunOptions> = Record<string, Func<T, CustomEvaluatorFuncRunOptions>>;
 
 export type Context = Record<string, any>;
 

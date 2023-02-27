@@ -29,27 +29,27 @@ type BadValidationContext = {
 }
 
 type Ignore = never;
-type CustomEngineRuleFuncRunOptions = {dryRun: boolean};
+type CustomEvaluatorFuncRunOptions = {dryRun: boolean};
 
-type TestExpressionEval = ExpressionHandler<Context, ExpressionFunction, Ignore, CustomEngineRuleFuncRunOptions>;
+type TestExpressionEval = ExpressionHandler<Context, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>;
 
 declare const functions: ExpressionFunction;
 declare const erroredFunctions: ErroredExpressionFunction;
 declare const validationContext: BadValidationContext;
 declare const expressionEval: TestExpressionEval;
-declare const runOpts: CustomEngineRuleFuncRunOptions;
+declare const runOpts: CustomEvaluatorFuncRunOptions;
 
 expectError(expressionEval.validate(validationContext, runOpts));
 
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({userId: 5}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: 5}, functions));
 const a = {userId: 'f', timesCounter: 5};
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(a, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>(a, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({
+    Ignore, CustomEvaluatorFuncRunOptions>({
     and: [{
         timesCounter: {
             ne: 'sdf',
@@ -57,134 +57,134 @@ expectError(new ExpressionHandler<Context, ExpressionFunction,
     }],
 }, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({and: [], or: []}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({and: [], or: []}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({and: [], not: []}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({and: [], not: []}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({or: [], not: []}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({or: [], not: []}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({or: [], userId: 'dfg'}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({or: [], userId: 'dfg'}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({user: {eq: 'sdf'}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({user: {eq: 'sdf'}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({userId: {eq: 5}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {eq: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({userId: {eq: 'sdf'}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {eq: 'sdf'}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({userId: {neq: 'sdf'}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {neq: 'sdf'}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({user: 5}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({user: 5}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({user: 'sdf'}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({user: 'sdf'}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({userId: 5}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: 5}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({userId: 'sdf'}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: 'sdf'}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({nested: {value: 5}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({nested: {value: 5}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({'nested.value': 'sdf'}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({'nested.value': 'sdf'}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({'nested.valu2e': 'sdf'}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({'nested.valu2e': 'sdf'}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({'nested.value': 5}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({'nested.value': 5}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {neq: 'sdf'}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {neq: 'sdf'}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {timesCounter: {neq: {ref:'nested.value333'}}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction, Ignore, CustomEngineRuleFuncRunOptions>(
+expectError(new ExpressionHandler<Context, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
     {timesCounter: {neq: {op: '+', lhs:5, rhs: {ref:'nested.value333'}}}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {inq: [{op: '+', lhs:5, rhs: 4}]}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {nin: [{op: '+', lhs:5, rhs: 4}]}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {eq: {op: '+', lhs:5, rhs: 4}}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {neq: {op: '+', lhs:5, rhs: 4}}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {regexp: {op: '+', lhs:5, rhs: 4}}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {regexpi: {op: '+', lhs:5, rhs: 4}}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {timesCounter: {neq: {op: 'dummy', lhs:5, rhs: 6}}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {neq: {ref:'nested.value'}}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {neq: {ref:'nested.value'}}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>(
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {timesCounter: {neq: {op: '+', lhs: {ref:'nested.value'}, rhs: 5}}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {neq: 5}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {neq: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {eq: 5}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {eq: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {gt: 5}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {gt: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {gte: 5}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {gte: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {lt: 5}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {lt: 5}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {lte: 5}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {lte: 5}}, functions));
 
 // inq
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({timesCounter: {inq: [4, 5, 6]}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({userId: {inq: ['a', 'b', 'c']}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {inq: ['s']}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {inq: ['s']}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({userId: {inq: [5]}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {inq: [5]}}, functions));
 
 // nin
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({timesCounter: {nin: [4, 5, 6]}}, functions));
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({userId: {nin: ['a', 'b', 'c']}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {nin: ['s']}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {nin: ['s']}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({userId: {nin: [5]}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {nin: [5]}}, functions));
 
 // regexp
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({userId: {regexp: 'sdf'}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {regexp: 'sdf'}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {regexp: 'sdf'}}, functions));
 
 // regexpi
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({userId: {regexpi: 'sdf'}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {regexpi: 'sdf'}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {regexpi: 'sdf'}}, functions));
 
 // between
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({timesCounter: {between: [4, 5]}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {between: [4]}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: [4]}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {between: [4, 5, 6]}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: [4, 5, 6]}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {userId: [4, 5]}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {userId: [4, 5]}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {between: []}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: []}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {between: ['s']}}, functions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: ['s']}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
-    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {between: [4, 5]}}, erroredFunctions));
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: [4, 5]}}, erroredFunctions));

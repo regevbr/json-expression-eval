@@ -2,7 +2,7 @@ import {ExpressionContext, ExpressionFunction, getEvaluator} from './lib/evaluat
 import {Expression, ExpressionParts} from '../..';
 import {Moment} from 'moment';
 import moment = require('moment');
-import {CustomEngineRuleFuncRunOptions} from './lib/evaluator';
+import {CustomEvaluatorFuncRunOptions} from './lib/evaluator';
 
 const context: ExpressionContext = {
     userId: 'a@b.com',
@@ -16,14 +16,14 @@ const context: ExpressionContext = {
     },
 };
 
-const run = async (expr: Expression<ExpressionContext, ExpressionFunction, Moment, CustomEngineRuleFuncRunOptions>,
+const run = async (expr: Expression<ExpressionContext, ExpressionFunction, Moment, CustomEvaluatorFuncRunOptions>,
                    ctx: ExpressionContext) => {
     const result = await getEvaluator(expression).evaluate(ctx, {dryRun: true});
     console.log(`Evaluating expression ${JSON.stringify(expr)} using context ${JSON.stringify(ctx)}`);
     console.log(`Result: ${result}`);
 };
 
-let expression: Expression<ExpressionContext, ExpressionFunction, Moment, CustomEngineRuleFuncRunOptions> = {
+let expression: Expression<ExpressionContext, ExpressionFunction, Moment, CustomEvaluatorFuncRunOptions> = {
     user: 'a@b.com',
 };
 
@@ -124,7 +124,7 @@ expression = {
 run(expression, context);
 
 const expressionParts: ExpressionParts<ExpressionContext, ExpressionFunction, { description: string },
-    Moment, CustomEngineRuleFuncRunOptions> = {
+    Moment, CustomEvaluatorFuncRunOptions> = {
     'nested.value': {
         isArray: false,
         isFunction: false,
