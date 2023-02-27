@@ -30,7 +30,7 @@ export interface RuleDefinition<ConsequencePayload, C extends Context,
   consequence: RuleConsequence<ConsequencePayload, C, Ignore>;
 }
 
-export type EngineRuleFuncRunOptions<CustomEngineRuleFuncRunOptions> = {
+export type EngineRuleFuncRunOptions<CustomEngineRuleFuncRunOptions = undefined> = {
   custom: CustomEngineRuleFuncRunOptions;
   validation: boolean;
 }
@@ -54,6 +54,6 @@ export type RuleFunctionsParams<ConsequencePayload, C extends Context,
 
 export type Rule<ConsequencePayload, RF extends RuleFunctionsTable<C, ConsequencePayload,
     CustomEngineRuleFuncRunOptions>, C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore, CustomEngineRuleFuncRunOptions> =
+    Ignore = never, CustomEngineRuleFuncRunOptions = undefined> =
     RuleDefinition<ConsequencePayload, C, F, Ignore, CustomEngineRuleFuncRunOptions> |
     RequireOnlyOne<RuleFunctionsParams<ConsequencePayload, C, RF, CustomEngineRuleFuncRunOptions>>;

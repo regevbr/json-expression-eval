@@ -220,7 +220,7 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
 }
 
 export const evaluate = async <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore = never, CustomEvaluatorFuncRunOptions = {}>(
+    Ignore = never, CustomEvaluatorFuncRunOptions = undefined>(
         expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C, functionsTable: F
         , runOptions: CustomEvaluatorFuncRunOptions)
     : Promise<boolean> => {
@@ -230,7 +230,7 @@ export const evaluate = async <C extends Context, F extends FunctionsTable<C, Cu
 
 // Throws in case of validation error. Does not run functions or compare fields
 export const validate = async <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore = never, CustomEvaluatorFuncRunOptions = {}>(
+    Ignore = never, CustomEvaluatorFuncRunOptions = undefined>(
         expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
         validationContext: ValidationContext<C, Ignore>, functionsTable: F, runOptions: CustomEvaluatorFuncRunOptions)
     : Promise<void> => {

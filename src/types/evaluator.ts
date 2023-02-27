@@ -135,7 +135,7 @@ export type Expression<C extends Context, F extends FunctionsTable<C, CustomEval
     Ignore, CustomEvaluatorFuncRunOptions> =
     RequireOnlyOne<FullExpression<C, F, Ignore, CustomEvaluatorFuncRunOptions>>;
 
-export type EvaluatorFuncRunOptions<CustomEvaluatorFuncRunOptions> = {
+export type EvaluatorFuncRunOptions<CustomEvaluatorFuncRunOptions = undefined> = {
     custom: CustomEvaluatorFuncRunOptions;
     validation: boolean;
 }
