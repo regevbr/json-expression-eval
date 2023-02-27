@@ -2,11 +2,13 @@ import {ResolvedConsequence, Rule} from '../../index';
 import {expectType} from 'tsd';
 
 type ExpressionFunction1 = {
-    user: (user: string, context: { userId: string }) => boolean;
+    user: (user: string, context: { userId: string },
+           runOpts: {validation: boolean, custom: {dryRun: boolean}}) => boolean;
 }
 
 type ExpressionFunction2 = {
-    user: (user: string, context: { userId: string }) => boolean;
+    user: (user: string, context: { userId: string },
+           runOpts: {validation: boolean, custom: {dryRun: boolean}}) => boolean;
 }
 
 type Context1 = {
@@ -43,8 +45,8 @@ type RuleFunctionsTable2 = {
     rule1: () => void | ResolvedConsequence<ConsequencePayload2>
 }
 
-type Rule1 = Rule<ConsequencePayload1, RuleFunctionsTable1, Context1, ExpressionFunction1, Date>;
-type Rule2 = Rule<ConsequencePayload2, RuleFunctionsTable2, Context2, ExpressionFunction2, Date>;
+type Rule1 = Rule<ConsequencePayload1, RuleFunctionsTable1, Context1, ExpressionFunction1, Date, {dryRun: true}>;
+type Rule2 = Rule<ConsequencePayload2, RuleFunctionsTable2, Context2, ExpressionFunction2, Date, {dryRun: true}>;
 
 declare const rule1: Rule1;
 declare const rule2: Rule2;

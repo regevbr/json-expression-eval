@@ -6,17 +6,22 @@ import {
     ValidationContext
 } from '../types';
 
-export class ExpressionHandler<C extends Context, F extends FunctionsTable<C>, Ignore = never> {
+export class ExpressionHandler<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore = never, CustomEvaluatorFuncRunOptions = {}> {
 
-    constructor(private readonly expression: Expression<C, F, Ignore>, private readonly functionsTable: F) {
+    constructor(private readonly expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+                private readonly functionsTable: F) {
     }
 
-    public async evaluate(context: C): Promise<boolean> {
-        return evaluate<C, F, Ignore>(this.expression, context, this.functionsTable);
+    public async evaluate(context: C, runOptions: CustomEvaluatorFuncRunOptions): Promise<boolean> {
+        return evaluate<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+            this.expression, context, this.functionsTable, runOptions);
     }
 
-    public async validate(validationContext: ValidationContext<C, Ignore>): Promise<void> {
-        await validate<C, F, Ignore>(this.expression, validationContext, this.functionsTable);
+    public async validate(validationContext: ValidationContext<C, Ignore>, runOptions: CustomEvaluatorFuncRunOptions)
+        : Promise<void> {
+        await validate<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+            this.expression, validationContext, this.functionsTable, runOptions);
     }
 
 }

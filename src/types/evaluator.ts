@@ -2,7 +2,8 @@ import {Object, String, Union} from 'ts-toolbelt';
 import {Paths} from './paths';
 import {NonNullable} from './required';
 
-export type FuncCompareOp<C extends Context, F extends FunctionsTable<C>, K extends keyof F> =
+export type FuncCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    K extends keyof F, CustomEvaluatorFuncRunOptions> =
     Awaited<Parameters<F[K]>[0]>;
 
 export type StringPaths<O extends object, Ignore> = any extends O ?
@@ -78,8 +79,9 @@ export interface RegexiCompareOp<C extends Context, Ignore> {
     regexpi: string | PropertyRef<C, Ignore, string>;
 }
 
-export type FuncCompares<C extends Context, F extends FunctionsTable<C>> = {
-    [K in keyof F]: FuncCompareOp<C, F, K>;
+export type FuncCompares<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    CustomEvaluatorFuncRunOptions> = {
+    [K in keyof F]: FuncCompareOp<C, F, K, CustomEvaluatorFuncRunOptions>;
 }
 
 export type NumberCompareOps<C extends Context, Ignore, V extends Primitive> =
@@ -104,36 +106,44 @@ export type PropertyCompareOps<C extends Context, Ignore> = {
         : never;
 };
 
-export interface AndCompareOp<C extends Context, F extends FunctionsTable<C>, Ignore> {
-    and: Expression<C, F, Ignore>[];
+export interface AndCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> {
+    and: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[];
 }
 
-export interface OrCompareOp<C extends Context, F extends FunctionsTable<C>, Ignore> {
-    or: Expression<C, F, Ignore>[];
+export interface OrCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> {
+    or: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[];
 }
 
-export interface NotCompareOp<C extends Context, F extends FunctionsTable<C>, Ignore> {
-    not: Expression<C, F, Ignore>;
+export interface NotCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> {
+    not: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
 }
 
 export type RequireOnlyOne<T extends object> = Object.Either<T, keyof T>;
 
-export type FullExpression<C extends Context, F extends FunctionsTable<C>, Ignore> =
-    NotCompareOp<C, F, Ignore> &
-    OrCompareOp<C, F, Ignore> &
-    AndCompareOp<C, F, Ignore> &
-    FuncCompares<C, F> &
+export type FullExpression<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> =
+    NotCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions> &
+    OrCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions> &
+    AndCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions> &
+    FuncCompares<C, F, CustomEvaluatorFuncRunOptions> &
     PropertyCompareOps<C, Ignore>;
 
-export type Expression<C extends Context, F extends FunctionsTable<C>, Ignore = never> =
-    RequireOnlyOne<FullExpression<C, F, Ignore>>;
+export type Expression<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> =
+    RequireOnlyOne<FullExpression<C, F, Ignore, CustomEvaluatorFuncRunOptions>>;
 
-export type EvaluatorFuncRunOptions = {
+export type EvaluatorFuncRunOptions<CustomEvaluatorFuncRunOptions> = {
+    custom: CustomEvaluatorFuncRunOptions;
     validation: boolean;
 }
-export type Func<T> = (param: any, context: T, runOptions: EvaluatorFuncRunOptions) => boolean | Promise<boolean>;
+export type Func<T, CustomEvaluatorFuncRunOptions> = (
+    param: any, context: T, runOptions: EvaluatorFuncRunOptions<CustomEvaluatorFuncRunOptions>) =>
+    boolean | Promise<boolean>;
 
-export type FunctionsTable<T> = Record<string, Func<T>>;
+export type FunctionsTable<T, CustomEvaluatorFuncRunOptions> = Record<string, Func<T, CustomEvaluatorFuncRunOptions>>;
 
 export type Context = Record<string, any>;
 

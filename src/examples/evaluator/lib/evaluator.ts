@@ -16,6 +16,10 @@ export interface ExpressionContext {
 
 export type ExpressionFunction = typeof functionsTable;
 
-export const getEvaluator = (expression: Expression<ExpressionContext, ExpressionFunction, Moment>) =>
-    new ExpressionHandler<ExpressionContext, ExpressionFunction, Moment>(expression, functionsTable);
+export type CustomEvaluatorFuncRunOptions = {dryRun: boolean};
+
+export const getEvaluator = (expression: Expression<ExpressionContext, ExpressionFunction,
+    Moment, CustomEvaluatorFuncRunOptions>) =>
+    new ExpressionHandler<ExpressionContext, ExpressionFunction, Moment, CustomEvaluatorFuncRunOptions>
+    (expression, functionsTable);
 

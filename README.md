@@ -47,11 +47,14 @@ interface IExampleContext {
 
 type IExampleContextIgnore = Moment;
 
+type IExampleCustomEvaluatorFuncRunOptions = {dryRun: boolean};
+
 type IExampleFunctionTable = {
-    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }) => boolean;
+    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
+                 runOpts: EvaluatorFuncRunOptions<IExampleCustomEvaluatorFuncRunOptions>) => Promise<boolean>;
 }
 
-type IExampleExpression = Expression<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>; // We pass Moment here to avoid TS exhaustion
+type IExampleExpression = Expression<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>; // We pass Moment here to avoid TS exhaustion
 
 const context: IExampleContext = {
     userId: 'a@b.com',
@@ -82,7 +85,8 @@ const validationContext: ValidationContext<IExampleContext, IExampleContextIgnor
 };
 
 const functionsTable: IExampleFunctionTable = {
-    countRange: async ([min, max]: [min: number, max: number], ctx: { times: number | undefined }, runOptions: EvaluatorFuncRunOptions): Promise<boolean> => {
+    countRange: async ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
+                       runOpts: EvaluatorFuncRunOptions<IExampleCustomEvaluatorFuncRunOptions>): Promise<boolean> => {
         return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
     },
 };
@@ -97,7 +101,7 @@ const expression: IExampleExpression = {
                 lte: {
                     op: '+',
                     lhs: {
-                        ref: 'nested.value4'
+                        ref: 'nested.value4',
                     },
                     rhs: 2,
                 },
@@ -114,8 +118,8 @@ const expression: IExampleExpression = {
                 {
                     times: {
                         lte: {
-                            ref: 'nested.value4'
-                        }
+                            ref: 'nested.value4',
+                        },
                     },
                 },
             ],
@@ -123,15 +127,19 @@ const expression: IExampleExpression = {
     ],
 };
 
-// Example usage 1
-const handler =
-    new ExpressionHandler<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, functionsTable);
-await handler.validate(validationContext); // Should not throw
-console.log(await handler.evaluate(context)); // true
+(async () => {
+    // Example usage 1
+    const handler =
+        new ExpressionHandler<IExampleContext, IExampleFunctionTable, IExampleContextIgnore,
+            IExampleCustomEvaluatorFuncRunOptions>(expression, functionsTable);
+    await handler.validate(validationContext, {dryRun: false}); // Should not throw
+    console.log(await handler.evaluate(context, {dryRun: true})); // true
 
-// Example usage 2
-await validate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, validationContext, functionsTable); // Should not throw
-console.log(await evaluate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore>(expression, context, functionsTable)); // true
+    // Example usage 2
+    await validate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore,
+        IExampleCustomEvaluatorFuncRunOptions>(expression, validationContext, functionsTable, {dryRun: true}); // Should not throw
+    console.log(await evaluate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>(expression, context, functionsTable, {dryRun: true})); // true
+})()
 ```
 
 ### Expression
@@ -140,7 +148,7 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
 - `and` - accepts a non-empty list of expressions
 - `or` - accepts a non-empty list of expressions
 - `not` - accepts another expressions
-- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions, and the given context (can be async) and run options (i.e. validation).
+- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions, and the given context (can be async) and run options (i.e. validation + custom defined value).
 - `<compare funcs>` - operates on one of the context properties and compares it to a given value.
     - `{property: {op: value}}`
         - available ops:
@@ -217,120 +225,133 @@ Example expressions, assuming we have the `user` and `maxCount` user defined fun
 *Please see tests and examples dir for more usages and examples (under /src)* 
 
 ```typescript
-import {ValidationContext, validateRules, evaluateRules, RulesEngine, Rule, ResolvedConsequence, EngineRuleFuncRunOptions, EvaluatorFuncRunOptions} from 'json-expression-eval';
+import {ValidationContext, validateRules, evaluateRules, RulesEngine, Rule, ResolvedConsequence, EngineRuleFuncRunOptions} from 'json-expression-eval';
 import {Moment} from 'moment';
 import moment = require('moment');
 
 interface IExampleContext {
-  userId: string;
-  times: number | undefined;
-  date: Moment;
-  nested: {
-    value: number | null;
-    nested2: {
-      value2?: number;
-      value3: boolean;
+    userId: string;
+    times: number | undefined;
+    date: Moment;
+    nested: {
+        value: number | null;
+        nested2: {
+            value2?: number;
+            value3: boolean;
+        };
     };
-  };
 }
 
 type IExampleContextIgnore = Moment;
+
+type IExampleCustomEngineRuleFuncRunOptions = {dryRun: boolean};
+
 type IExamplePayload = number;
 
 type IExampleFunctionTable = {
-  countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }, runOptions: EvaluatorFuncRunOptions) => boolean;
+    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
+                 runOpts: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>) => boolean;
 }
 
 type IExampleRuleFunctionTable = {
-  userRule: (user: string, ctx: IExampleContext, runOptions: EngineRuleFuncRunOptions) => Promise<void | ResolvedConsequence<IExamplePayload>>;
+    userRule: (user: string, ctx: IExampleContext,
+               runOpts: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>) =>
+        Promise<void | ResolvedConsequence<IExamplePayload>>;
 }
 
 type IExampleRule = Rule<IExamplePayload, IExampleRuleFunctionTable, IExampleContext,
-  IExampleFunctionTable, IExampleContextIgnore>;
+    IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>;
 
 const context: IExampleContext = {
-  userId: 'a@b.com',
-  times: 3,
-  date: moment(),
-  nested: {
-    value: null,
-    nested2: {
-      value3: true,
+    userId: 'a@b.com',
+    times: 3,
+    date: moment(),
+    nested: {
+        value: null,
+        nested2: {
+            value3: true,
+        },
     },
-  },
 };
 
 // For validation we must provide a full example context
 const validationContext: ValidationContext<IExampleContext, IExampleContextIgnore> = {
-  userId: 'a@b.com',
-  times: 3,
-  date: moment(),
-  nested: {
-    value: 5,
-    nested2: {
-      value2: 6,
-      value3: true,
+    userId: 'a@b.com',
+    times: 3,
+    date: moment(),
+    nested: {
+        value: 5,
+        nested2: {
+            value2: 6,
+            value3: true,
+        },
     },
-  },
 };
 
 const functionsTable: IExampleFunctionTable = {
-  countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined }, runOptions: EvaluatorFuncRunOptions): boolean => {
-    return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
-  },
+    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
+                 runOptions: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>): boolean => {
+        return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
+    },
 };
 
 const ruleFunctionsTable: IExampleRuleFunctionTable = {
-  userRule: async (user: string, ctx: IExampleContext, runOptions: EngineRuleFuncRunOptions): Promise<void | ResolvedConsequence<number>> => {
-    if (ctx.userId === user) {
-      return {
-        message: `Username ${user} is not allowed`,
-        custom: 543,
-      }
-    }
-  },
+    userRule: async (user: string, ctx: IExampleContext,
+                     runOptions: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>)
+        : Promise<void | ResolvedConsequence<number>> => {
+        if (ctx.userId === user) {
+            return {
+                message: `Username ${user} is not allowed`,
+                custom: 543,
+            }
+        }
+    },
 };
 
 const rules: IExampleRule[] = [
-  {
-    condition: {
-      or: [
-        {
-          userId: 'a@b.com',
+    {
+        condition: {
+            or: [
+                {
+                    userId: 'a@b.com',
+                },
+                {
+                    and: [
+                        {
+                            countRange: [2, 6],
+                        },
+                        {
+                            'nested.nested2.value3': true,
+                        },
+                    ],
+                },
+            ],
         },
-        {
-          and: [
-            {
-              countRange: [2, 6],
-            },
-            {
-              'nested.nested2.value3': true,
-            },
-          ],
+        consequence: {
+            message: ['user', {
+                ref: 'userId',
+            }, 'should not equal a@b.com'],
+            custom: 579,
         },
-      ],
     },
-    consequence: {
-      message: ['user', {
-        ref: 'userId',
-      }, 'should not equal a@b.com'],
-      custom: 579,
+    {
+        userRule: 'b@c.com',
     },
-  },
-  {
-    userRule: 'b@c.com',
-  },
 ];
 
-// Example usage 1
-const engine = new RulesEngine<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
-  IExampleFunctionTable, IExampleContextIgnore>(functionsTable, ruleFunctionsTable);
-await engine.validate(rules, validationContext); // Should not throw
-console.log(JSON.stringify(await engine.evaluateAll(rules, context))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
+(async () => {
+    // Example usage 1
+    const engine = new RulesEngine<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
+        IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>(
+        functionsTable, ruleFunctionsTable);
+    await engine.validate(rules, validationContext, {dryRun: false}); // Should not throw
+    console.log(JSON.stringify(await engine.evaluateAll(rules, context, {dryRun: false}))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
 
-// Example usage 2
-await validateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
-  IExampleFunctionTable, IExampleContextIgnore>(rules, validationContext, functionsTable, ruleFunctionsTable); // Should not throw
-console.log(JSON.stringify(await evaluateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
-  IExampleFunctionTable, IExampleContextIgnore>(rules, context, functionsTable, ruleFunctionsTable, false))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
+    // Example usage 2
+    await validateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
+        IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>(
+        rules, validationContext, functionsTable, ruleFunctionsTable, {dryRun: false}); // Should not throw
+    console.log(JSON.stringify(await evaluateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
+        IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>(rules, context, functionsTable, ruleFunctionsTable, false, {dryRun: false}))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
+})();
 ```

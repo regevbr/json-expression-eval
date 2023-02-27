@@ -2,7 +2,13 @@ import {ExpressionHandler} from '../../index';
 import {expectError, expectType} from 'tsd';
 
 type ExpressionFunction = {
-    user: (user: string, context: { userId: string }) => boolean;
+    user: (user: string, context: { userId: string },
+           runOpts: {validation: boolean, custom: {dryRun: boolean}}) => boolean;
+}
+
+type ErroredExpressionFunction = {
+    user: (user: string, context: { userId: string },
+           runOpts: {validation: boolean, custom: {dummy: boolean}}) => boolean;
 }
 
 type Context = {
@@ -22,101 +28,163 @@ type BadValidationContext = {
     };
 }
 
-type TestExpressionEval = ExpressionHandler<Context, ExpressionFunction>;
+type Ignore = never;
+type CustomEvaluatorFuncRunOptions = {dryRun: boolean};
+
+type TestExpressionEval = ExpressionHandler<Context, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>;
 
 declare const functions: ExpressionFunction;
+declare const erroredFunctions: ErroredExpressionFunction;
 declare const validationContext: BadValidationContext;
 declare const expressionEval: TestExpressionEval;
+declare const runOpts: CustomEvaluatorFuncRunOptions;
 
-expectError(expressionEval.validate(validationContext));
+expectError(expressionEval.validate(validationContext, runOpts));
 
-expectError(new ExpressionHandler<Context, ExpressionFunction>({}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({userId: 5}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: 5}, functions));
 const a = {userId: 'f', timesCounter: 5};
-expectError(new ExpressionHandler<Context, ExpressionFunction>(a, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(a, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({
     and: [{
         timesCounter: {
             ne: 'sdf',
         },
     }],
 }, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({and: [], or: []}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({and: [], not: []}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({or: [], not: []}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({or: [], userId: 'dfg'}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({user: {eq: 'sdf'}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({userId: {eq: 5}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({userId: {eq: 'sdf'}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({userId: {neq: 'sdf'}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({user: 5}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({user: 'sdf'}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({userId: 5}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({userId: 'sdf'}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({nested: {value: 5}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({'nested.value': 'sdf'}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({'nested.valu2e': 'sdf'}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({'nested.value': 5}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {neq: 'sdf'}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>(
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({and: [], or: []}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({and: [], not: []}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({or: [], not: []}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({or: [], userId: 'dfg'}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({user: {eq: 'sdf'}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {eq: 5}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {eq: 'sdf'}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {neq: 'sdf'}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({user: 5}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({user: 'sdf'}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: 5}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: 'sdf'}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({nested: {value: 5}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'nested.value': 'sdf'}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'nested.valu2e': 'sdf'}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'nested.value': 5}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {neq: 'sdf'}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {timesCounter: {neq: {ref:'nested.value333'}}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>(
+expectError(new ExpressionHandler<Context, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
     {timesCounter: {neq: {op: '+', lhs:5, rhs: {ref:'nested.value333'}}}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>(
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {inq: [{op: '+', lhs:5, rhs: 4}]}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>(
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {nin: [{op: '+', lhs:5, rhs: 4}]}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>(
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {eq: {op: '+', lhs:5, rhs: 4}}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>(
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {neq: {op: '+', lhs:5, rhs: 4}}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>(
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {regexp: {op: '+', lhs:5, rhs: 4}}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>(
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {userId: {regexpi: {op: '+', lhs:5, rhs: 4}}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>(
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {timesCounter: {neq: {op: 'dummy', lhs:5, rhs: 6}}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {neq: {ref:'nested.value'}}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>(
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {neq: {ref:'nested.value'}}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>(
     {timesCounter: {neq: {op: '+', lhs: {ref:'nested.value'}, rhs: 5}}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {neq: 5}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {eq: 5}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {gt: 5}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {gte: 5}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {lt: 5}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {lte: 5}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {neq: 5}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {eq: 5}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {gt: 5}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {gte: 5}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {lt: 5}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {lte: 5}}, functions));
 
 // inq
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({timesCounter: {inq: [4, 5, 6]}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({userId: {inq: ['a', 'b', 'c']}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {inq: ['s']}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({userId: {inq: [5]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {inq: ['s']}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {inq: [5]}}, functions));
 
 // nin
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({timesCounter: {nin: [4, 5, 6]}}, functions));
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({userId: {nin: ['a', 'b', 'c']}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {nin: ['s']}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({userId: {nin: [5]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {nin: ['s']}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {nin: [5]}}, functions));
 
 // regexp
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({userId: {regexp: 'sdf'}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {regexp: 'sdf'}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {regexp: 'sdf'}}, functions));
 
 // regexpi
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({userId: {regexpi: 'sdf'}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {regexpi: 'sdf'}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {regexpi: 'sdf'}}, functions));
 
 // between
-expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction>
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
 ({timesCounter: {between: [4, 5]}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {between: [4]}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {between: [4, 5, 6]}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {userId: [4, 5]}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {between: []}}, functions));
-expectError(new ExpressionHandler<Context, ExpressionFunction>({timesCounter: {between: ['s']}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: [4]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: [4, 5, 6]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {userId: [4, 5]}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: []}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: ['s']}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: [4, 5]}}, erroredFunctions));
