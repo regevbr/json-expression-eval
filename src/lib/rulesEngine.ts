@@ -8,7 +8,7 @@ import {evaluateRules, validateRules} from './engine';
 export class RulesEngine<ConsequencePayload, C extends Context,
     RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,
     F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore = never, CustomEngineRuleFuncRunOptions = {}> {
+    Ignore = never, CustomEngineRuleFuncRunOptions = undefined> {
 
     constructor(private readonly functionsTable: F, private readonly ruleFunctionsTable: RF) {
     }

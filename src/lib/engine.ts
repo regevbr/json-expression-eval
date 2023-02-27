@@ -75,7 +75,7 @@ async function run<ConsequencePayload, C extends Context,
 export const evaluateRules = async <ConsequencePayload, C extends Context,
     RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,
     F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore = never, CustomEngineRuleFuncRunOptions = {}>(rules: Rule<ConsequencePayload,
+    Ignore = never, CustomEngineRuleFuncRunOptions = undefined>(rules: Rule<ConsequencePayload,
       RF, C, F, Ignore, CustomEngineRuleFuncRunOptions>[], context: C, functionsTable: F, ruleFunctionsTable: RF,
  haltOnFirstMatch: boolean, runOptions: CustomEngineRuleFuncRunOptions)
     : Promise<void | ResolvedConsequence<ConsequencePayload>[]> => {
@@ -86,7 +86,7 @@ export const evaluateRules = async <ConsequencePayload, C extends Context,
 export const validateRules = async <ConsequencePayload, C extends Context,
     RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,
     F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
-    Ignore = never, CustomEngineRuleFuncRunOptions = {}>(
+    Ignore = never, CustomEngineRuleFuncRunOptions = undefined>(
         rules: Rule<ConsequencePayload, RF, C, F, Ignore, CustomEngineRuleFuncRunOptions>[],
         validationContext: ValidationContext<C, Ignore>,
  functionsTable: F, ruleFunctionsTable: RF, runOptions: CustomEngineRuleFuncRunOptions)

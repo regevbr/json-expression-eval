@@ -7,7 +7,7 @@ import {
 } from '../types';
 
 export class ExpressionHandler<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore = never, CustomEvaluatorFuncRunOptions = {}> {
+    Ignore = never, CustomEvaluatorFuncRunOptions = undefined> {
 
     constructor(private readonly expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
                 private readonly functionsTable: F) {
