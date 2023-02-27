@@ -14,7 +14,7 @@ const context: ExpressionContext = {
 };
 
 const run = async (_rules: MyRule[], _context: ExpressionContext) => {
-  const result = await engine.evaluateAll(_rules, _context);
+  const result = await engine.evaluateAll(_rules, _context, {dryRun: false});
   console.log(`Evaluating rules ${JSON.stringify(_rules)} using context ${JSON.stringify(_context)}`);
   console.log(`Result: ${JSON.stringify(result)}\n\n`);
 };

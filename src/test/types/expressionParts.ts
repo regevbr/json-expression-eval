@@ -22,7 +22,7 @@ type ExpressionFunction = {
     boolArrFn: (a: boolean[], context: { str: string }) => boolean;
 };
 
-type Result = Any.Compute<ExpressionParts<ExpressionContext, ExpressionFunction>>;
+type Result = Any.Compute<ExpressionParts<ExpressionContext, ExpressionFunction, {}, never, {dryRun: boolean}>>;
 
 type Expected = {
     'nested.value': {
@@ -99,7 +99,8 @@ declare var e: Expected;
 r = e;
 e = r;
 
-type ResultExtended = Any.Compute<ExpressionParts<ExpressionContext, ExpressionFunction, { description: string }>>;
+type ResultExtended = Any.Compute<ExpressionParts<ExpressionContext, ExpressionFunction, { description: string }, never,
+    {dryRun: boolean}>>;
 
 type ExpectedExtended = {
     'nested.value': {

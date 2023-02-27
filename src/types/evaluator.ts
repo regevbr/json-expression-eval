@@ -2,7 +2,8 @@ import {Object, String, Union} from 'ts-toolbelt';
 import {Paths} from './paths';
 import {NonNullable} from './required';
 
-export type FuncCompareOp<C extends Context, F extends FunctionsTable<C>, K extends keyof F> =
+export type FuncCompareOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    K extends keyof F, CustomEngineRuleFuncRunOptions> =
     Awaited<Parameters<F[K]>[0]>;
 
 export type StringPaths<O extends object, Ignore> = any extends O ?
@@ -78,8 +79,9 @@ export interface RegexiCompareOp<C extends Context, Ignore> {
     regexpi: string | PropertyRef<C, Ignore, string>;
 }
 
-export type FuncCompares<C extends Context, F extends FunctionsTable<C>> = {
-    [K in keyof F]: FuncCompareOp<C, F, K>;
+export type FuncCompares<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    CustomEngineRuleFuncRunOptions> = {
+    [K in keyof F]: FuncCompareOp<C, F, K, CustomEngineRuleFuncRunOptions>;
 }
 
 export type NumberCompareOps<C extends Context, Ignore, V extends Primitive> =
@@ -104,36 +106,44 @@ export type PropertyCompareOps<C extends Context, Ignore> = {
         : never;
 };
 
-export interface AndCompareOp<C extends Context, F extends FunctionsTable<C>, Ignore> {
-    and: Expression<C, F, Ignore>[];
+export interface AndCompareOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    Ignore, CustomEngineRuleFuncRunOptions> {
+    and: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>[];
 }
 
-export interface OrCompareOp<C extends Context, F extends FunctionsTable<C>, Ignore> {
-    or: Expression<C, F, Ignore>[];
+export interface OrCompareOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    Ignore, CustomEngineRuleFuncRunOptions> {
+    or: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>[];
 }
 
-export interface NotCompareOp<C extends Context, F extends FunctionsTable<C>, Ignore> {
-    not: Expression<C, F, Ignore>;
+export interface NotCompareOp<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    Ignore, CustomEngineRuleFuncRunOptions> {
+    not: Expression<C, F, Ignore, CustomEngineRuleFuncRunOptions>;
 }
 
 export type RequireOnlyOne<T extends object> = Object.Either<T, keyof T>;
 
-export type FullExpression<C extends Context, F extends FunctionsTable<C>, Ignore> =
-    NotCompareOp<C, F, Ignore> &
-    OrCompareOp<C, F, Ignore> &
-    AndCompareOp<C, F, Ignore> &
-    FuncCompares<C, F> &
+export type FullExpression<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    Ignore, CustomEngineRuleFuncRunOptions> =
+    NotCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions> &
+    OrCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions> &
+    AndCompareOp<C, F, Ignore, CustomEngineRuleFuncRunOptions> &
+    FuncCompares<C, F, CustomEngineRuleFuncRunOptions> &
     PropertyCompareOps<C, Ignore>;
 
-export type Expression<C extends Context, F extends FunctionsTable<C>, Ignore = never> =
-    RequireOnlyOne<FullExpression<C, F, Ignore>>;
+export type Expression<C extends Context, F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    Ignore, CustomEngineRuleFuncRunOptions> =
+    RequireOnlyOne<FullExpression<C, F, Ignore, CustomEngineRuleFuncRunOptions>>;
 
-export type EvaluatorFuncRunOptions = {
+export type EvaluatorFuncRunOptions<CustomEngineRuleFuncRunOptions> = {
+    custom: CustomEngineRuleFuncRunOptions;
     validation: boolean;
 }
-export type Func<T> = (param: any, context: T, runOptions: EvaluatorFuncRunOptions) => boolean | Promise<boolean>;
+export type Func<T, CustomEngineRuleFuncRunOptions> = (
+    param: any, context: T, runOptions: EvaluatorFuncRunOptions<CustomEngineRuleFuncRunOptions>) =>
+    boolean | Promise<boolean>;
 
-export type FunctionsTable<T> = Record<string, Func<T>>;
+export type FunctionsTable<T, CustomEngineRuleFuncRunOptions> = Record<string, Func<T, CustomEngineRuleFuncRunOptions>>;
 
 export type Context = Record<string, any>;
 

@@ -5,27 +5,39 @@ import {isRuleFunction} from './typeGuards';
 import {evaluateEngineConsequence} from './engineConsequenceEvaluator';
 
 async function run<ConsequencePayload, C extends Context,
-    RF extends RuleFunctionsTable<C, ConsequencePayload>, F extends FunctionsTable<C>, Ignore = never>
-(rules: Rule<ConsequencePayload, RF, C, F, Ignore>[], context: C, functionsTable: F, ruleFunctionsTable: RF,
- haltOnFirstMatch: boolean, validation: false)
+    RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,
+    F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    Ignore, CustomEngineRuleFuncRunOptions>(rules: Rule<ConsequencePayload, RF, C, F, Ignore,
+                                                                  CustomEngineRuleFuncRunOptions>[],
+                                            context: C, functionsTable: F, ruleFunctionsTable: RF,
+ haltOnFirstMatch: boolean, validation: false, runOptions: CustomEngineRuleFuncRunOptions)
     : Promise<void | ResolvedConsequence<ConsequencePayload>[]>
 async function run<ConsequencePayload, C extends Context,
-    RF extends RuleFunctionsTable<C, ConsequencePayload>, F extends FunctionsTable<C>, Ignore = never>
-(rules: Rule<ConsequencePayload, RF, C, F, Ignore>[], context: ValidationContext<C, Ignore>,
+    RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,
+    F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>, Ignore,
+    CustomEngineRuleFuncRunOptions>(rules: Rule<ConsequencePayload, RF, C, F,
+        Ignore, CustomEngineRuleFuncRunOptions>[], context: ValidationContext<C, Ignore>,
  functionsTable: F, ruleFunctionsTable: RF,
- haltOnFirstMatch: boolean, validation: true)
+ haltOnFirstMatch: boolean, validation: true, runOptions: CustomEngineRuleFuncRunOptions)
     : Promise<void | ResolvedConsequence<ConsequencePayload>[]>
 async function run<ConsequencePayload, C extends Context,
-    RF extends RuleFunctionsTable<C, ConsequencePayload>, F extends FunctionsTable<C>, Ignore = never>
-(rules: Rule<ConsequencePayload, RF, C, F, Ignore>[], context: C | ValidationContext<C, Ignore>, functionsTable: F,
- ruleFunctionsTable: RF, haltOnFirstMatch: boolean, validation: boolean)
+    RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,
+    F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    Ignore, CustomEngineRuleFuncRunOptions>(rules: Rule<ConsequencePayload, RF,
+                                                                  C, F, Ignore, CustomEngineRuleFuncRunOptions>[],
+                                            context: C | ValidationContext<C, Ignore>, functionsTable: F,
+ ruleFunctionsTable: RF, haltOnFirstMatch: boolean, validation: boolean, runOptions: CustomEngineRuleFuncRunOptions)
     : Promise<void | ResolvedConsequence<ConsequencePayload>[]> {
     const errors: ResolvedConsequence<ConsequencePayload>[] = [];
     for (const rule of rules) {
         const keys = objectKeys(rule);
         const key = keys[0];
-        if (keys.length === 1 && key && isRuleFunction<ConsequencePayload, C, RF>(rule, ruleFunctionsTable, key)) {
-            const consequence = await ruleFunctionsTable[key](rule[key], context as C, {validation});
+        if (keys.length === 1 && key && isRuleFunction<ConsequencePayload, C, RF, CustomEngineRuleFuncRunOptions>(
+            rule, ruleFunctionsTable, key)) {
+            const consequence = await ruleFunctionsTable[key](rule[key], context as C, {
+                custom: runOptions,
+                validation,
+            });
             if (consequence) {
                 errors.push(consequence);
                 if (haltOnFirstMatch && !validation) {
@@ -40,10 +52,12 @@ async function run<ConsequencePayload, C extends Context,
                 throw new Error(`Missing consequence for rule`);
             }
             if (validation) {
-                await validate<C, F, Ignore>(rule.condition, context as ValidationContext<C, Ignore>, functionsTable);
+                await validate<C, F, Ignore, CustomEngineRuleFuncRunOptions>(rule.condition,
+                    context as ValidationContext<C, Ignore>, functionsTable, runOptions);
                 await evaluateEngineConsequence<ConsequencePayload, C, Ignore>(context as C, rule.consequence);
             } else {
-                const ruleApplies = await evaluate<C, F, Ignore>(rule.condition, context as C, functionsTable);
+                const ruleApplies = await evaluate<C, F, Ignore, CustomEngineRuleFuncRunOptions>(
+                    rule.condition, context as C, functionsTable, runOptions);
                 if (ruleApplies) {
                     const consequence =
                         await evaluateEngineConsequence<ConsequencePayload, C, Ignore>(context as C, rule.consequence);
@@ -59,19 +73,25 @@ async function run<ConsequencePayload, C extends Context,
 }
 
 export const evaluateRules = async <ConsequencePayload, C extends Context,
-    RF extends RuleFunctionsTable<C, ConsequencePayload>, F extends FunctionsTable<C>, Ignore = never>
-(rules: Rule<ConsequencePayload, RF, C, F, Ignore>[], context: C, functionsTable: F, ruleFunctionsTable: RF,
- haltOnFirstMatch: boolean)
+    RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,
+    F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    Ignore = never, CustomEngineRuleFuncRunOptions = never>(rules: Rule<ConsequencePayload,
+      RF, C, F, Ignore, CustomEngineRuleFuncRunOptions>[], context: C, functionsTable: F, ruleFunctionsTable: RF,
+ haltOnFirstMatch: boolean, runOptions: CustomEngineRuleFuncRunOptions)
     : Promise<void | ResolvedConsequence<ConsequencePayload>[]> => {
-    return run<ConsequencePayload, C, RF, F, Ignore>(
-        rules, context, functionsTable, ruleFunctionsTable, haltOnFirstMatch, false);
+    return run<ConsequencePayload, C, RF, F, Ignore, CustomEngineRuleFuncRunOptions>(
+        rules, context, functionsTable, ruleFunctionsTable, haltOnFirstMatch, false, runOptions);
 }
 
 export const validateRules = async <ConsequencePayload, C extends Context,
-    RF extends RuleFunctionsTable<C, ConsequencePayload>, F extends FunctionsTable<C>, Ignore = never>
-(rules: Rule<ConsequencePayload, RF, C, F, Ignore>[], validationContext: ValidationContext<C, Ignore>,
- functionsTable: F, ruleFunctionsTable: RF)
+    RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,
+    F extends FunctionsTable<C, CustomEngineRuleFuncRunOptions>,
+    Ignore = never, CustomEngineRuleFuncRunOptions = never>(
+        rules: Rule<ConsequencePayload, RF, C, F, Ignore, CustomEngineRuleFuncRunOptions>[],
+        validationContext: ValidationContext<C, Ignore>,
+ functionsTable: F, ruleFunctionsTable: RF, runOptions: CustomEngineRuleFuncRunOptions)
     : Promise<void> => {
-    await run<ConsequencePayload, C, RF, F, Ignore>(rules, validationContext, functionsTable,
-        ruleFunctionsTable, false, true);
+    await run<ConsequencePayload, C, RF, F, Ignore, CustomEngineRuleFuncRunOptions>(
+        rules, validationContext, functionsTable,
+        ruleFunctionsTable, false, true, runOptions);
 }
