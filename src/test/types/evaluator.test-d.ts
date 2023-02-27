@@ -2,7 +2,13 @@ import {ExpressionHandler} from '../../index';
 import {expectError, expectType} from 'tsd';
 
 type ExpressionFunction = {
-    user: (user: string, context: { userId: string }) => boolean;
+    user: (user: string, context: { userId: string },
+           runOpts: {validation: boolean, custom: {dryRun: boolean}}) => boolean;
+}
+
+type ErroredExpressionFunction = {
+    user: (user: string, context: { userId: string },
+           runOpts: {validation: boolean, custom: {dummy: boolean}}) => boolean;
 }
 
 type Context = {
@@ -28,6 +34,7 @@ type CustomEngineRuleFuncRunOptions = {dryRun: boolean};
 type TestExpressionEval = ExpressionHandler<Context, ExpressionFunction, Ignore, CustomEngineRuleFuncRunOptions>;
 
 declare const functions: ExpressionFunction;
+declare const erroredFunctions: ErroredExpressionFunction;
 declare const validationContext: BadValidationContext;
 declare const expressionEval: TestExpressionEval;
 declare const runOpts: CustomEngineRuleFuncRunOptions;
@@ -179,3 +186,5 @@ expectError(new ExpressionHandler<Context, ExpressionFunction,
     Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {between: []}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
     Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {between: ['s']}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEngineRuleFuncRunOptions>({timesCounter: {between: [4, 5]}}, erroredFunctions));

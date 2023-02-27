@@ -2,11 +2,13 @@ import {ResolvedConsequence, Rule} from '../../index';
 import {expectType} from 'tsd';
 
 type ExpressionFunction1 = {
-    user: (user: string, context: { userId: string }) => boolean;
+    user: (user: string, context: { userId: string },
+           runOpts: {validation: boolean, custom: {dryRun: boolean}}) => boolean;
 }
 
 type ExpressionFunction2 = {
-    user: (user: string, context: { userId: string }) => boolean;
+    user: (user: string, context: { userId: string },
+           runOpts: {validation: boolean, custom: {dryRun: boolean}}) => boolean;
 }
 
 type Context1 = {
