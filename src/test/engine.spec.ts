@@ -10,6 +10,13 @@ const functionsTable = {
         : boolean => {
         return context.userId === user;
     },
+    userComplex: async (user: string, context: { userId: string },
+                        runOpts: {validation: boolean, custom: {dryRun: boolean}}): Promise<boolean> => {
+        if (runOpts.validation && !runOpts.custom.dryRun) {
+            throw new Error(`Failed user validation`);
+        }
+        return runOpts.validation || runOpts.custom.dryRun ? true : context.userId === user;
+    },
 };
 
 const ruleFunctionsTable = {
@@ -19,6 +26,21 @@ const ruleFunctionsTable = {
         custom: number;
     }> => {
         if (context.userId === user) {
+            return {
+                message: `Username ${user} is not allowed`,
+                custom: 543,
+            }
+        }
+    },
+    userRuleComplex: async (user: string, context: { userId: string },
+                        runOpts: {validation: boolean, custom: {dryRun: boolean}}): Promise<void | {
+        message: string;
+        custom: number;
+    }> => {
+        if (runOpts.validation && !runOpts.custom.dryRun) {
+            throw new Error(`Failed user validation`);
+        }
+        if (runOpts.validation || runOpts.custom.dryRun || context.userId === user) {
             return {
                 message: `Username ${user} is not allowed`,
                 custom: 543,
@@ -239,6 +261,154 @@ describe('engine', () => {
         await expect(engine.evaluate(rules, context, runOpts)).to.eventually.rejectedWith(Error, 'Invalid consequence ref - unknown context key userIdd');
         await expect(engine.evaluateAll(rules, context, runOpts)).to
             .eventually.rejectedWith(Error, 'Invalid consequence ref - unknown context key userIdd');
+    });
+
+    it('should pass run opts to functions', async () => {
+        type Con = {
+            userId: string,
+        }
+        const rules: Rule<number, RuleFunction, Con, ExpressionFunction, Ignore, CustomEngineRuleFuncRunOptions>[] = [
+            {
+                condition: {
+                    userComplex: 'b',
+                },
+                consequence: {
+                    message: ['user', {ref: 'userId'}, 'should not equal b'],
+                    custom: 579,
+                },
+            },
+        ];
+        const validationContext: ValidationContext<Con> = {
+            userId: 'a',
+        };
+        const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>
+        (functionsTable, ruleFunctionsTable);
+        await expect(engine.validate(rules, validationContext, {dryRun: false}))
+            .to.eventually.rejectedWith(Error, 'Failed user validation');
+        expect(await engine.validate(rules, validationContext, {dryRun: true})).to.be.an('undefined');
+        await expect(validateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
+            functionsTable, ruleFunctionsTable, {dryRun: false}))
+            .to.eventually.rejectedWith(Error, 'Failed user validation');
+        expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
+            functionsTable, ruleFunctionsTable, {dryRun: true})).to.be.an('undefined');
+        expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, {
+                userId: 'b',
+            }, functionsTable
+            , ruleFunctionsTable, true, {dryRun: false})).to.eql([
+            {
+                'custom': 579,
+                'message': 'user b should not equal b',
+            },
+        ]);
+        expect(await engine.evaluate(rules, {
+            userId: 'b',
+        }, {dryRun: false})).to.eql(
+            {
+                'custom': 579,
+                'message': 'user b should not equal b',
+            }
+        );
+        expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, {
+                userId: 'a',
+            }, functionsTable
+            , ruleFunctionsTable, true, {dryRun: false})).to.eql(undefined);
+        expect(await engine.evaluate(rules, {
+            userId: 'a',
+        }, {dryRun: false})).to.eql(undefined);
+        expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, {
+                userId: 'a',
+            }, functionsTable
+            , ruleFunctionsTable, true, {dryRun: true})).to.eql([
+            {
+                'custom': 579,
+                'message': 'user a should not equal b',
+            },
+        ]);
+        expect(await engine.evaluate(rules, {
+            userId: 'a',
+        }, {dryRun: true})).to.eql(
+            {
+                'custom': 579,
+                'message': 'user a should not equal b',
+            }
+        );
+    });
+
+    it('should pass run opts to rules', async () => {
+        type Con = {
+            userId: string,
+        }
+        const rules: Rule<number, RuleFunction, Con, ExpressionFunction, Ignore, CustomEngineRuleFuncRunOptions>[] = [
+            {
+                userRuleComplex: 'b',
+            },
+        ];
+        const validationContext: ValidationContext<Con> = {
+            userId: 'a',
+        };
+        const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>
+        (functionsTable, ruleFunctionsTable);
+        await expect(engine.validate(rules, validationContext, {dryRun: false}))
+            .to.eventually.rejectedWith(Error, 'Failed user validation');
+        expect(await engine.validate(rules, validationContext, {dryRun: true})).to.be.an('undefined');
+        await expect(validateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
+            functionsTable, ruleFunctionsTable, {dryRun: false}))
+            .to.eventually.rejectedWith(Error, 'Failed user validation');
+        expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
+            functionsTable, ruleFunctionsTable, {dryRun: true})).to.be.an('undefined');
+        expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, {
+                userId: 'b',
+            }, functionsTable
+            , ruleFunctionsTable, true, {dryRun: false})).to.eql([
+            {
+                'custom': 543,
+                'message': 'Username b is not allowed',
+            },
+        ]);
+        expect(await engine.evaluate(rules, {
+            userId: 'b',
+        }, {dryRun: false})).to.eql(
+            {
+                'custom': 543,
+                'message': 'Username b is not allowed',
+            }
+        );
+        expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, {
+                userId: 'a',
+            }, functionsTable
+            , ruleFunctionsTable, true, {dryRun: false})).to.eql(undefined);
+        expect(await engine.evaluate(rules, {
+            userId: 'a',
+        }, {dryRun: false})).to.eql(undefined);
+        expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
+            Ignore, CustomEngineRuleFuncRunOptions>(rules, {
+                userId: 'a',
+            }, functionsTable
+            , ruleFunctionsTable, true, {dryRun: true})).to.eql([
+            {
+                'custom': 543,
+                'message': 'Username b is not allowed',
+            },
+        ]);
+        expect(await engine.evaluate(rules, {
+            userId: 'a',
+        }, {dryRun: true})).to.eql(
+            {
+                'custom': 543,
+                'message': 'Username b is not allowed',
+            }
+        );
     });
 
     it('should evaluate and pass properly', async () => {

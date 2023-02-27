@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="true" type="mocha-javascript-test-runner">
+    <node-interpreter>project</node-interpreter>
+    <node-options />
+    <working-directory>$PROJECT_DIR$</working-directory>
+    <pass-parent-env>true</pass-parent-env>
+    <ui />
+    <extra-mocha-options>--config src/test/.mocharc.json</extra-mocha-options>
+    <test-kind>DIRECTORY</test-kind>
+    <test-directory />
+    <recursive>false</recursive>
+    <method v="2" />
+  </configuration>
+</component>

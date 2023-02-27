@@ -10,6 +10,13 @@ const functionsTable = {
                  runOpts: {validation: boolean, custom: {dryRun: boolean}}): Promise<boolean> => {
         return context.userId === user;
     },
+    userComplex: async (user: string, context: { userId: string },
+                 runOpts: {validation: boolean, custom: {dryRun: boolean}}): Promise<boolean> => {
+        if (runOpts.validation && !runOpts.custom.dryRun) {
+            throw new Error(`Failed user validation`);
+        }
+        return runOpts.validation || runOpts.custom.dryRun ? true : context.userId === user;
+    },
 };
 type ExpressionFunction = typeof functionsTable;
 
@@ -1123,6 +1130,31 @@ describe('evaluator', () => {
             expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
         });
+    });
+
+    it('should pass run opts to functions', async () => {
+        const expression = {userComplex: 'r@a.com'};
+        expect(await validate(expression, {
+            userId: '-',
+            timesCounter: 8,
+        }, functionsTable, {dryRun: true})).to.be.an('undefined');
+        await expect(validate(expression, {
+            userId: '-',
+            timesCounter: 8,
+        }, functionsTable, {dryRun: false}))
+            .to.eventually.rejectedWith(Error, 'Failed user validation');
+        expect(await evaluate(expression, {
+            userId: 'r@a.com',
+            timesCounter: 8,
+        }, functionsTable, {dryRun: false})).to.eql(true);
+        expect(await evaluate(expression, {
+            userId: '-',
+            timesCounter: 8,
+        }, functionsTable, {dryRun: false})).to.eql(false);
+        expect(await evaluate(expression, {
+            userId: '-',
+            timesCounter: 8,
+        }, functionsTable, {dryRun: true})).to.eql(true);
     });
 
     it('should evaluate a single function', async () => {
