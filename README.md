@@ -27,7 +27,7 @@ yarn add json-expression-eval
  *Please see tests and examples dir for more usages and examples (under /src)* 
 
 ```typescript
-import {evaluate, Expression, ExpressionHandler, validate, ValidationContext, EvaluatorFuncRunOptions, EvaluatorFuncRunOptions} from 'json-expression-eval';
+import {evaluate, Expression, ExpressionHandler, validate, ValidationContext, EvaluatorFuncRunOptions} from 'json-expression-eval';
 import {Moment} from 'moment';
 import moment = require('moment');
 
