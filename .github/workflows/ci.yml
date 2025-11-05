@@ -11,7 +11,7 @@ on:
       - '**'
 
 env:
-  PRIMARY_NODE_VERSION: 18.x
+  PRIMARY_NODE_VERSION: 24.x
   PRIMARY_OS: ubuntu-latest
   REGISTRY: https://registry.npmjs.org/
 
@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        node-version: [ 14.x, 16.x, 18.x, 20.x ]
+        node-version: [ 18.x, 20.x, 22.x, 24.x ]
 
     steps:
 
@@ -92,7 +92,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        node-version: [ 18.x ]
+        node-version: [ 24.x ]
     needs: [ test ]
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:

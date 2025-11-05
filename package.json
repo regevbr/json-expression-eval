@@ -1,11 +1,11 @@
 {
   "name": "json-expression-eval",
-  "version": "7.1.0",
+  "version": "8.0.0",
   "description": "json serializable rule engine / boolean expression evaluator",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
-    "node": "^14 || ^16 || ^18 || ^20"
+    "node": "^18 || ^20 || ^22 || ^24"
   },
   "scripts": {
     "test": "yarn lint && yarn test:tsd && yarn test:cover",
