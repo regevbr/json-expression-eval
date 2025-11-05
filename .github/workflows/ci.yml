@@ -25,30 +25,20 @@ jobs:
         node-version: [ 18.x, 20.x, 22.x, 24.x ]
 
     steps:
-
-      - name: Echo env variables
-        run: |
-          echo ref: ${{ github.event.client_payload.ref || github.ref }}
-          echo sha: ${{ github.event.client_payload.sha || github.sha }}
-          echo head ref: ${{ github.event.client_payload.head_ref || github.head_ref }}
-          echo base ref: ${{ github.event.client_payload.base_ref || github.base_ref }}
-          echo action: ${{ github.action }}
-          echo event: ${{ github.event_name }}
-
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
         name: Checkout
         with:
           ref: ${{ github.event.client_payload.ref || github.ref }}
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Get yarn cache directory
         id: yarn-cache-dir
         run: |
-          echo "::set-output name=dir::$(yarn cache dir)"
+          echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         id: yarn-cache
@@ -101,14 +91,14 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
 
       - name: fetch
         run: |
           git fetch --prune --unshallow
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: ${{ env.REGISTRY }}
@@ -116,7 +106,7 @@ jobs:
       - name: Get yarn cache directory
         id: yarn-cache-dir
         run: |
-          echo "::set-output name=dir::$(yarn cache dir)"
+          echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         id: yarn-cache

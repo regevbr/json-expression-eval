@@ -102,12 +102,12 @@ async function evaluateCompareOp<C extends Context, Ignore>(expressionValue: Ext
         contextStringAssertion(expressionKey, contextValue);
         const regexpValue = computeValue(context, validation, expressionValue.regexp, expressionKey);
         expressionStringAssertion(expressionKey, regexpValue);
-        return Boolean(contextValue.match(new RegExp(regexpValue)));
+        return Boolean(new RegExp(regexpValue).exec(contextValue));
     } else if (isRegexiCompareOp(expressionValue)) {
         contextStringAssertion(expressionKey, contextValue);
         const regexpiValue = computeValue(context, validation, expressionValue.regexpi, expressionKey);
         expressionStringAssertion(expressionKey, regexpiValue);
-        return Boolean(contextValue.match(new RegExp(regexpiValue, `i`)));
+        return Boolean(new RegExp(regexpiValue, `i`).exec(contextValue));
     } else if (isGtCompareOp(expressionValue)) {
         contextNumberAssertion(expressionKey, contextValue);
         const gtValue = computeValue(context, validation, expressionValue.gt, expressionKey);

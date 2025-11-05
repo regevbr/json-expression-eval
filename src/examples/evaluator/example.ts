@@ -1,8 +1,7 @@
-import {ExpressionContext, ExpressionFunction, getEvaluator} from './lib/evaluator';
+import {ExpressionContext, ExpressionFunction, getEvaluator, CustomEvaluatorFuncRunOptions} from './lib/evaluator';
 import {Expression, ExpressionParts} from '../..';
 import {Moment} from 'moment';
 import moment = require('moment');
-import {CustomEvaluatorFuncRunOptions} from './lib/evaluator';
 
 const context: ExpressionContext = {
     userId: 'a@b.com',
