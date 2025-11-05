@@ -93,8 +93,8 @@ type Expected = {
     },
 };
 
-declare var r: Result;
-declare var e: Expected;
+declare let r: Result;
+declare let e: Expected;
 
 r = e;
 e = r;
