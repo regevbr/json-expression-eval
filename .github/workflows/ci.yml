@@ -11,7 +11,7 @@ on:
       - '**'
 
 env:
-  PRIMARY_NODE_VERSION: 18.x
+  PRIMARY_NODE_VERSION: 24.x
   PRIMARY_OS: ubuntu-latest
   REGISTRY: https://registry.npmjs.org/
 
@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        node-version: [ 14.x, 16.x, 18.x, 20.x ]
+        node-version: [ 18.x, 20.x, 22.x, 24.x ]
 
     steps:
 
@@ -50,7 +50,7 @@ jobs:
         run: |
           echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
@@ -76,11 +76,14 @@ jobs:
 
       - name: Run unit tests with coverage
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
-        uses: paambaati/codeclimate-action@v2.7.5
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        run: yarn test:cover
+
+      - name: Upload coverage
+        if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
+        uses: qltysh/qlty-action/coverage@v2
         with:
-          coverageCommand: yarn test:cover
+          token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+          files: coverage/lcov.info
 
       - name: Run unit tests
         if: "!(matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS)"
@@ -92,7 +95,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        node-version: [ 18.x ]
+        node-version: [ 24.x ]
     needs: [ test ]
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
@@ -115,7 +118,7 @@ jobs:
         run: |
           echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
