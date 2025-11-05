@@ -76,11 +76,14 @@ jobs:
 
       - name: Run unit tests with coverage
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
-        uses: paambaati/codeclimate-action@v2.7.5
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        run: yarn test:cover
+
+      - name: Upload coverage
+        if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
+        uses: qltysh/qlty-action/coverage@v2
         with:
-          coverageCommand: yarn test:cover
+          token: {{secrets.QLTY_COVERAGE_TOKEN}}
+          files: coverage/lcov.info
 
       - name: Run unit tests
         if: "!(matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS)"

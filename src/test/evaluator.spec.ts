@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import {expect} from 'chai';
 import {evaluate, ExpressionHandler, validate} from '../';
-import * as chaiAsPromised from 'chai-as-promised';
+import  chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiAsPromised);
 
