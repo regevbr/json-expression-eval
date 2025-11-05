@@ -1487,4 +1487,298 @@ describe('evaluator', () => {
         });
     });
 
+    describe(`exists`, () => {
+        // Basic exists: true cases
+        it('should evaluate exists compare op to true for non-null value', async () => {
+            const expression = {
+                timesCounter: {exists: true},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate exists compare op to true for zero value', async () => {
+            const expression = {
+                timesCounter: {exists: true},
+            };
+            const context = {
+                timesCounter: 0,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate exists compare op to true for empty string', async () => {
+            const expression = {
+                userId: {exists: true},
+            };
+            const context = {
+                userId: '',
+                timesCounter: 5,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate exists compare op to true for false boolean', async () => {
+            type Con = {
+                userId: string,
+                nested?: {
+                    value3: boolean,
+                },
+            }
+            const expression = {
+                'nested.value3': {exists: true},
+            };
+            const context = {
+                nested: {
+                    value3: false,
+                },
+                userId: 'a',
+            };
+            const validationContext = {
+                nested: {
+                    value3: true,
+                },
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate<Con, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
+                expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        // exists: true with null/undefined (should be false)
+        it('should evaluate exists compare op to false for null value', async () => {
+            const expression = {
+                timesCounter: {exists: true},
+            };
+            const context = {
+                timesCounter: null,
+                userId: 'a',
+            };
+            const validationContext = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        });
+
+        it('should evaluate exists compare op to false for undefined value', async () => {
+            const expression = {
+                timesCounter: {exists: true},
+            };
+            const context = {
+                timesCounter: undefined,
+                userId: 'a',
+            };
+            const validationContext = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        });
+
+        // exists: false cases (inverted logic)
+        it('should evaluate exists false compare op to true for null value', async () => {
+            const expression = {
+                timesCounter: {exists: false},
+            };
+            const context = {
+                timesCounter: null,
+                userId: 'a',
+            };
+            const validationContext = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate exists false compare op to true for undefined value', async () => {
+            const expression = {
+                timesCounter: {exists: false},
+            };
+            const context = {
+                timesCounter: undefined,
+                userId: 'a',
+            };
+            const validationContext = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate exists false compare op to false for non-null value', async () => {
+            const expression = {
+                timesCounter: {exists: false},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        });
+
+        it('should evaluate exists false compare op to false for zero value', async () => {
+            const expression = {
+                timesCounter: {exists: false},
+            };
+            const context = {
+                timesCounter: 0,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        });
+
+        // Nested properties
+        it('should evaluate exists compare op on nested property to true', async () => {
+            type Con = {
+                userId: string,
+                nested: {
+                    value: number,
+                },
+            }
+            const expression = {
+                'nested.value': {exists: true},
+            };
+            const context = {
+                nested: {
+                    value: 7,
+                },
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate<Con, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
+                expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate exists compare op on nested property to false for null', async () => {
+            type Con = {
+                userId: string,
+                nested: {
+                    value: number | null,
+                },
+            }
+            const expression = {
+                'nested.value': {exists: true},
+            };
+            const context = {
+                nested: {
+                    value: null,
+                },
+                userId: 'a',
+            };
+            const validationContext = {
+                nested: {
+                    value: 5,
+                },
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate<Con, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
+                expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        });
+
+        // Logical operator combinations
+        it('should work with and operator', async () => {
+            const expression = {
+                and: [
+                    {timesCounter: {exists: true}},
+                    {timesCounter: {gt: 0}},
+                ],
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should work with or operator', async () => {
+            const expression = {
+                or: [
+                    {timesCounter: {exists: false}},
+                    {userId: 'a'},
+                ],
+            };
+            const context = {
+                timesCounter: null,
+                userId: 'a',
+            };
+            const validationContext = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should work with not operator', async () => {
+            const expression = {
+                not: {timesCounter: {exists: true}},
+            };
+            const context = {
+                timesCounter: null,
+                userId: 'a',
+            };
+            const validationContext = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should work with ExpressionHandler class', async () => {
+            type Con = {
+                timesCounter?: number;
+                userId: string,
+            }
+            const expression = {
+                timesCounter: {exists: true},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'a',
+            };
+            const validationContext = {
+                timesCounter: 10,
+                userId: 'b',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            const exp = new ExpressionHandler<Con, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
+                expression, functionsTable);
+            expect(await exp.validate(validationContext, runOpts)).to.be.an('undefined');
+            expect(await exp.evaluate(context, runOpts)).to.eql(true);
+        });
+    });
+
 });

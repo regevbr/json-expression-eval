@@ -15,6 +15,7 @@ import {
     isNinCompareOp,
     isRegexCompareOp,
     isRegexiCompareOp,
+    isExistsCompareOp,
     isWithRef, isMathOp,
     WithRef
 } from './typeGuards';
@@ -142,6 +143,10 @@ async function evaluateCompareOp<C extends Context, Ignore>(expressionValue: Ext
             throw new Error(`Invalid expression - ${expressionKey} first value is higher than second value`);
         }
         return contextValue >= low && contextValue <= high;
+    } else if (isExistsCompareOp(expressionValue)) {
+        // Check if value exists (not null or undefined)
+        // Using != null checks both null and undefined
+        return expressionValue.exists ? (contextValue != null) : (contextValue == null);
     } else {
         return assertUnreachable(expressionValue, `Invalid expression - unknown op ${compareKeys[0]}`);
     }

@@ -82,6 +82,10 @@ export interface RegexiCompareOp<C extends Context, Ignore> {
     regexpi: string | PropertyRef<C, Ignore, string>;
 }
 
+export interface ExistsCompareOp<C extends Context, Ignore> {
+    exists: boolean;
+}
+
 export type FuncCompares<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
     CustomEvaluatorFuncRunOptions> = {
     [K in keyof F]: FuncCompareOp<C, F, K, CustomEvaluatorFuncRunOptions>;
@@ -99,7 +103,8 @@ export type StringCompareOps<C extends Context, Ignore, V extends Primitive> =
 
 export type ExtendedCompareOp<C extends Context, Ignore, V extends Primitive> =
     EqualCompareOp<C, Ignore, V> | NotEqualCompareOp<C, Ignore, V> | InqCompareOp<C, Ignore, V> |
-    NinCompareOp<C, Ignore, V> | NumberCompareOps<C, Ignore, V> | StringCompareOps<C, Ignore, V>;
+    NinCompareOp<C, Ignore, V> | NumberCompareOps<C, Ignore, V> | StringCompareOps<C, Ignore, V> |
+    ExistsCompareOp<C, Ignore>;
 
 export type PropertyCompareOps<C extends Context, Ignore> = {
     [K in StringPaths<C, Ignore>]:

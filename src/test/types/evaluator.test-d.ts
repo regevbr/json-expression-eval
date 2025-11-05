@@ -188,3 +188,23 @@ expectError(new ExpressionHandler<Context, ExpressionFunction,
     Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: ['s']}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
     Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: [4, 5]}}, erroredFunctions));
+
+// exists
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
+({timesCounter: {exists: true}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
+({timesCounter: {exists: false}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
+({userId: {exists: true}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
+({'nested.value': {exists: true}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {exists: 'true'}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {exists: 1}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {exists: null}}, functions));

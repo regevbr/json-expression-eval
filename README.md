@@ -158,6 +158,7 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
             - `lte` - <=
             - `eq` - ===
             - `neq` - !==
+            - `exists: boolean` - True if the property exists (not null or undefined) when set to `true`, or doesn't exist (null or undefined) when set to `false`
             - `regexp: RegExp` - True if matches the compiled regular expression.
             - `regexpi: RegExp` - True if matches the compiled regular expression with the `i` flag set.
             - `nin: any[]` - True if *not* in an array of values. Comparison is done using the `===` operator

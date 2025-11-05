@@ -12,7 +12,8 @@ import {
     RegexiCompareOp,
     NotCompareOp,
     NotEqualCompareOp,
-    OrCompareOp, InqCompareOp, NinCompareOp, RuleFunctionsTable, RuleFunctionsParams, MathOp
+    OrCompareOp, InqCompareOp, NinCompareOp, RuleFunctionsTable, RuleFunctionsParams, MathOp,
+    ExistsCompareOp
 } from '../types';
 
 export const _isObject = (obj: unknown): boolean => {
@@ -108,6 +109,11 @@ export const isInqCompareOp = (op: ExtendedCompareOp<any, any, any>)
 export const isNinCompareOp = (op: ExtendedCompareOp<any, any, any>)
     : op is NinCompareOp<any, any, any> => {
     return Array.isArray((op as NinCompareOp<any, any, any>).nin);
+}
+
+export const isExistsCompareOp = (op: ExtendedCompareOp<any, any, any>)
+    : op is ExistsCompareOp<any, any> => {
+    return typeof (op as ExistsCompareOp<any, any>).exists === 'boolean';
 }
 
 export type WithRef = {
