@@ -82,7 +82,7 @@ jobs:
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
         uses: qltysh/qlty-action/coverage@v2
         with:
-          token: {{secrets.QLTY_COVERAGE_TOKEN}}
+          token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
           files: coverage/lcov.info
 
       - name: Run unit tests

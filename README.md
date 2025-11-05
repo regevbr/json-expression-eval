@@ -1,8 +1,8 @@
 [![Npm Version](https://img.shields.io/npm/v/json-expression-eval.svg?style=popout)](https://www.npmjs.com/package/json-expression-eval)
 [![node](https://img.shields.io/node/v-lts/json-expression-eval)](https://www.npmjs.com/package/json-expression-eval)
 [![Build status](https://github.com/regevbr/json-expression-eval/actions/workflows/ci.yml/badge.svg?branch=master)](https://www.npmjs.com/package/json-expression-eval)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/test_coverage)](https://codeclimate.com/github/regevbr/json-expression-eval/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/maintainability)](https://codeclimate.com/github/regevbr/json-expression-eval/maintainability)
+[![Code Coverage](https://qlty.sh/gh/regevbr/projects/json-expression-eval/coverage.svg)](https://qlty.sh/gh/regevbr/projects/json-expression-eval)
+[![Maintainability](https://qlty.sh/gh/regevbr/projects/json-expression-eval/maintainability.svg)](https://qlty.sh/gh/regevbr/projects/json-expression-eval)
 [![Known Vulnerabilities](https://snyk.io/test/github/regevbr/json-expression-eval/badge.svg?targetFile=package.json)](https://snyk.io/test/github/regevbr/json-expression-eval?targetFile=package.json)
 
 # json-expression-eval (and rule engine)
