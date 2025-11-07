@@ -10,6 +10,7 @@ import {
     LteCompareOp,
     RegexCompareOp,
     RegexiCompareOp,
+    ExistsCompareOp,
     NotCompareOp,
     NotEqualCompareOp,
     OrCompareOp, InqCompareOp, NinCompareOp, RuleFunctionsTable, RuleFunctionsParams, MathOp
@@ -88,6 +89,11 @@ export const isRegexCompareOp = (op: ExtendedCompareOp<any, any, any>)
 export const isRegexiCompareOp = (op: ExtendedCompareOp<any, any, any>)
     : op is RegexiCompareOp<any, any> => {
     return (op as RegexiCompareOp<any, any>).regexpi !== undefined;
+}
+
+export const isExistsCompareOp = (op: ExtendedCompareOp<any, any, any>)
+    : op is ExistsCompareOp => {
+    return (op as ExistsCompareOp).exists !== undefined;
 }
 
 export const isEqualCompareOp = (op: ExtendedCompareOp<any, any, any>)
