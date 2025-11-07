@@ -994,6 +994,169 @@ describe('evaluator', () => {
 
     });
 
+    describe(`exists`, () => {
+        it('should evaluate exists op to true when value exists', async () => {
+            const expression = {
+                userId: {exists: true},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate exists op to false when value is null', async () => {
+            const expression = {
+                userId: {exists: true},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: null,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await evaluate(expression, context, {}, runOpts)).to.eql(false);
+        });
+
+        it('should evaluate exists op to false when value is undefined', async () => {
+            const expression = {
+                userId: {exists: true},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: undefined,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await evaluate(expression, context, {}, runOpts)).to.eql(false);
+        });
+
+        it('should evaluate exists op to false for nested undefined property', async () => {
+            const expression = {
+                'nested.value': {exists: true},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                nested: {
+                    otherValue: 'exists',
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await evaluate(expression as any, context, {}, runOpts)).to.eql(false);
+        });
+
+        it('should evaluate exists:false to true when value is null', async () => {
+            const expression = {
+                userId: {exists: false},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: null,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await evaluate(expression, context, {}, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate exists:false to true when value is undefined', async () => {
+            const expression = {
+                userId: {exists: false},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: undefined,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await evaluate(expression, context, {}, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate exists:false to false when value exists', async () => {
+            const expression = {
+                userId: {exists: false},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        });
+
+        it('should consider falsy values as existing (0)', async () => {
+            const expression = {
+                timesCounter: {exists: true},
+            };
+            const context = {
+                timesCounter: 0,
+                userId: 'user@example.com',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should consider falsy values as existing (false)', async () => {
+            const expression = {
+                isActive: {exists: true},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                isActive: false,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should consider falsy values as existing (empty string)', async () => {
+            const expression = {
+                userId: {exists: true},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: '',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should work with AND logical operator', async () => {
+            const expression = {
+                and: [
+                    {userId: {exists: true}},
+                    {userId: {regexpi: '^GROUP '}},
+                ],
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'GROUP admin',
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should work with AND logical operator - false case', async () => {
+            const expression = {
+                and: [
+                    {userId: {exists: true}},
+                    {userId: {regexpi: '^GROUP '}},
+                ],
+            };
+            const context = {
+                timesCounter: 5,
+                userId: undefined,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await evaluate(expression as any, context, {}, runOpts)).to.eql(false);
+        });
+
+    });
+
     describe(`lt`, () => {
         it('should evaluate lt compare op to true', async () => {
             const expression = {

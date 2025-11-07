@@ -172,6 +172,16 @@ expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction
 expectError(new ExpressionHandler<Context, ExpressionFunction,
     Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {regexpi: 'sdf'}}, functions));
 
+// exists
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
+({userId: {exists: true}}, functions));
+expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>
+({userId: {exists: false}}, functions));
+expectError(new ExpressionHandler<Context, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({userId: {exists: 'sdf'}}, functions));
+
 // between
 expectType<TestExpressionEval>(new ExpressionHandler<Context, ExpressionFunction,
     Ignore, CustomEvaluatorFuncRunOptions>

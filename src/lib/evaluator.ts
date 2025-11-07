@@ -15,6 +15,7 @@ import {
     isNinCompareOp,
     isRegexCompareOp,
     isRegexiCompareOp,
+    isExistsCompareOp,
     isWithRef, isMathOp,
     WithRef
 } from './typeGuards';
@@ -108,6 +109,10 @@ async function evaluateCompareOp<C extends Context, Ignore>(expressionValue: Ext
         const regexpiValue = computeValue(context, validation, expressionValue.regexpi, expressionKey);
         expressionStringAssertion(expressionKey, regexpiValue);
         return Boolean(new RegExp(regexpiValue, `i`).exec(contextValue));
+    } else if (isExistsCompareOp(expressionValue)) {
+        const shouldExist = expressionValue.exists;
+        const doesExist = contextValue !== null && contextValue !== undefined;
+        return shouldExist ? doesExist : !doesExist;
     } else if (isGtCompareOp(expressionValue)) {
         contextNumberAssertion(expressionKey, contextValue);
         const gtValue = computeValue(context, validation, expressionValue.gt, expressionKey);

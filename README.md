@@ -163,6 +163,7 @@ There are 4 types of operators you can use (evaluated in that order of precedenc
             - `nin: any[]` - True if *not* in an array of values. Comparison is done using the `===` operator
             - `inq: any[]` - True if in an array of values. Comparison is done using the `===` operator
             - `between: readonly [number, number] (as const)` - True if the value is between the two specified values: greater than or equal to first value and less than or equal to second value.
+            - `exists: boolean` - True if the value is not null or undefined (when `exists: true`), or True if the value is null or undefined (when `exists: false`). Note: Falsy values like `0`, `false`, and `""` are considered as existing.
     - `{property: value}`
         - compares the property to that value (shorthand to the `eq` op, without the option to user math or refs to other properties)
 
