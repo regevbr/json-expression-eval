@@ -9,6 +9,7 @@ permissions:
   contents: read # Allows checking out the repository contents
 
 env:
+  NODE_VERSION: 24.x
   REGISTRY: https://registry.npmjs.org/
 
 jobs:
@@ -20,9 +21,6 @@ jobs:
   publish_version:
     name: Publish to NPM
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 24.x ]
     needs: [ test ]
     steps:
 
@@ -33,10 +31,10 @@ jobs:
         run: |
           git fetch --prune --unshallow
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
           registry-url: ${{ env.REGISTRY }}
 
       - name: Get yarn cache directory
@@ -48,16 +46,15 @@ jobs:
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ubuntu-latest-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ubuntu-latest-${{ env.NODE_VERSION }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ubuntu-latest-${{ matrix.node-version }}-yarn-
+            ubuntu-latest-${{ env.NODE_VERSION }}-yarn-
 
       - name: Install dependencies and build
         run: |
           yarn install --ignore-engines
           yarn build
 
-      - name: Install dependencies and build
+      - name: Publish
         run: |
-          yarn install --ignore-engines
-          yarn publish
+          npm publish
