@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import {expect} from 'chai';
-import {evaluate, ExpressionHandler, validate} from '../';
+import {evaluate, ExpressionHandler, validate, ValidationContext} from '../';
 import  chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiAsPromised);
@@ -1716,7 +1716,7 @@ describe('evaluator', () => {
                 userId: string;
                 recordNested?: Record<string, string | boolean | number | undefined>;
             };
-            const context: Context = {
+            const context: ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 recordNested: {
@@ -1738,7 +1738,7 @@ describe('evaluator', () => {
                 specialNested?: Record<string, string | boolean | number | undefined |
                     (string | boolean | number | (string | boolean | number)[])[]>;
             };
-            const context:Context = {
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1760,7 +1760,7 @@ describe('evaluator', () => {
                 specialNested?: Record<string, string | boolean | number | undefined |
                     (string | boolean | number | (string | boolean | number)[])[]>;
             };
-            const context: Context = {
+            const context: ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1782,7 +1782,7 @@ describe('evaluator', () => {
                 specialNested?: Record<string, string | boolean | number | undefined |
                     (string | boolean | number | (string | boolean | number)[])[]>;
             };
-            const context:Context = {
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1804,7 +1804,7 @@ describe('evaluator', () => {
                 specialNested?: Record<string, string | boolean | number | undefined |
                     (string | boolean | number | (string | boolean | number)[])[]>;
             };
-            const context:Context = {
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1826,7 +1826,7 @@ describe('evaluator', () => {
                 specialNested?: Record<string, string | boolean | number | undefined |
                     (string | boolean | number | (string | boolean | number)[])[]>;
             };
-            const context:Context = {
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1848,7 +1848,7 @@ describe('evaluator', () => {
                 specialNested?: Record<string, string | boolean | number | undefined |
                     (string | boolean | number | (string | boolean | number)[])[]>;
             };
-            const context:Context = {
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1869,7 +1869,7 @@ describe('evaluator', () => {
                 userId: string;
                 recordNested?: Record<string, string | boolean | number | undefined>;
             };
-            const context:Context = {
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 recordNested: {
@@ -1894,7 +1894,7 @@ describe('evaluator', () => {
                 specialNested?: Record<string, string | boolean | number | undefined |
                     (string | boolean | number | (string | boolean | number)[])[]>;
             };
-            const context:Context = {
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
