@@ -1,0 +1,63 @@
+name: Publish
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  id-token: write # Required for OIDC authentication
+  contents: read # Allows checking out the repository contents
+
+env:
+  REGISTRY: https://registry.npmjs.org/
+
+jobs:
+  test:
+    name: Run tests before publish
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  publish_version:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 24.x ]
+    needs: [ test ]
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: fetch
+        run: |
+          git fetch --prune --unshallow
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: ${{ env.REGISTRY }}
+
+      - name: Get yarn cache directory
+        id: yarn-cache-dir
+        run: |
+          echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ubuntu-latest-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ubuntu-latest-${{ matrix.node-version }}-yarn-
+
+      - name: Install dependencies and build
+        run: |
+          yarn install --ignore-engines
+          yarn build
+
+      - name: Install dependencies and build
+        run: |
+          yarn install --ignore-engines
+          yarn publish
