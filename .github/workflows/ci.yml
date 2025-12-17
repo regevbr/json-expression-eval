@@ -10,6 +10,10 @@ on:
     branches:
       - '**'
 
+permissions:
+  id-token: write # Required for OIDC authentication
+  contents: read # Allows checking out the repository contents
+
 env:
   PRIMARY_NODE_VERSION: 24.x
   PRIMARY_OS: ubuntu-latest
