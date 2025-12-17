@@ -106,12 +106,14 @@ export type ExtendedCompareOp<C extends Context, Ignore, V extends Primitive> =
     NinCompareOp<C, Ignore, V> | NumberCompareOps<C, Ignore, V> | StringCompareOps<C, Ignore, V> |
     ExistsCompareOp;
 
+type ExtractPrimitive<T> = Extract<Union.NonNullable<T>, Primitive>;
+
 export type PropertyCompareOps<C extends Context, Ignore> = {
     [K in StringPaths<C, Ignore>]:
-    Union.NonNullable<Object.Path<C, String.Split<K, '.'>>> extends Primitive ?
-        (Object.Path<C, String.Split<K, '.'>> |
-            ExtendedCompareOp<C, Ignore, Union.NonNullable<Object.Path<C, String.Split<K, '.'>>>>)
-        : never;
+    ExtractPrimitive<Object.Path<C, String.Split<K, '.'>>> extends never ?
+        ExistsCompareOp :
+        (Extract<Object.Path<C, String.Split<K, '.'>>, Primitive | undefined> |
+            ExtendedCompareOp<C, Ignore, ExtractPrimitive<Object.Path<C, String.Split<K, '.'>>>>)
 };
 
 export interface AndCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,

@@ -198,3 +198,55 @@ expectError(new ExpressionHandler<Context, ExpressionFunction,
     Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: ['s']}}, functions));
 expectError(new ExpressionHandler<Context, ExpressionFunction,
     Ignore, CustomEvaluatorFuncRunOptions>({timesCounter: {between: [4, 5]}}, erroredFunctions));
+
+// Record with union types including arrays
+type ContextWithRecords = {
+    timesCounter: number;
+    userId: string;
+    recordNested?: Record<string, string | boolean | number | undefined>;
+    specialNested?: Record<string, string | boolean | number | undefined |
+        (string | boolean | number | (string | boolean | number)[])[]>;
+}
+
+type TestExpressionEvalWithRecords = ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>;
+
+declare const functionsForRecords: ExpressionFunction;
+
+// recordNested - should extract primitive types from Record union
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'recordNested.a': 5}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'recordNested.a': 'test'}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'recordNested.a': true}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'recordNested.a': {eq: 5}}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'recordNested.a': {neq: 'test'}}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'recordNested.b': {gt: 10}}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'recordNested.b': {inq: [1, 2, 3]}}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'recordNested.b': {exists: true}}, functionsForRecords));
+
+// specialNested - should extract primitive types, ignoring array types in union
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.a': 5}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.a': 'test'}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.a': true}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.a': {eq: 5}}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.a': {neq: 'test'}}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.b': {gt: 10}}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.c': {regexp: '^test'}}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.c': {inq: ['a', 'b']}}, functionsForRecords));
+expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.c': {exists: true}}, functionsForRecords));
