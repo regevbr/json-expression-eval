@@ -253,4 +253,4 @@ expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecor
 expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
     Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.c': {exists: true}}, functionsForRecords));
 expectType<TestExpressionEvalWithRecords>(new ExpressionHandler<ContextWithRecords, ExpressionFunction,
-    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.c': {eq: {ref: 'specialNested.b'}}}, functionsForRecords));
+    Ignore, CustomEvaluatorFuncRunOptions>({'specialNested.c': {eq: {ref: 'recordNested.b'}}}, functionsForRecords));
