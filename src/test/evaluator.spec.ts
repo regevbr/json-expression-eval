@@ -1650,4 +1650,166 @@ describe('evaluator', () => {
         });
     });
 
+    describe('Record with union types including arrays', () => {
+        it('should evaluate recordNested.a with short eq to true', async () => {
+            const expression = {
+                'recordNested.a': 5,
+            };
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                recordNested?: Record<string, string | boolean | number | undefined>;
+            };
+            const context: Context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                recordNested: {
+                    a: 5,
+                },
+            };
+            const validationContext = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                recordNested: {
+                    a: 5,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate recordNested.a with short eq to false', async () => {
+            const expression = {
+                'recordNested.a': 5,
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                recordNested: {
+                    a: 10,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        });
+
+        it('should evaluate specialNested.a with short eq to true (ignoring array type)', async () => {
+            const expression = {
+                'specialNested.a': 5,
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                specialNested: {
+                    a: 5,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate specialNested.a with eq operator to true', async () => {
+            const expression = {
+                'specialNested.a': {eq: 5},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                specialNested: {
+                    a: 5,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate specialNested.b with gt operator to true', async () => {
+            const expression = {
+                'specialNested.b': {gt: 10},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                specialNested: {
+                    b: 15,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate specialNested.name with regexp operator to true', async () => {
+            const expression = {
+                'specialNested.name': {regexp: '^test'},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                specialNested: {
+                    name: 'test123',
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate specialNested.id with inq operator to true', async () => {
+            const expression = {
+                'specialNested.id': {inq: [1, 2, 3]},
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                specialNested: {
+                    id: 2,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate recordNested.status with boolean value to true', async () => {
+            const expression = {
+                'recordNested.status': true,
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                recordNested: {
+                    status: true,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should work with or operator combining specialNested paths', async () => {
+            const expression = {
+                or: [
+                    {'specialNested.a': 5},
+                    {'specialNested.b': {gt: 10}},
+                ],
+            };
+            const context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                specialNested: {
+                    a: 3,
+                    b: 15,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+    });
+
 });
