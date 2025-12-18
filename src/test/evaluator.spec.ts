@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import {expect} from 'chai';
-import {evaluate, ExpressionHandler, validate} from '../';
+import {evaluate, ExpressionHandler, validate, ValidationContext} from '../';
 import  chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiAsPromised);
@@ -1679,11 +1679,44 @@ describe('evaluator', () => {
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
 
+        it('should evaluate recordNested.a with ref', async () => {
+            const expression = {
+                'recordNested.a': {eq: {ref: 'recordNested.a' as const}},
+            };
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                recordNested?: Record<string, string | boolean | number | undefined>;
+            };
+            const context: Context = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                recordNested: {
+                    a: 5,
+                },
+            };
+            const validationContext = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                recordNested: {
+                    a: 5,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
         it('should evaluate recordNested.a with short eq to false', async () => {
             const expression = {
                 'recordNested.a': 5,
             };
-            const context = {
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                recordNested?: Record<string, string | boolean | number | undefined>;
+            };
+            const context: ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 recordNested: {
@@ -1699,7 +1732,35 @@ describe('evaluator', () => {
             const expression = {
                 'specialNested.a': 5,
             };
-            const context = {
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                specialNested?: Record<string, string | boolean | number | undefined |
+                    (string | boolean | number | (string | boolean | number)[])[]>;
+            };
+            const context:ValidationContext<Context> = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                specialNested: {
+                    a: 5,
+                },
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        });
+
+        it('should evaluate specialNested.a with ref', async () => {
+            const expression = {
+                'specialNested.a': {eq: {ref: 'specialNested.a' as const}},
+            };
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                specialNested?: Record<string, string | boolean | number | undefined |
+                    (string | boolean | number | (string | boolean | number)[])[]>;
+            };
+            const context: ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1715,7 +1776,13 @@ describe('evaluator', () => {
             const expression = {
                 'specialNested.a': {eq: 5},
             };
-            const context = {
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                specialNested?: Record<string, string | boolean | number | undefined |
+                    (string | boolean | number | (string | boolean | number)[])[]>;
+            };
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1731,7 +1798,13 @@ describe('evaluator', () => {
             const expression = {
                 'specialNested.b': {gt: 10},
             };
-            const context = {
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                specialNested?: Record<string, string | boolean | number | undefined |
+                    (string | boolean | number | (string | boolean | number)[])[]>;
+            };
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1747,7 +1820,13 @@ describe('evaluator', () => {
             const expression = {
                 'specialNested.name': {regexp: '^test'},
             };
-            const context = {
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                specialNested?: Record<string, string | boolean | number | undefined |
+                    (string | boolean | number | (string | boolean | number)[])[]>;
+            };
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1763,7 +1842,13 @@ describe('evaluator', () => {
             const expression = {
                 'specialNested.id': {inq: [1, 2, 3]},
             };
-            const context = {
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                specialNested?: Record<string, string | boolean | number | undefined |
+                    (string | boolean | number | (string | boolean | number)[])[]>;
+            };
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1779,7 +1864,12 @@ describe('evaluator', () => {
             const expression = {
                 'recordNested.status': true,
             };
-            const context = {
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                recordNested?: Record<string, string | boolean | number | undefined>;
+            };
+            const context:ValidationContext<Context> = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 recordNested: {
@@ -1798,7 +1888,22 @@ describe('evaluator', () => {
                     {'specialNested.b': {gt: 10}},
                 ],
             };
-            const context = {
+            type Context = {
+                timesCounter: number;
+                userId: string;
+                specialNested?: Record<string, string | boolean | number | undefined |
+                    (string | boolean | number | (string | boolean | number)[])[]>;
+            };
+            const validationContext: ValidationContext<Context> = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                specialNested: {
+                    a: 3,
+                    b: 15,
+                },
+            };
+
+            const context: Context = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1807,7 +1912,7 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
     });

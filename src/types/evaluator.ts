@@ -13,7 +13,7 @@ export type Primitive = string | number | boolean;
 
 export type PropertyPathsOfType<C extends Context, Ignore, V extends Primitive> = {
     [K in StringPaths<C, Ignore>]:
-    Union.NonNullable<Object.Path<C, String.Split<K, '.'>>> extends V ? 1 : 0;
+    Union.NonNullable<Extract<Object.Path<C, String.Split<K, '.'>>, V>> extends V ? 1 : 0;
 };
 
 export type ExtractPropertyPathsOfType<T extends Record<string, 1 | 0>> = {
