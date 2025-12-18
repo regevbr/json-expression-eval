@@ -1894,7 +1894,16 @@ describe('evaluator', () => {
                 specialNested?: Record<string, string | boolean | number | undefined |
                     (string | boolean | number | (string | boolean | number)[])[]>;
             };
-            const context:ValidationContext<Context> = {
+            const validationContext: ValidationContext<Context> = {
+                timesCounter: 5,
+                userId: 'user@example.com',
+                specialNested: {
+                    a: 3,
+                    b: 15,
+                },
+            };
+
+            const context: Context = {
                 timesCounter: 5,
                 userId: 'user@example.com',
                 specialNested: {
@@ -1903,7 +1912,7 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
             expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
         });
     });
