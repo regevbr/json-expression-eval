@@ -2121,6 +2121,39 @@ describe('evaluator', () => {
             expect(result.reason).to.eql(undefined);
             expect(fnCounter).to.eql(2);  // short-circuited at second expression
         });
+
+        it('should fail on empty or op', async () => {
+            const expression = {or: []} as any;
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            await expect(evaluateWithReason(expression, context, functionsTable, runOpts))
+                .to.eventually.rejectedWith(Error, 'Invalid expression - or operator must have at least one expression');
+        });
+
+        it('should fail on empty and op', async () => {
+            const expression = {and: []} as any;
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            await expect(evaluateWithReason(expression, context, functionsTable, runOpts))
+                .to.eventually.rejectedWith(Error, 'Invalid expression - and operator must have at least one expression');
+        });
+
+        it('should fail on too many keys', async () => {
+            const expression = {timesCounter: 1, userId: 'a'} as any;
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            await expect(evaluateWithReason(expression, context, functionsTable, runOpts))
+                .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
+        });
+
+        it('should return false with undefined reason for non-existing property', async () => {
+            const expression = {nonExistent: 1} as any;
+            const context = {userId: 'r@a.com', timesCounter: 8};
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
+            expect(result.result).to.eql(false);
+            expect(result.reason).to.eql(undefined);
+        });
     });
 
     describe('Record with union types including arrays', () => {
