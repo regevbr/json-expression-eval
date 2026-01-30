@@ -5,6 +5,18 @@ import  chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiAsPromised);
 
+// Helper to verify that the reason expression evaluates to the same result
+async function verifyReasonEvaluatesToSameResult(
+    result: {result: boolean; reason: any},
+    context: any,
+    fnTable: any,
+    runOpts: any
+): Promise<void> {
+    const reasonResult = await evaluate(result.reason, context, fnTable, runOpts);
+    expect(reasonResult).to.eql(result.result,
+        `Reason expression should evaluate to ${result.result}, but got ${reasonResult}`);
+}
+
 const functionsTable = {
     user: async (user: string, context: { userId: string },
                  runOpts: {validation: boolean, custom: {dryRun: boolean}}): Promise<boolean> => {
@@ -1663,6 +1675,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({timesCounter: 5});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return result with reason for false expression', async () => {
@@ -1677,6 +1690,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(false);
             expect(result.reason).to.eql({timesCounter: 5});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return only the first matching expression in OR as reason', async () => {
@@ -1695,6 +1709,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({or: [{timesCounter: 5}]});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return all matching expressions in AND as reason', async () => {
@@ -1712,6 +1727,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({and: [{timesCounter: 5}, {userId: 'a'}]});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason when AND fails', async () => {
@@ -1729,6 +1745,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(false);
             expect(result.reason).to.eql({and: [{userId: 'b'}]});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for nested OR in AND', async () => {
@@ -1751,6 +1768,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({and: [{timesCounter: 5}, {or: [{userId: 'a'}]}]});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for NOT expression', async () => {
@@ -1763,6 +1781,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({not: {user: 'a@a.com'}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason when NOT fails', async () => {
@@ -1776,6 +1795,7 @@ describe('evaluator', () => {
             expect(result.result).to.eql(false);
             // NOT is false because inner {user: 'r@a.com'} was true
             expect(result.reason).to.eql({not: {user: 'r@a.com'}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return minimal reason for NOT on AND (first failing condition)', async () => {
@@ -1796,6 +1816,7 @@ describe('evaluator', () => {
             expect(result.result).to.eql(true);
             // Should return NOT of just the first failing condition, not the entire AND
             expect(result.reason).to.eql({not: {and: [{userId: 'admin'}]}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return minimal reason for NOT on OR (all failing conditions)', async () => {
@@ -1816,6 +1837,7 @@ describe('evaluator', () => {
             expect(result.result).to.eql(true);
             // OR is false because all conditions failed, so the reason includes all
             expect(result.reason).to.eql({not: {or: [{userId: 'admin'}, {userId: 'root'}]}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return minimal reason for nested NOT on AND with nested OR', async () => {
@@ -1841,6 +1863,7 @@ describe('evaluator', () => {
             expect(result.result).to.eql(true);
             // AND failed because the nested OR failed (first condition in AND)
             expect(result.reason).to.eql({not: {and: [{or: [{userId: 'admin'}, {userId: 'root'}]}]}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should handle triple NOT correctly', async () => {
@@ -1860,6 +1883,7 @@ describe('evaluator', () => {
             // !(!(!false)) = !(!(true)) = !false = true
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({not: {not: {not: {userId: 'admin'}}}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should handle deep expression with multiple NOTs at different levels', async () => {
@@ -1902,6 +1926,7 @@ describe('evaluator', () => {
                     {or: [{not: {timesCounter: 100}}]},
                 ],
             });
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should handle NOT inside OR inside NOT', async () => {
@@ -1930,6 +1955,7 @@ describe('evaluator', () => {
                     ],
                 },
             });
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for user function that returns true', async () => {
@@ -1942,6 +1968,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({user: 'r@a.com'});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for user function that returns false', async () => {
@@ -1954,6 +1981,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(false);
             expect(result.reason).to.eql({user: 'a@a.com'});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for complex nested expression', async () => {
@@ -1982,6 +2010,7 @@ describe('evaluator', () => {
             expect(result.result).to.eql(true);
             // The reason should be the second AND block that evaluated to true
             expect(result.reason).to.eql({or: [{and: [{timesCounter: 5}, {userId: 'a'}]}]});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should work with ExpressionHandler.evaluateWithReason', async () => {
@@ -2005,6 +2034,7 @@ describe('evaluator', () => {
             const result = await exp.evaluateWithReason(context, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({or: [{timesCounter: 5}]});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for gt operator', async () => {
@@ -2019,6 +2049,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({timesCounter: {gt: 3}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for between operator', async () => {
@@ -2033,6 +2064,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({timesCounter: {between: [3, 10]}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for inq operator', async () => {
@@ -2047,6 +2079,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({timesCounter: {inq: [3, 5, 7]}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for regexp operator', async () => {
@@ -2061,6 +2094,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({userId: {regexp: '^a'}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should return reason for exists operator', async () => {
@@ -2075,6 +2109,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({userId: {exists: true}});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
         it('should short-circuit OR and return first matching reason', async () => {
@@ -2098,6 +2133,7 @@ describe('evaluator', () => {
             expect(result.result).to.eql(true);
             expect(result.reason).to.eql({or: [{eval: true}]});
             expect(fnCounter).to.eql(2);  // short-circuited at second expression
+            await verifyReasonEvaluatesToSameResult(result, context, fnTable, runOpts);
         });
 
         it('should short-circuit AND and return reason on first false', async () => {
@@ -2121,6 +2157,7 @@ describe('evaluator', () => {
             expect(result.result).to.eql(false);
             expect(result.reason).to.eql({and: [{eval: false}]});
             expect(fnCounter).to.eql(2);  // short-circuited at second expression
+            await verifyReasonEvaluatesToSameResult(result, context, fnTable, runOpts);
         });
 
         it('should fail on empty or op', async () => {
@@ -2156,6 +2193,7 @@ describe('evaluator', () => {
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(false);
             expect(result.reason).to.eql({nonExistent: 1});
+            await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
     });
 
