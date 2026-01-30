@@ -174,7 +174,8 @@ async function handleAndOp<C extends Context, F extends FunctionsTable<C, Custom
             currExpression, context, functionsTable, validation, runOptions);
         if (!runResult.result && !validation) {
             // AND fails on first false
-            const reason = {and: [runResult.reason] as const}as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
+            const reason = {and: [runResult.reason] as const} as
+                Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
             return {result: false, reason};
         }
         reasons.push(runResult.reason);
