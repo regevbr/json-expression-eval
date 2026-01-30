@@ -2127,7 +2127,8 @@ describe('evaluator', () => {
             const context = {userId: 'r@a.com', timesCounter: 8};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             await expect(evaluateWithReason(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - or operator must have at least one expression');
+                .to.eventually.rejectedWith(Error,
+                    'Invalid expression - or operator must have at least one expression');
         });
 
         it('should fail on empty and op', async () => {
@@ -2135,7 +2136,8 @@ describe('evaluator', () => {
             const context = {userId: 'r@a.com', timesCounter: 8};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             await expect(evaluateWithReason(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - and operator must have at least one expression');
+                .to.eventually.rejectedWith(Error,
+                    'Invalid expression - and operator must have at least one expression');
         });
 
         it('should fail on too many keys', async () => {
