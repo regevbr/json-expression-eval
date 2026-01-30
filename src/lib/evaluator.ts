@@ -227,19 +227,9 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
     } else if (isNotCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression)) {
         const innerResult = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
             expression.not, context, functionsTable, validation, runOptions);
-        if (innerResult.result) {
-            // NOT is false because inner was true - use the inner's true reason
-            return {
-                result: false,
-                reason: {not: innerResult.reason} as
-                    Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
-            };
-        }
-        // NOT is true because inner was false - use the inner's false reason
         return {
-            result: true,
-            reason: {not: innerResult.reason} as
-                Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+            result: !innerResult.result,
+            reason: {not: innerResult.reason} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
         };
     } else if (isFunctionCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression,
         functionsTable, expressionKey)) {
@@ -247,17 +237,13 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
             custom: runOptions,
             validation,
         });
-        if (result) {
-            return {result: true, reason: expression};
-        }
-        return {result: false, reason: expression};
+        return {result, reason: expression};
     } else {
         const {value: contextValue, exists} = getFromPath(context, expressionKey);
         if (validation && !exists) {
             throw new Error(`Invalid expression - unknown context key ${expressionKey}`);
         }
         if (!exists) {
-            // In evaluation mode, non-existing property returns false
             return {result: false, reason: expression};
         }
         const result = await evaluateCompareOp<C, Ignore>(
@@ -265,10 +251,7 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
                 [expressionKey as any as keyof PropertyCompareOps<C, Ignore>] as
                 unknown as ExtendedCompareOp<any, any, any>,
             expressionKey, contextValue, context, validation);
-        if (result) {
-            return {result: true, reason: expression};
-        }
-        return {result: false, reason: expression};
+        return {result, reason: expression};
     }
 }
 
