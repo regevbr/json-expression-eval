@@ -243,9 +243,6 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
         if (validation && !exists) {
             throw new Error(`Invalid expression - unknown context key ${expressionKey}`);
         }
-        if (!exists) {
-            return {result: false, reason: expression};
-        }
         const result = await evaluateCompareOp<C, Ignore>(
             (expression as PropertyCompareOps<C, Ignore>)
                 [expressionKey as any as keyof PropertyCompareOps<C, Ignore>] as
