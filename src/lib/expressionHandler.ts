@@ -1,9 +1,10 @@
-import {evaluate, validate} from './evaluator';
+import {evaluate, validate, evaluateWithReason} from './evaluator';
 import {
     Context,
     Expression,
     FunctionsTable,
-    ValidationContext
+    ValidationContext,
+    EvaluationResult
 } from '../types';
 
 export class ExpressionHandler<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
@@ -22,6 +23,12 @@ export class ExpressionHandler<C extends Context, F extends FunctionsTable<C, Cu
         : Promise<void> {
         await validate<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
             this.expression, validationContext, this.functionsTable, runOptions);
+    }
+
+    public async evaluateWithReason(context: C, runOptions: CustomEvaluatorFuncRunOptions)
+        : Promise<EvaluationResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
+        return evaluateWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+            this.expression, context, this.functionsTable, runOptions);
     }
 
 }
