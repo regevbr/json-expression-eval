@@ -172,17 +172,11 @@ async function handleAndOp<C extends Context, F extends FunctionsTable<C, Custom
     for (const currExpression of andExpression) {
         const runResult = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
             currExpression, context, functionsTable, validation, runOptions);
-        if (!runResult.result) {
-            if (validation) {
-                // In validation mode, continue to validate all expressions
-                reasons.push(runResult.reason);
-            } else {
-                // AND fails on first false - the false reason is the minimal expression that caused failure
-                return {result: false, reason: runResult.reason};
-            }
-        } else {
-            reasons.push(runResult.reason);
+        if (!runResult.result && !validation) {
+            // AND fails on first false - return minimal expression that caused failure
+            return {result: false, reason: runResult.reason};
         }
+        reasons.push(runResult.reason);
     }
     return {
         result: true,
@@ -202,19 +196,12 @@ async function handleOrOp<C extends Context, F extends FunctionsTable<C, CustomE
     for (const currExpression of orExpression) {
         const runResult = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
             currExpression, context, functionsTable, validation, runOptions);
-        if (runResult.result) {
-            if (validation) {
-                // In validation mode, continue to validate all expressions
-                reasons.push(runResult.reason);
-            } else {
-                // OR succeeds on first true
-                return {result: true, reason: runResult.reason};
-            }
-        } else {
-            reasons.push(runResult.reason);
+        if (runResult.result && !validation) {
+            // OR succeeds on first true
+            return {result: true, reason: runResult.reason};
         }
+        reasons.push(runResult.reason);
     }
-    // OR fails when all are false - the false reason is all the false sub-expressions
     return {
         result: false,
         reason: {or: reasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
