@@ -153,18 +153,11 @@ async function evaluateCompareOp<C extends Context, Ignore>(expressionValue: Ext
     }
 }
 
-// Internal type for run result with reason
-interface RunResult<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore, CustomEvaluatorFuncRunOptions> {
-    result: boolean;
-    reason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
-}
-
 async function handleAndOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
     Ignore, CustomEvaluatorFuncRunOptions>
 (andExpression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[], context: C, functionsTable: F,
  validation: boolean, runOptions: CustomEvaluatorFuncRunOptions)
-    : Promise<RunResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
+    : Promise<EvaluationResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
     if (andExpression.length === 0) {
         throw new Error('Invalid expression - and operator must have at least one expression');
     }
@@ -190,7 +183,7 @@ async function handleOrOp<C extends Context, F extends FunctionsTable<C, CustomE
     Ignore, CustomEvaluatorFuncRunOptions>(
         orExpression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[],
         context: C, functionsTable: F, validation: boolean, runOptions: CustomEvaluatorFuncRunOptions)
-    : Promise<RunResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
+    : Promise<EvaluationResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
     if (orExpression.length === 0) {
         throw new Error('Invalid expression - or operator must have at least one expression');
     }
@@ -215,7 +208,7 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
     Ignore, CustomEvaluatorFuncRunOptions>(
         expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C,
         functionsTable: F, validation: boolean, runOptions: CustomEvaluatorFuncRunOptions)
-    : Promise<RunResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
+    : Promise<EvaluationResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
     const expressionKeys = objectKeys(expression);
     if (expressionKeys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
