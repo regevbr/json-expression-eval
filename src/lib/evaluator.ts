@@ -173,8 +173,9 @@ async function handleAndOp<C extends Context, F extends FunctionsTable<C, Custom
         const runResult = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
             currExpression, context, functionsTable, validation, runOptions);
         if (!runResult.result && !validation) {
-            // AND fails on first false - return minimal expression that caused failure
-            return {result: false, reason: runResult.reason};
+            // AND fails on first false
+            const reason = {and: [runResult.reason] as const}as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
+            return {result: false, reason};
         }
         reasons.push(runResult.reason);
     }
@@ -198,7 +199,8 @@ async function handleOrOp<C extends Context, F extends FunctionsTable<C, CustomE
             currExpression, context, functionsTable, validation, runOptions);
         if (runResult.result && !validation) {
             // OR succeeds on first true
-            return {result: true, reason: runResult.reason};
+            const reason = {or: [runResult.reason] as const} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
+            return {result: true, reason};
         }
         reasons.push(runResult.reason);
     }
