@@ -368,5 +368,5 @@ export const evaluateWithReason = async <C extends Context, F extends FunctionsT
     if (runResult.result) {
         return {result: true, reason: runResult.trueReason};
     }
-    return {result: false, reason: undefined};
+    return {result: false, reason: runResult.falseReason};
 };

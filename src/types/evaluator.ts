@@ -162,5 +162,5 @@ export type ValidationContext<C extends Context, Ignore = never> = NonNullable<C
 export interface EvaluationResult<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
     Ignore, CustomEvaluatorFuncRunOptions> {
     result: boolean;
-    reason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions> | undefined;
+    reason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
 }

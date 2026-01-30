@@ -1665,7 +1665,7 @@ describe('evaluator', () => {
             expect(result.reason).to.eql({timesCounter: 5});
         });
 
-        it('should return result with undefined reason for false expression', async () => {
+        it('should return result with reason for false expression', async () => {
             const expression = {
                 timesCounter: 5,
             };
@@ -1676,7 +1676,7 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(false);
-            expect(result.reason).to.eql(undefined);
+            expect(result.reason).to.eql({timesCounter: 5});
         });
 
         it('should return only the first matching expression in OR as reason', async () => {
@@ -1714,11 +1714,11 @@ describe('evaluator', () => {
             expect(result.reason).to.eql({and: [{timesCounter: 5}, {userId: 'a'}]});
         });
 
-        it('should return undefined reason when AND fails', async () => {
+        it('should return reason when AND fails', async () => {
             const expression = {
                 and: [
                     {timesCounter: 5},
-                    {userId: 'b'},  // false
+                    {userId: 'b'},  // false - this is the reason
                 ],
             };
             const context = {
@@ -1728,7 +1728,7 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(false);
-            expect(result.reason).to.eql(undefined);
+            expect(result.reason).to.eql({userId: 'b'});
         });
 
         it('should return reason for nested OR in AND', async () => {
@@ -1765,7 +1765,7 @@ describe('evaluator', () => {
             expect(result.reason).to.eql({not: {user: 'a@a.com'}});
         });
 
-        it('should return undefined reason when NOT fails', async () => {
+        it('should return reason when NOT fails', async () => {
             const expression = {not: {user: 'r@a.com'}};
             const context = {
                 userId: 'r@a.com',
@@ -1774,7 +1774,8 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(false);
-            expect(result.reason).to.eql(undefined);
+            // NOT is false because inner {user: 'r@a.com'} was true
+            expect(result.reason).to.eql({not: {user: 'r@a.com'}});
         });
 
         it('should return minimal reason for NOT on AND (first failing condition)', async () => {
@@ -1943,7 +1944,7 @@ describe('evaluator', () => {
             expect(result.reason).to.eql({user: 'r@a.com'});
         });
 
-        it('should return undefined reason for user function that returns false', async () => {
+        it('should return reason for user function that returns false', async () => {
             const expression = {user: 'a@a.com'};
             const context = {
                 userId: 'r@a.com',
@@ -1952,7 +1953,7 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(false);
-            expect(result.reason).to.eql(undefined);
+            expect(result.reason).to.eql({user: 'a@a.com'});
         });
 
         it('should return reason for complex nested expression', async () => {
@@ -2099,7 +2100,7 @@ describe('evaluator', () => {
             expect(fnCounter).to.eql(2);  // short-circuited at second expression
         });
 
-        it('should short-circuit AND and return undefined reason on first false', async () => {
+        it('should short-circuit AND and return reason on first false', async () => {
             let fnCounter = 0;
             const fnTable = {
                 eval: (arg: boolean): boolean => {
@@ -2118,7 +2119,7 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, fnTable, runOpts);
             expect(result.result).to.eql(false);
-            expect(result.reason).to.eql(undefined);
+            expect(result.reason).to.eql({eval: false});
             expect(fnCounter).to.eql(2);  // short-circuited at second expression
         });
 
@@ -2148,13 +2149,13 @@ describe('evaluator', () => {
                 .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
         });
 
-        it('should return false with undefined reason for non-existing property', async () => {
+        it('should return false with reason for non-existing property', async () => {
             const expression = {nonExistent: 1} as any;
             const context = {userId: 'r@a.com', timesCounter: 8};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             expect(result.result).to.eql(false);
-            expect(result.reason).to.eql(undefined);
+            expect(result.reason).to.eql({nonExistent: 1});
         });
     });
 
