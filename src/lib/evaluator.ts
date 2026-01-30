@@ -248,7 +248,8 @@ export const validate = async <C extends Context, F extends FunctionsTable<C, Cu
 type RunResultWithReason<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
     Ignore, CustomEvaluatorFuncRunOptions> = {
     result: boolean;
-    reason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions> | undefined;
+    trueReason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions> | undefined;
+    falseReason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions> | undefined;
 };
 
 async function handleAndOpWithReason<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
@@ -260,18 +261,20 @@ async function handleAndOpWithReason<C extends Context, F extends FunctionsTable
     }
     const reasons: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[] = [];
     for (const currExpression of andExpression) {
-        const {result, reason} = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(currExpression,
-            context, functionsTable, runOptions);
+        const {result, trueReason, falseReason} = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+            currExpression, context, functionsTable, runOptions);
         if (!result) {
-            return {result: false, reason: undefined};
+            // AND fails on first false - the false reason is the minimal expression that caused failure
+            return {result: false, trueReason: undefined, falseReason: falseReason ?? currExpression};
         }
-        if (reason !== undefined) {
-            reasons.push(reason);
+        if (trueReason !== undefined) {
+            reasons.push(trueReason);
         }
     }
     return {
         result: true,
-        reason: {and: reasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+        trueReason: {and: reasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+        falseReason: undefined,
     };
 }
 
@@ -283,14 +286,23 @@ async function handleOrOpWithReason<C extends Context, F extends FunctionsTable<
     if (orExpression.length === 0) {
         throw new Error('Invalid expression - or operator must have at least one expression');
     }
+    const falseReasons: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[] = [];
     for (const currExpression of orExpression) {
-        const {result, reason} = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+        const {result, trueReason, falseReason} = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
             currExpression, context, functionsTable, runOptions);
         if (result) {
-            return {result: true, reason};
+            return {result: true, trueReason, falseReason: undefined};
+        }
+        if (falseReason !== undefined) {
+            falseReasons.push(falseReason);
         }
     }
-    return {result: false, reason: undefined};
+    // OR fails when all are false - the false reason is all the false sub-expressions
+    return {
+        result: false,
+        trueReason: undefined,
+        falseReason: {or: falseReasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+    };
 }
 
 async function runWithReason<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
@@ -310,17 +322,26 @@ async function runWithReason<C extends Context, F extends FunctionsTable<C, Cust
         return handleOrOpWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression.or, context,
             functionsTable, runOptions);
     } else if (isNotCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression)) {
-        const {result: innerResult, reason: innerReason} = await runWithReason<C, F, Ignore,
-            CustomEvaluatorFuncRunOptions>(expression.not, context, functionsTable, runOptions);
+        const {result: innerResult, trueReason: innerTrueReason, falseReason: innerFalseReason} =
+            await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+                expression.not, context, functionsTable, runOptions);
         const result = !innerResult;
-        // For 'not', the reason is the 'not' wrapping the inner reason (or the original expression if no inner reason)
         if (result) {
+            // NOT is true because inner was false - use the inner's false reason
             return {
                 result: true,
-                reason: {not: innerReason ?? expression.not} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+                trueReason: {not: innerFalseReason ?? expression.not} as
+                    Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+                falseReason: undefined,
             };
         }
-        return {result: false, reason: undefined};
+        // NOT is false because inner was true - use the inner's true reason
+        return {
+            result: false,
+            trueReason: undefined,
+            falseReason: {not: innerTrueReason ?? expression.not} as
+                Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+        };
     } else if (isFunctionCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression,
         functionsTable, expressionKey)) {
         const result = await functionsTable[expressionKey](expression[expressionKey], context, {
@@ -329,13 +350,14 @@ async function runWithReason<C extends Context, F extends FunctionsTable<C, Cust
         });
         return {
             result,
-            reason: result ? expression : undefined,
+            trueReason: result ? expression : undefined,
+            falseReason: result ? undefined : expression,
         };
     } else {
         const {value: contextValue, exists} = getFromPath(context, expressionKey);
         if (!exists) {
             // In evaluation mode, non-existing property returns false
-            return {result: false, reason: undefined};
+            return {result: false, trueReason: undefined, falseReason: expression};
         }
         const result = await evaluateCompareOp<C, Ignore>(
             (expression as PropertyCompareOps<C, Ignore>)
@@ -344,7 +366,8 @@ async function runWithReason<C extends Context, F extends FunctionsTable<C, Cust
             expressionKey, contextValue, context, false);
         return {
             result,
-            reason: result ? expression : undefined,
+            trueReason: result ? expression : undefined,
+            falseReason: result ? undefined : expression,
         };
     }
 }
@@ -354,6 +377,7 @@ export const evaluateWithReason = async <C extends Context, F extends FunctionsT
         expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C, functionsTable: F
         , runOptions: CustomEvaluatorFuncRunOptions)
     : Promise<EvaluationResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> => {
-    return runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression, context,
-        functionsTable, runOptions);
+    const {result, trueReason} = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+        expression, context, functionsTable, runOptions);
+    return {result, reason: trueReason};
 };

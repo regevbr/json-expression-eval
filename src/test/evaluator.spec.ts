@@ -1777,6 +1777,71 @@ describe('evaluator', () => {
             expect(result.reason).to.eql(undefined);
         });
 
+        it('should return minimal reason for NOT on AND (first failing condition)', async () => {
+            const expression = {
+                not: {
+                    and: [
+                        {userId: 'admin'},  // false - this alone makes AND false
+                        {timesCounter: 5},
+                    ],
+                },
+            };
+            const context = {
+                userId: 'john',
+                timesCounter: 5,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
+            expect(result.result).to.eql(true);
+            // Should return NOT of just the first failing condition, not the entire AND
+            expect(result.reason).to.eql({not: {userId: 'admin'}});
+        });
+
+        it('should return minimal reason for NOT on OR (all failing conditions)', async () => {
+            const expression = {
+                not: {
+                    or: [
+                        {userId: 'admin'},
+                        {userId: 'root'},
+                    ],
+                },
+            };
+            const context = {
+                userId: 'john',
+                timesCounter: 5,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
+            expect(result.result).to.eql(true);
+            // OR is false because all conditions failed, so the reason includes all
+            expect(result.reason).to.eql({not: {or: [{userId: 'admin'}, {userId: 'root'}]}});
+        });
+
+        it('should return minimal reason for nested NOT on AND with nested OR', async () => {
+            const expression = {
+                not: {
+                    and: [
+                        {
+                            or: [
+                                {userId: 'admin'},
+                                {userId: 'root'},
+                            ],
+                        },
+                        {timesCounter: 5},
+                    ],
+                },
+            };
+            const context = {
+                userId: 'john',
+                timesCounter: 5,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
+            expect(result.result).to.eql(true);
+            // AND failed because the nested OR failed (first condition in AND)
+            expect(result.reason).to.eql({not: {or: [{userId: 'admin'}, {userId: 'root'}]}});
+        });
+
         it('should return reason for user function that returns true', async () => {
             const expression = {user: 'r@a.com'};
             const context = {
