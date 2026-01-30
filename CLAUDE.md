@@ -1,6 +1,6 @@
-# json-expression-eval
+# CLAUDE.md
 
-A fully typed Node.js module that evaluates JSON-described boolean expressions using dynamic functions and a given context.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Build & Test Commands
 
@@ -14,41 +14,55 @@ A fully typed Node.js module that evaluates JSON-described boolean expressions u
 - `yarn lint` - Run TSLint
 - `yarn ci` - Full CI pipeline (lint, compile, type tests, coverage)
 
-## Project Structure
+Run a single test:
+```sh
+yarn test:unit --grep "test name pattern"
+```
 
-- `src/lib/evaluator.ts` - Core expression evaluation logic (`evaluate`, `evaluateWithReason`, `validate`)
-- `src/lib/engine.ts` - Rule engine evaluation (`evaluateRules`, `validateRules`)
-- `src/lib/expressionHandler.ts` - `ExpressionHandler` class wrapper
-- `src/lib/rulesEngine.ts` - `RulesEngine` class wrapper
-- `src/types/` - TypeScript type definitions
-- `src/test/` - Unit tests (Mocha/Chai)
-- `src/test/types/` - TSD type definition tests
+## Architecture
+
+### Two Evaluation Systems
+
+1. **Expression Evaluator** (`src/lib/evaluator.ts`): Evaluates boolean expressions against a context
+   - `evaluate()` - Returns boolean result
+   - `evaluateWithReason()` - Returns result plus minimal expression that caused it
+   - `validate()` - Validates expression structure against a full context
+
+2. **Rule Engine** (`src/lib/engine.ts`): Evaluates rules with conditions and consequences
+   - Rules have a condition (expression) and consequence (message + custom payload)
+   - Can also use rule functions that combine condition checking and consequence in one
+
+### Type System (Critical)
+
+The type system uses `ts-toolbelt` for advanced type manipulation. Generic parameters follow this pattern:
+```typescript
+<Context, FunctionsTable, Ignore, CustomRunOptions>
+```
+
+- **Context**: The object being evaluated against
+- **FunctionsTable**: Custom functions available in expressions
+- **Ignore**: Types to exclude from path extraction (e.g., `Moment`) to avoid TypeScript exhaustion
+- **CustomRunOptions**: User-defined options passed to functions
+
+Key types in `src/types/`:
+- `Expression` - Union type of all valid expression forms (and/or/not/property comparisons/functions)
+- `ValidationContext` - Context with all optional properties required (for validation)
+- `EvaluationResult` - Result of `evaluateWithReason()` with boolean and minimal expression
+
+### Expression Operators
+
+Logical: `and`, `or`, `not`
+Comparison: `eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `between`, `inq`, `nin`, `regexp`, `regexpi`, `exists`
+
+Right-hand side can be: literal value, `{ref: "path"}` to reference context, or math operation `{op, lhs, rhs}`.
 
 ## Code Style
 
-- TypeScript with strict typing
-- TSLint for linting (`tslint.json`)
-- 4-space indentation
-- Single quotes for strings
-- Semicolons required
-- Lines should not exceed ~140 characters
-- Generic type parameters follow pattern: `<Context, FunctionsTable, Ignore, CustomRunOptions>`
-
-## Testing
-
-- Mocha test framework with Chai assertions
-- Tests in `src/test/*.spec.ts`
+- 4-space indentation, single quotes, semicolons required
+- Lines ~140 characters max
 - 100% code coverage required
 - Type tests use TSD in `src/test/types/`
 
-## Key Concepts
-
-- **Expression**: JSON object describing boolean logic with `and`, `or`, `not`, property comparisons, and custom functions
-- **Context**: Object containing values to evaluate against
-- **FunctionsTable**: Custom async/sync functions for expression evaluation
-- **ValidationContext**: Full context with all optional properties filled (for validation)
-- **Ignore**: Types to exclude from path extraction (e.g., Moment)
-
 ## Node.js Support
 
-Supports Node.js ^20, ^22, or ^24 (no Node 18 support as of v9.0.0)
+Supports Node.js ^20, ^22, or ^24
