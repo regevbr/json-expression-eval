@@ -365,8 +365,6 @@ export const evaluateWithReason = async <C extends Context, F extends FunctionsT
     : Promise<EvaluationResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> => {
     const runResult = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
         expression, context, functionsTable, runOptions);
-    if (runResult.result) {
-        return {result: true, reason: runResult.trueReason};
-    }
-    return {result: false, reason: runResult.falseReason};
+    const reason = runResult.result ? runResult.trueReason : runResult.falseReason;
+    return {result: runResult.result, reason};
 };
