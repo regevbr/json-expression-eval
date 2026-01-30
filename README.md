@@ -143,12 +143,12 @@ const expression: IExampleExpression = {
     // Example usage 3 - evaluateWithReason returns the minimal expression that led to the result
     const resultWithReason = await evaluateWithReason<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>(expression, context, functionsTable, {dryRun: true});
     console.log(resultWithReason.result); // true
-    console.log(JSON.stringify(resultWithReason.reason)); // {"userId":"a@b.com"} - the first matching condition in the OR
+    console.log(JSON.stringify(resultWithReason.reason)); // {"or":[{"userId":"a@b.com"}]} - the first matching condition in the OR
 
     // Using ExpressionHandler
     const handlerResult = await handler.evaluateWithReason(context, {dryRun: true});
     console.log(handlerResult.result); // true
-    console.log(JSON.stringify(handlerResult.reason)); // {"userId":"a@b.com"}
+    console.log(JSON.stringify(handlerResult.reason)); // {"or":[{"userId":"a@b.com"}]}
 })()
 ```
 
@@ -163,11 +163,11 @@ const result: EvaluationResult<...> = await evaluateWithReason(expression, conte
 ```
 
 **Behavior:**
-- For `or` expressions that evaluate to `true`: returns the first sub-expression that evaluated to `true`
-- For `or` expressions that evaluate to `false`: returns the entire `or` with all sub-expressions (all failed)
-- For `and` expressions that evaluate to `false`: returns the first sub-expression that evaluated to `false`
-- For `and` expressions that evaluate to `true`: returns the entire `and` with all sub-expressions (all passed)
-- For `not` expressions: returns the `not` wrapping the reason from the inner expression
+- For `or` expressions that evaluate to `true`: returns `{or: [reason]}` with the first sub-expression that evaluated to `true`
+- For `or` expressions that evaluate to `false`: returns `{or: [reasons...]}` with all sub-expressions (all failed)
+- For `and` expressions that evaluate to `false`: returns `{and: [reason]}` with the first sub-expression that evaluated to `false`
+- For `and` expressions that evaluate to `true`: returns `{and: [reasons...]}` with all sub-expressions (all passed)
+- For `not` expressions: returns `{not: reason}` wrapping the reason from the inner expression
 - For simple property comparisons and function calls: returns the expression itself
 
 ### Expression

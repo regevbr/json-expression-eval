@@ -25,7 +25,7 @@ yarn test:unit --grep "test name pattern"
 
 1. **Expression Evaluator** (`src/lib/evaluator.ts`): Evaluates boolean expressions against a context
    - `evaluate()` - Returns boolean result
-   - `evaluateWithReason()` - Returns result plus minimal expression that caused it
+   - `evaluateWithReason()` - Returns `{result, reason}` where reason is the minimal expression that caused the result. For `and`/`or`, reason is always wrapped in array form (e.g., `{or: [reason]}`)
    - `validate()` - Validates expression structure against a full context
 
 2. **Rule Engine** (`src/lib/engine.ts`): Evaluates rules with conditions and consequences
