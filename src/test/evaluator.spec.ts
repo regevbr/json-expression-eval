@@ -1842,6 +1842,95 @@ describe('evaluator', () => {
             expect(result.reason).to.eql({not: {or: [{userId: 'admin'}, {userId: 'root'}]}});
         });
 
+        it('should handle triple NOT correctly', async () => {
+            const expression = {
+                not: {
+                    not: {
+                        not: {userId: 'admin'},
+                    },
+                },
+            };
+            const context = {
+                userId: 'john',
+                timesCounter: 5,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
+            // !(!(!false)) = !(!(true)) = !false = true
+            expect(result.result).to.eql(true);
+            expect(result.reason).to.eql({not: {not: {not: {userId: 'admin'}}}});
+        });
+
+        it('should handle deep expression with multiple NOTs at different levels', async () => {
+            const expression = {
+                and: [
+                    {
+                        not: {
+                            or: [
+                                {userId: 'admin'},
+                                {userId: 'root'},
+                            ],
+                        },
+                    },
+                    {
+                        not: {userId: 'guest'},
+                    },
+                    {
+                        or: [
+                            {not: {timesCounter: 100}},
+                            {userId: 'john'},
+                        ],
+                    },
+                ],
+            };
+            const context = {
+                userId: 'john',
+                timesCounter: 5,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
+            expect(result.result).to.eql(true);
+            // All AND conditions are true:
+            // 1. NOT(OR) is true because OR(admin, root) is false
+            // 2. NOT(guest) is true because userId != guest
+            // 3. OR short-circuits on first NOT(100) which is true
+            expect(result.reason).to.eql({
+                and: [
+                    {not: {or: [{userId: 'admin'}, {userId: 'root'}]}},
+                    {not: {userId: 'guest'}},
+                    {not: {timesCounter: 100}},
+                ],
+            });
+        });
+
+        it('should handle NOT inside OR inside NOT', async () => {
+            const expression = {
+                not: {
+                    or: [
+                        {not: {userId: 'john'}},  // false because userId IS john
+                        {userId: 'admin'},        // false
+                    ],
+                },
+            };
+            const context = {
+                userId: 'john',
+                timesCounter: 5,
+            };
+            const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
+            const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
+            // OR is false (both conditions false), so NOT(OR) is true
+            expect(result.result).to.eql(true);
+            // falseReason of OR contains both failing conditions
+            expect(result.reason).to.eql({
+                not: {
+                    or: [
+                        {not: {userId: 'john'}},
+                        {userId: 'admin'},
+                    ],
+                },
+            });
+        });
+
         it('should return reason for user function that returns true', async () => {
             const expression = {user: 'r@a.com'};
             const context = {
