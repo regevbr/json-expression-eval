@@ -153,45 +153,78 @@ async function evaluateCompareOp<C extends Context, Ignore>(expressionValue: Ext
     }
 }
 
+// Internal types for reason tracking - discriminated union ensures type safety
+type RunResult<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> =
+    | { result: true; trueReason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions> }
+    | { result: false; falseReason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions> };
+
 async function handleAndOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
     Ignore, CustomEvaluatorFuncRunOptions>
 (andExpression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[], context: C, functionsTable: F,
- validation: boolean, runOptions: CustomEvaluatorFuncRunOptions): Promise<boolean> {
+ validation: boolean, runOptions: CustomEvaluatorFuncRunOptions)
+    : Promise<RunResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
     if (andExpression.length === 0) {
         throw new Error('Invalid expression - and operator must have at least one expression');
     }
+    const reasons: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[] = [];
     for (const currExpression of andExpression) {
-        const result = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(currExpression,
-            context, functionsTable, validation, runOptions);
-        if (!validation && !result) {
-            return false;
+        const runResult = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+            currExpression, context, functionsTable, validation, runOptions);
+        if (!runResult.result) {
+            if (validation) {
+                // In validation mode, continue to validate all expressions
+                reasons.push(runResult.falseReason);
+            } else {
+                // AND fails on first false - the false reason is the minimal expression that caused failure
+                return {result: false, falseReason: runResult.falseReason};
+            }
+        } else {
+            reasons.push(runResult.trueReason);
         }
     }
-    return true;
+    return {
+        result: true,
+        trueReason: {and: reasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+    };
 }
 
 async function handleOrOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
     Ignore, CustomEvaluatorFuncRunOptions>(
         orExpression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[],
         context: C, functionsTable: F, validation: boolean, runOptions: CustomEvaluatorFuncRunOptions)
-    : Promise<boolean> {
+    : Promise<RunResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
     if (orExpression.length === 0) {
         throw new Error('Invalid expression - or operator must have at least one expression');
     }
+    const falseReasons: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[] = [];
     for (const currExpression of orExpression) {
-        const result = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+        const runResult = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
             currExpression, context, functionsTable, validation, runOptions);
-        if (!validation && result) {
-            return true;
+        if (runResult.result) {
+            if (validation) {
+                // In validation mode, continue to validate all expressions
+                falseReasons.push(runResult.trueReason);
+            } else {
+                // OR succeeds on first true
+                return {result: true, trueReason: runResult.trueReason};
+            }
+        } else {
+            falseReasons.push(runResult.falseReason);
         }
     }
-    return false;
+    // OR fails when all are false - the false reason is all the false sub-expressions
+    return {
+        result: false,
+        falseReason: {or: falseReasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+    };
 }
 
 async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
     Ignore, CustomEvaluatorFuncRunOptions>(
         expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C,
-        functionsTable: F, validation: boolean, runOptions: CustomEvaluatorFuncRunOptions): Promise<boolean> {
+        functionsTable: F, validation: boolean, runOptions: CustomEvaluatorFuncRunOptions)
+    : Promise<RunResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
     const expressionKeys = objectKeys(expression);
     if (expressionKeys.length !== 1) {
         throw new Error('Invalid expression - too may keys');
@@ -204,118 +237,8 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
         return handleOrOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression.or, context,
             functionsTable, validation, runOptions);
     } else if (isNotCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression)) {
-        return !(await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression.not, context,
-            functionsTable, validation, runOptions));
-    } else if (isFunctionCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression,
-        functionsTable, expressionKey)) {
-        return functionsTable[expressionKey](expression[expressionKey], context, {
-            custom: runOptions,
-            validation,
-        });
-    } else {
-        const {value: contextValue, exists} = getFromPath(context, expressionKey);
-        if (validation && !exists) {
-            throw new Error(`Invalid expression - unknown context key ${expressionKey}`);
-        }
-        return evaluateCompareOp<C, Ignore>(
-            (expression as PropertyCompareOps<C, Ignore>)
-                [expressionKey as any as keyof PropertyCompareOps<C, Ignore>] as
-                unknown as ExtendedCompareOp<any, any, any>,
-            expressionKey, contextValue, context, validation);
-    }
-}
-
-export const evaluate = async <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore = never, CustomEvaluatorFuncRunOptions = undefined>(
-        expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C, functionsTable: F
-        , runOptions: CustomEvaluatorFuncRunOptions)
-    : Promise<boolean> => {
-    return run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression, context,
-        functionsTable, false, runOptions);
-};
-
-// Throws in case of validation error. Does not run functions or compare fields
-export const validate = async <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore = never, CustomEvaluatorFuncRunOptions = undefined>(
-        expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
-        validationContext: ValidationContext<C, Ignore>, functionsTable: F, runOptions: CustomEvaluatorFuncRunOptions)
-    : Promise<void> => {
-    await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression,
-        validationContext as C, functionsTable, true, runOptions);
-};
-
-// Internal types for reason tracking - discriminated union ensures type safety
-type RunResultWithReason<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore, CustomEvaluatorFuncRunOptions> =
-    | { result: true; trueReason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions> }
-    | { result: false; falseReason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions> };
-
-async function handleAndOpWithReason<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore, CustomEvaluatorFuncRunOptions>
-(andExpression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[], context: C, functionsTable: F,
- runOptions: CustomEvaluatorFuncRunOptions): Promise<RunResultWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
-    if (andExpression.length === 0) {
-        throw new Error('Invalid expression - and operator must have at least one expression');
-    }
-    const reasons: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[] = [];
-    for (const currExpression of andExpression) {
-        const runResult = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
-            currExpression, context, functionsTable, runOptions);
-        if (!runResult.result) {
-            // AND fails on first false - the false reason is the minimal expression that caused failure
-            return {result: false, falseReason: runResult.falseReason};
-        }
-        reasons.push(runResult.trueReason);
-    }
-    return {
-        result: true,
-        trueReason: {and: reasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
-    };
-}
-
-async function handleOrOpWithReason<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore, CustomEvaluatorFuncRunOptions>(
-        orExpression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[],
-        context: C, functionsTable: F, runOptions: CustomEvaluatorFuncRunOptions)
-    : Promise<RunResultWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
-    if (orExpression.length === 0) {
-        throw new Error('Invalid expression - or operator must have at least one expression');
-    }
-    const falseReasons: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>[] = [];
-    for (const currExpression of orExpression) {
-        const runResult = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
-            currExpression, context, functionsTable, runOptions);
-        if (runResult.result) {
-            return {result: true, trueReason: runResult.trueReason};
-        }
-        falseReasons.push(runResult.falseReason);
-    }
-    // OR fails when all are false - the false reason is all the false sub-expressions
-    return {
-        result: false,
-        falseReason: {or: falseReasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
-    };
-}
-
-async function runWithReason<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
-    Ignore, CustomEvaluatorFuncRunOptions>(
-        expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C,
-        functionsTable: F, runOptions: CustomEvaluatorFuncRunOptions)
-    : Promise<RunResultWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>> {
-    const expressionKeys = objectKeys(expression);
-    if (expressionKeys.length !== 1) {
-        throw new Error('Invalid expression - too may keys');
-    }
-    const expressionKey = expressionKeys[0];
-    if (isAndCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression)) {
-        return handleAndOpWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression.and,
-            context, functionsTable, runOptions);
-    } else if (isOrCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression)) {
-        return handleOrOpWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression.or, context,
-            functionsTable, runOptions);
-    } else if (isNotCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression)) {
-        const innerResult = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
-            expression.not, context, functionsTable, runOptions);
+        const innerResult = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+            expression.not, context, functionsTable, validation, runOptions);
         if (innerResult.result) {
             // NOT is false because inner was true - use the inner's true reason
             return {
@@ -334,7 +257,7 @@ async function runWithReason<C extends Context, F extends FunctionsTable<C, Cust
         functionsTable, expressionKey)) {
         const result = await functionsTable[expressionKey](expression[expressionKey], context, {
             custom: runOptions,
-            validation: false,
+            validation,
         });
         if (result) {
             return {result: true, trueReason: expression};
@@ -342,6 +265,9 @@ async function runWithReason<C extends Context, F extends FunctionsTable<C, Cust
         return {result: false, falseReason: expression};
     } else {
         const {value: contextValue, exists} = getFromPath(context, expressionKey);
+        if (validation && !exists) {
+            throw new Error(`Invalid expression - unknown context key ${expressionKey}`);
+        }
         if (!exists) {
             // In evaluation mode, non-existing property returns false
             return {result: false, falseReason: expression};
@@ -350,7 +276,7 @@ async function runWithReason<C extends Context, F extends FunctionsTable<C, Cust
             (expression as PropertyCompareOps<C, Ignore>)
                 [expressionKey as any as keyof PropertyCompareOps<C, Ignore>] as
                 unknown as ExtendedCompareOp<any, any, any>,
-            expressionKey, contextValue, context, false);
+            expressionKey, contextValue, context, validation);
         if (result) {
             return {result: true, trueReason: expression};
         }
@@ -358,13 +284,33 @@ async function runWithReason<C extends Context, F extends FunctionsTable<C, Cust
     }
 }
 
+export const evaluate = async <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore = never, CustomEvaluatorFuncRunOptions = undefined>(
+        expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C, functionsTable: F
+        , runOptions: CustomEvaluatorFuncRunOptions)
+    : Promise<boolean> => {
+    const runResult = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression, context,
+        functionsTable, false, runOptions);
+    return runResult.result;
+};
+
+// Throws in case of validation error. Does not run functions or compare fields
+export const validate = async <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore = never, CustomEvaluatorFuncRunOptions = undefined>(
+        expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+        validationContext: ValidationContext<C, Ignore>, functionsTable: F, runOptions: CustomEvaluatorFuncRunOptions)
+    : Promise<void> => {
+    await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression,
+        validationContext as C, functionsTable, true, runOptions);
+};
+
 export const evaluateWithReason = async <C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
     Ignore = never, CustomEvaluatorFuncRunOptions = undefined>(
         expression: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>, context: C, functionsTable: F
         , runOptions: CustomEvaluatorFuncRunOptions)
     : Promise<EvaluationResult<C, F, Ignore, CustomEvaluatorFuncRunOptions>> => {
-    const runResult = await runWithReason<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
-        expression, context, functionsTable, runOptions);
+    const runResult = await run<C, F, Ignore, CustomEvaluatorFuncRunOptions>(
+        expression, context, functionsTable, false, runOptions);
     const reason = runResult.result ? runResult.trueReason : runResult.falseReason;
     return {result: runResult.result, reason};
 };
