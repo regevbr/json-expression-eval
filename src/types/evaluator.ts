@@ -158,3 +158,9 @@ export type FunctionsTable<T, CustomEvaluatorFuncRunOptions> = Record<string, Fu
 export type Context = Record<string, any>;
 
 export type ValidationContext<C extends Context, Ignore = never> = NonNullable<C, Ignore>;
+
+export interface EvaluationResult<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
+    Ignore, CustomEvaluatorFuncRunOptions> {
+    result: boolean;
+    reason: Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
+}

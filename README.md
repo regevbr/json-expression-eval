@@ -27,7 +27,7 @@ yarn add json-expression-eval
  *Please see tests and examples dir for more usages and examples (under /src)* 
 
 ```typescript
-import {evaluate, Expression, ExpressionHandler, validate, ValidationContext, EvaluatorFuncRunOptions} from 'json-expression-eval';
+import {evaluate, evaluateWithReason, Expression, ExpressionHandler, validate, ValidationContext, EvaluatorFuncRunOptions, EvaluationResult} from 'json-expression-eval';
 import {Moment} from 'moment';
 import moment = require('moment');
 
@@ -139,8 +139,36 @@ const expression: IExampleExpression = {
     await validate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore,
         IExampleCustomEvaluatorFuncRunOptions>(expression, validationContext, functionsTable, {dryRun: true}); // Should not throw
     console.log(await evaluate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>(expression, context, functionsTable, {dryRun: true})); // true
+
+    // Example usage 3 - evaluateWithReason returns the minimal expression that led to the result
+    const resultWithReason = await evaluateWithReason<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>(expression, context, functionsTable, {dryRun: true});
+    console.log(resultWithReason.result); // true
+    console.log(JSON.stringify(resultWithReason.reason)); // {"or":[{"userId":"a@b.com"}]} - the first matching condition in the OR
+
+    // Using ExpressionHandler
+    const handlerResult = await handler.evaluateWithReason(context, {dryRun: true});
+    console.log(handlerResult.result); // true
+    console.log(JSON.stringify(handlerResult.reason)); // {"or":[{"userId":"a@b.com"}]}
 })()
 ```
+
+### evaluateWithReason
+
+The `evaluateWithReason` function evaluates an expression and returns not only the boolean result, but also the minimal sub-expression that led to that result. This is useful for debugging and understanding why an expression evaluated to a specific value.
+
+```typescript
+const result: EvaluationResult<...> = await evaluateWithReason(expression, context, functionsTable, runOptions);
+// result.result - boolean: the evaluation result
+// result.reason - Expression: the minimal expression that caused the result
+```
+
+**Behavior:**
+- For `or` expressions that evaluate to `true`: returns `{or: [reason]}` with the first sub-expression that evaluated to `true`
+- For `or` expressions that evaluate to `false`: returns `{or: [reasons...]}` with all sub-expressions (all failed)
+- For `and` expressions that evaluate to `false`: returns `{and: [reason]}` with the first sub-expression that evaluated to `false`
+- For `and` expressions that evaluate to `true`: returns `{and: [reasons...]}` with all sub-expressions (all passed)
+- For `not` expressions: returns `{not: reason}` wrapping the reason from the inner expression
+- For simple property comparisons and function calls: returns the expression itself
 
 ### Expression
 

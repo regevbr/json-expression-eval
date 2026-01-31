@@ -1,11 +1,11 @@
 {
   "name": "json-expression-eval",
-  "version": "8.2.1",
+  "version": "9.0.0",
   "description": "json serializable rule engine / boolean expression evaluator",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
-    "node": "^18 || ^20 || ^22 || ^24"
+    "node": "^20 || ^22 || ^24"
   },
   "scripts": {
     "test": "yarn lint && yarn test:tsd && yarn test:cover",
@@ -52,7 +52,7 @@
     "@types/chai": "4.3.20",
     "@types/chai-as-promised": "7.1.8",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.9",
     "@types/underscore": "^1.13.0",
     "chai": "4.5.0",
     "chai-as-promised": "7.1.2",
