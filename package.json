@@ -14,7 +14,7 @@
     "build": "pnpm run lint && pnpm run compile",
     "compile": "tsc -p tsconfig.build.json",
     "test:cover": "vitest run --coverage",
-    "lint": "eslint 'src/**/*.ts'",
+    "lint": "eslint \"src/**/*.ts\"",
     "ci": "pnpm run lint && pnpm run compile && pnpm run test:tsd && pnpm run test:cover"
   },
   "repository": {
