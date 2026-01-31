@@ -28,28 +28,21 @@ jobs:
         with:
           ref: ${{ github.event.client_payload.ref || github.ref }}
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Get yarn cache directory
-        id: yarn-cache-dir
-        run: |
-          echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ matrix.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.node-version }}-yarn-
+          cache: 'pnpm'
 
       - name: Install dependencies and build
         run: |
-          yarn install --ignore-engines
-          yarn build
+          pnpm install
+          pnpm build
 
       - name: Snyk security check
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
@@ -60,11 +53,11 @@ jobs:
       - name: Run types tests
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
         run: |
-          yarn test:tsd
+          pnpm test:tsd
 
       - name: Run unit tests with coverage
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
-        run: yarn test:cover
+        run: pnpm test:cover
 
       - name: Upload coverage
         if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
@@ -75,4 +68,4 @@ jobs:
 
       - name: Run unit tests
         if: "!(matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS)"
-        run: yarn test:unit
+        run: pnpm test:unit

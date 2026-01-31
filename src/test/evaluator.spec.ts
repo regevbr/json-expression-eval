@@ -1,9 +1,5 @@
-import * as chai from 'chai';
-import {expect} from 'chai';
+import { describe, it, expect } from 'vitest';
 import {evaluate, ExpressionHandler, validate, ValidationContext, evaluateWithReason} from '../';
-import  chaiAsPromised from 'chai-as-promised';
-
-chai.use(chaiAsPromised);
 
 // Helper to verify that the reason expression evaluates to the same result
 async function verifyReasonEvaluatesToSameResult(
@@ -13,8 +9,7 @@ async function verifyReasonEvaluatesToSameResult(
     runOpts: any
 ): Promise<void> {
     const reasonResult = await evaluate(result.reason, context, fnTable, runOpts);
-    expect(reasonResult).to.eql(result.result,
-        `Reason expression should evaluate to ${result.result}, but got ${reasonResult}`);
+    expect(reasonResult).toEqual(result.result);
 }
 
 const functionsTable = {
@@ -68,11 +63,11 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const exp = new ExpressionHandler<Con, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
                 expression, functionsTable);
-            expect(await exp.validate(validationContext, runOpts)).to.be.an('undefined');
+            expect(await exp.validate(validationContext, runOpts)).toBeUndefined();
             expect(await validate<Con, ExpressionFunction, Ignore, CustomEvaluatorFuncRunOptions>(
-                expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
-            expect(await exp.evaluate(context, runOpts)).to.eql(true);
+                expression, validationContext, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
+            expect(await exp.evaluate(context, runOpts)).toEqual(true);
         });
 
         it('should evaluate short eq compare op true to on deeply nested properties', async () => {
@@ -97,8 +92,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate short eq compare op to true', async () => {
@@ -110,8 +105,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate short eq compare op to false', async () => {
@@ -123,8 +118,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate eq compare op to true', async () => {
@@ -136,8 +131,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate ref eq compare op to true', async () => {
@@ -150,8 +145,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate math ref eq compare op to true', async () => {
@@ -164,8 +159,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate eq compare op to true on nested properties', async () => {
@@ -182,8 +177,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate ref eq compare op to true on nested properties', async () => {
@@ -205,8 +200,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate eq compare op true to on deeply nested properties', async () => {
@@ -235,8 +230,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate eq compare ref op true to on deeply nested properties', async () => {
@@ -271,8 +266,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate eq compare op to false', async () => {
@@ -284,8 +279,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate ref eq compare op to false', async () => {
@@ -298,8 +293,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
     });
 
@@ -313,8 +308,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate ref neq compare op to true', async () => {
@@ -327,8 +322,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate neq compare op to false', async () => {
@@ -340,8 +335,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate ref neq compare op to false', async () => {
@@ -354,8 +349,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate math ref neq compare op to false', async () => {
@@ -368,8 +363,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
     });
 
@@ -384,8 +379,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate ref gt compare op to true', async () => {
@@ -398,8 +393,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate math ref gt compare op to true', async () => {
@@ -412,8 +407,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate gt compare op to false', async () => {
@@ -425,8 +420,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate ref gt compare op to false', async () => {
@@ -439,8 +434,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate gt compare op to false 2', async () => {
@@ -452,8 +447,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
     });
@@ -468,8 +463,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate ref gte compare op to true', async () => {
@@ -482,8 +477,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate math ref gte compare op to true', async () => {
@@ -502,8 +497,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate gte compare op to true 2', async () => {
@@ -515,8 +510,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate gte compare op to false', async () => {
@@ -528,8 +523,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
     });
 
@@ -543,8 +538,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate between compare op to true', async () => {
@@ -556,8 +551,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate between left ref compare op to true', async () => {
@@ -570,8 +565,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate between left ref compare op and right math op to true', async () => {
@@ -590,8 +585,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate between right ref compare op to true', async () => {
@@ -604,8 +599,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate between compare op to true low equal', async () => {
@@ -617,8 +612,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate between compare op to true high equal', async () => {
@@ -630,8 +625,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate between compare op to false', async () => {
@@ -643,8 +638,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should fail on empty between compare op', async () => {
@@ -654,9 +649,9 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter.length must be 2');
+                .rejects.toThrow('Invalid expression - timesCounter.length must be 2');
             await expect(evaluate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter.length must be 2');
+                .rejects.toThrow('Invalid expression - timesCounter.length must be 2');
         });
 
         it('should fail on single value between compare op', async () => {
@@ -666,9 +661,9 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter.length must be 2');
+                .rejects.toThrow('Invalid expression - timesCounter.length must be 2');
             await expect(evaluate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter.length must be 2');
+                .rejects.toThrow('Invalid expression - timesCounter.length must be 2');
         });
 
         it('should fail on too many values value between compare op', async () => {
@@ -678,9 +673,9 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter.length must be 2');
+                .rejects.toThrow('Invalid expression - timesCounter.length must be 2');
             await expect(evaluate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter.length must be 2');
+                .rejects.toThrow('Invalid expression - timesCounter.length must be 2');
         });
 
         it('should fail on non number value between compare op', async () => {
@@ -690,9 +685,9 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter[0] must be a number');
+                .rejects.toThrow('Invalid expression - timesCounter[0] must be a number');
             await expect(evaluate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter[0] must be a number');
+                .rejects.toThrow('Invalid expression - timesCounter[0] must be a number');
         });
 
         it('should fail on non number value between compare op 2', async () => {
@@ -702,9 +697,9 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter[1] must be a number');
+                .rejects.toThrow('Invalid expression - timesCounter[1] must be a number');
             await expect(evaluate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter[1] must be a number');
+                .rejects.toThrow('Invalid expression - timesCounter[1] must be a number');
         });
 
         it('should fail on bad high/low values between compare op', async () => {
@@ -714,9 +709,9 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const context = {userId: 'r@a.com', timesCounter: 8};
             await expect(validate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter first value is higher than second value');
+                .rejects.toThrow('Invalid expression - timesCounter first value is higher than second value');
             await expect(evaluate(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter first value is higher than second value');
+                .rejects.toThrow('Invalid expression - timesCounter first value is higher than second value');
         });
     });
 
@@ -730,8 +725,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate ref inq op to true (number)', async () => {
@@ -744,8 +739,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate math ref inq op to true (number)', async () => {
@@ -758,8 +753,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate inq op to true (string)', async () => {
@@ -771,8 +766,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate inq op to true (string)', async () => {
@@ -785,8 +780,8 @@ describe('evaluator', () => {
                 userIdRef: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate inq op to false (number)', async () => {
@@ -798,8 +793,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate inq op to false (string)', async () => {
@@ -811,8 +806,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
     });
@@ -827,8 +822,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate nin op to true (string)', async () => {
@@ -840,8 +835,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate nin op to false (number)', async () => {
@@ -853,8 +848,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate ref nin op to false (number)', async () => {
@@ -867,8 +862,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate math ref nin op to false (number)', async () => {
@@ -881,8 +876,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate nin op to false (string)', async () => {
@@ -894,8 +889,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
     });
@@ -910,8 +905,8 @@ describe('evaluator', () => {
                 userId: 'aBdC',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
         it('should evaluate ref regexp op to true', async () => {
             const expression = {
@@ -923,8 +918,8 @@ describe('evaluator', () => {
                 userIdRegex: '^a.+C$',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
         it('should evaluate regexpi op to false case sensitive', async () => {
             const expression = {
@@ -935,8 +930,8 @@ describe('evaluator', () => {
                 userId: 'aBdc',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
         it('should evaluate regexp op to false', async () => {
             const expression = {
@@ -947,8 +942,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
     });
@@ -963,8 +958,8 @@ describe('evaluator', () => {
                 userId: 'aBdC',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
         it('should evaluate ref regexpi op to true', async () => {
             const expression = {
@@ -976,8 +971,8 @@ describe('evaluator', () => {
                 userIdRegex: '^a.+C$',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
         it('should evaluate regexpi op to true case insensitive', async () => {
             const expression = {
@@ -988,8 +983,8 @@ describe('evaluator', () => {
                 userId: 'aBdc',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
         it('should evaluate regexpi op to false', async () => {
             const expression = {
@@ -1000,8 +995,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
     });
@@ -1016,8 +1011,8 @@ describe('evaluator', () => {
                 userId: 'user@example.com',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate exists op to false when value is null', async () => {
@@ -1029,7 +1024,7 @@ describe('evaluator', () => {
                 userId: null,
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await evaluate(expression, context, {}, runOpts)).to.eql(false);
+            expect(await evaluate(expression, context, {}, runOpts)).toEqual(false);
         });
 
         it('should evaluate exists op to false when value is undefined', async () => {
@@ -1041,7 +1036,7 @@ describe('evaluator', () => {
                 userId: undefined,
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await evaluate(expression, context, {}, runOpts)).to.eql(false);
+            expect(await evaluate(expression, context, {}, runOpts)).toEqual(false);
         });
 
         it('should evaluate exists op to false for nested undefined property', async () => {
@@ -1056,7 +1051,7 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await evaluate(expression as any, context, {}, runOpts)).to.eql(false);
+            expect(await evaluate(expression as any, context, {}, runOpts)).toEqual(false);
         });
 
         it('should evaluate exists:false to true when value is null', async () => {
@@ -1068,7 +1063,7 @@ describe('evaluator', () => {
                 userId: null,
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await evaluate(expression, context, {}, runOpts)).to.eql(true);
+            expect(await evaluate(expression, context, {}, runOpts)).toEqual(true);
         });
 
         it('should evaluate exists:false to true when value is undefined', async () => {
@@ -1080,7 +1075,7 @@ describe('evaluator', () => {
                 userId: undefined,
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await evaluate(expression, context, {}, runOpts)).to.eql(true);
+            expect(await evaluate(expression, context, {}, runOpts)).toEqual(true);
         });
 
         it('should evaluate exists:false to false when value exists', async () => {
@@ -1092,8 +1087,8 @@ describe('evaluator', () => {
                 userId: 'user@example.com',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should consider falsy values as existing (0)', async () => {
@@ -1105,8 +1100,8 @@ describe('evaluator', () => {
                 userId: 'user@example.com',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should consider falsy values as existing (false)', async () => {
@@ -1119,8 +1114,8 @@ describe('evaluator', () => {
                 isActive: false,
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should consider falsy values as existing (empty string)', async () => {
@@ -1132,8 +1127,8 @@ describe('evaluator', () => {
                 userId: '',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should work with AND logical operator', async () => {
@@ -1148,8 +1143,8 @@ describe('evaluator', () => {
                 userId: 'GROUP admin',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should work with AND logical operator - false case', async () => {
@@ -1164,7 +1159,7 @@ describe('evaluator', () => {
                 userId: undefined,
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await evaluate(expression as any, context, {}, runOpts)).to.eql(false);
+            expect(await evaluate(expression as any, context, {}, runOpts)).toEqual(false);
         });
 
     });
@@ -1179,8 +1174,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate ref lt compare op to true', async () => {
@@ -1193,8 +1188,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate math ref lt compare op to true', async () => {
@@ -1207,8 +1202,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate lt compare lt to false', async () => {
@@ -1220,8 +1215,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate lt compare op to false 2', async () => {
@@ -1233,8 +1228,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
     });
 
@@ -1248,8 +1243,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate ref lte compare op to true', async () => {
@@ -1262,8 +1257,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate math ref lte compare op to true', async () => {
@@ -1276,8 +1271,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate lte compare op to true 2', async () => {
@@ -1289,8 +1284,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate lte compare op to false', async () => {
@@ -1302,8 +1297,8 @@ describe('evaluator', () => {
                 userId: 'a',
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
     });
 
@@ -1312,24 +1307,24 @@ describe('evaluator', () => {
         expect(await validate(expression, {
             userId: '-',
             timesCounter: 8,
-        }, functionsTable, {dryRun: true})).to.be.an('undefined');
+        }, functionsTable, {dryRun: true})).toBeUndefined();
         await expect(validate(expression, {
             userId: '-',
             timesCounter: 8,
         }, functionsTable, {dryRun: false}))
-            .to.eventually.rejectedWith(Error, 'Failed user validation');
+            .rejects.toThrow('Failed user validation');
         expect(await evaluate(expression, {
             userId: 'r@a.com',
             timesCounter: 8,
-        }, functionsTable, {dryRun: false})).to.eql(true);
+        }, functionsTable, {dryRun: false})).toEqual(true);
         expect(await evaluate(expression, {
             userId: '-',
             timesCounter: 8,
-        }, functionsTable, {dryRun: false})).to.eql(false);
+        }, functionsTable, {dryRun: false})).toEqual(false);
         expect(await evaluate(expression, {
             userId: '-',
             timesCounter: 8,
-        }, functionsTable, {dryRun: true})).to.eql(true);
+        }, functionsTable, {dryRun: true})).toEqual(true);
     });
 
     it('should evaluate a single function', async () => {
@@ -1339,8 +1334,8 @@ describe('evaluator', () => {
             timesCounter: 8,
         };
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-        expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
     });
 
     it('should evaluate a single not function to false', async () => {
@@ -1350,8 +1345,8 @@ describe('evaluator', () => {
             timesCounter: 8,
         };
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-        expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
     });
 
     it('should evaluate a single not function to true', async () => {
@@ -1361,8 +1356,8 @@ describe('evaluator', () => {
             timesCounter: 8,
         };
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-        expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
     });
 
     it('should evaluate a single and function to true', async () => {
@@ -1372,8 +1367,8 @@ describe('evaluator', () => {
             timesCounter: 8,
         };
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-        expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
     });
 
     it('should evaluate a single or function to true', async () => {
@@ -1383,8 +1378,8 @@ describe('evaluator', () => {
             timesCounter: 8,
         };
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-        expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+        expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
     });
 
     it('should evaluate a single and function to false', async () => {
@@ -1394,8 +1389,8 @@ describe('evaluator', () => {
             timesCounter: 8,
         };
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-        expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
     });
 
     it('should evaluate a single or function to false', async () => {
@@ -1405,8 +1400,8 @@ describe('evaluator', () => {
             timesCounter: 8,
         };
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-        expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+        expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
     });
 
     it('should fail on empty or op', async () => {
@@ -1414,9 +1409,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - or operator must have at least one expression');
+            .rejects.toThrow('Invalid expression - or operator must have at least one expression');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - or operator must have at least one expression');
+            .rejects.toThrow('Invalid expression - or operator must have at least one expression');
     });
 
     it('should fail on empty and op', async () => {
@@ -1424,9 +1419,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - and operator must have at least one expression');
+            .rejects.toThrow('Invalid expression - and operator must have at least one expression');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - and operator must have at least one expression');
+            .rejects.toThrow('Invalid expression - and operator must have at least one expression');
     });
 
     it('should fail on non existing property', async () => {
@@ -1434,8 +1429,8 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key dummy');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            .rejects.toThrow('Invalid expression - unknown context key dummy');
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
     });
 
     it('should fail on non existing property ref', async () => {
@@ -1443,8 +1438,8 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key fsdf');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            .rejects.toThrow('Invalid expression - unknown context key fsdf');
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
     });
 
     it('should fail on non existing math op', async () => {
@@ -1452,9 +1447,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter has invalid math operand y');
+            .rejects.toThrow('Invalid expression - timesCounter has invalid math operand y');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter has invalid math operand y');
+            .rejects.toThrow('Invalid expression - timesCounter has invalid math operand y');
     });
 
     it('should fail on non number math parameter', async () => {
@@ -1462,9 +1457,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+            .rejects.toThrow('Invalid expression - timesCounter must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+            .rejects.toThrow('Invalid expression - timesCounter must be a number');
     });
 
     it('should fail on non number math parameter 2', async () => {
@@ -1472,9 +1467,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+            .rejects.toThrow('Invalid expression - timesCounter must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+            .rejects.toThrow('Invalid expression - timesCounter must be a number');
     });
 
     it('should fail on non existing nested property', async () => {
@@ -1482,8 +1477,8 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key dummy');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            .rejects.toThrow('Invalid expression - unknown context key dummy');
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
     });
 
     it('should fail on non existing nested property 2', async () => {
@@ -1491,8 +1486,8 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8, dummy: {value2: 5}};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key dummy');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            .rejects.toThrow('Invalid expression - unknown context key dummy');
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
     });
 
     it('should fail on non existing property 2', async () => {
@@ -1500,8 +1495,8 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key dummy');
-        expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            .rejects.toThrow('Invalid expression - unknown context key dummy');
+        expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
     });
 
     it('should fail on non existing op', async () => {
@@ -1509,9 +1504,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - unknown op bk');
+            .rejects.toThrow('Invalid expression - unknown op bk');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - unknown op bk');
+            .rejects.toThrow('Invalid expression - unknown op bk');
     });
 
     it('should fail on non number op', async () => {
@@ -1519,9 +1514,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+            .rejects.toThrow('Invalid expression - timesCounter must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+            .rejects.toThrow('Invalid expression - timesCounter must be a number');
     });
 
     it('should fail on non number op ref', async () => {
@@ -1529,9 +1524,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+            .rejects.toThrow('Invalid expression - timesCounter must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - timesCounter must be a number');
+            .rejects.toThrow('Invalid expression - timesCounter must be a number');
     });
 
     it('should fail on non string op', async () => {
@@ -1539,9 +1534,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - userId must be a string');
+            .rejects.toThrow('Invalid expression - userId must be a string');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - userId must be a string');
+            .rejects.toThrow('Invalid expression - userId must be a string');
     });
 
     it('should fail on non string context', async () => {
@@ -1549,9 +1544,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid context - timesCounter must be a string');
+            .rejects.toThrow('Invalid context - timesCounter must be a string');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid context - timesCounter must be a string');
+            .rejects.toThrow('Invalid context - timesCounter must be a string');
     });
 
     it('should fail on non number context', async () => {
@@ -1559,9 +1554,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid context - userId must be a number');
+            .rejects.toThrow('Invalid context - userId must be a number');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid context - userId must be a number');
+            .rejects.toThrow('Invalid context - userId must be a number');
     });
 
     it('should fail too many keys to op', async () => {
@@ -1569,9 +1564,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
+            .rejects.toThrow('Invalid expression - too may keys');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
+            .rejects.toThrow('Invalid expression - too may keys');
     });
 
     it('should fail too many keys', async () => {
@@ -1579,9 +1574,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
+            .rejects.toThrow('Invalid expression - too may keys');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
+            .rejects.toThrow('Invalid expression - too may keys');
     });
 
     it('should fail too many keys 2', async () => {
@@ -1589,9 +1584,9 @@ describe('evaluator', () => {
         const context = {userId: 'r@a.com', timesCounter: 8};
         const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
         await expect(validate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
+            .rejects.toThrow('Invalid expression - too may keys');
         await expect(evaluate(expression, context, functionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
+            .rejects.toThrow('Invalid expression - too may keys');
     });
 
     describe('short circuit', () => {
@@ -1600,7 +1595,7 @@ describe('evaluator', () => {
             const fnTable = {
                 eval: (arg: boolean): boolean => {
                     fnCounter++;
-                    return arg
+                    return arg;
                 },
             };
             const expression = {
@@ -1619,12 +1614,13 @@ describe('evaluator', () => {
                     },
                 ],
             };
+            const context = {};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             await validate(expression, context, fnTable, runOpts);
-            expect(fnCounter).to.eql(4);
+            expect(fnCounter).toEqual(4);
             fnCounter = 0;
             await evaluate(expression, context, fnTable, runOpts);
-            expect(fnCounter).to.eql(3);
+            expect(fnCounter).toEqual(3);
         });
 
         it('and is short circuiting', async () => {
@@ -1632,7 +1628,7 @@ describe('evaluator', () => {
             const fnTable = {
                 eval: (arg: boolean): boolean => {
                     fnCounter++;
-                    return arg
+                    return arg;
                 },
             };
             const expression = {
@@ -1655,10 +1651,10 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             await validate<typeof context, typeof fnTable, Ignore, CustomEvaluatorFuncRunOptions>(
                 expression, context, fnTable, runOpts);
-            expect(fnCounter).to.eql(4);
+            expect(fnCounter).toEqual(4);
             fnCounter = 0;
             await evaluate(expression, context, fnTable, runOpts);
-            expect(fnCounter).to.eql(3);
+            expect(fnCounter).toEqual(3);
         });
     });
 
@@ -1673,8 +1669,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({timesCounter: 5});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({timesCounter: 5});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1688,8 +1684,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(false);
-            expect(result.reason).to.eql({timesCounter: 5});
+            expect(result.result).toEqual(false);
+            expect(result.reason).toEqual({timesCounter: 5});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1707,8 +1703,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({or: [{timesCounter: 5}]});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({or: [{timesCounter: 5}]});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1725,8 +1721,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({and: [{timesCounter: 5}, {userId: 'a'}]});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({and: [{timesCounter: 5}, {userId: 'a'}]});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1743,8 +1739,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(false);
-            expect(result.reason).to.eql({and: [{userId: 'b'}]});
+            expect(result.result).toEqual(false);
+            expect(result.reason).toEqual({and: [{userId: 'b'}]});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1766,8 +1762,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({and: [{timesCounter: 5}, {or: [{userId: 'a'}]}]});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({and: [{timesCounter: 5}, {or: [{userId: 'a'}]}]});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1779,8 +1775,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({not: {user: 'a@a.com'}});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({not: {user: 'a@a.com'}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1792,9 +1788,9 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(false);
+            expect(result.result).toEqual(false);
             // NOT is false because inner {user: 'r@a.com'} was true
-            expect(result.reason).to.eql({not: {user: 'r@a.com'}});
+            expect(result.reason).toEqual({not: {user: 'r@a.com'}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1813,9 +1809,9 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
+            expect(result.result).toEqual(true);
             // Should return NOT of just the first failing condition, not the entire AND
-            expect(result.reason).to.eql({not: {and: [{userId: 'admin'}]}});
+            expect(result.reason).toEqual({not: {and: [{userId: 'admin'}]}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1834,9 +1830,9 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
+            expect(result.result).toEqual(true);
             // OR is false because all conditions failed, so the reason includes all
-            expect(result.reason).to.eql({not: {or: [{userId: 'admin'}, {userId: 'root'}]}});
+            expect(result.reason).toEqual({not: {or: [{userId: 'admin'}, {userId: 'root'}]}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1860,9 +1856,9 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
+            expect(result.result).toEqual(true);
             // AND failed because the nested OR failed (first condition in AND)
-            expect(result.reason).to.eql({not: {and: [{or: [{userId: 'admin'}, {userId: 'root'}]}]}});
+            expect(result.reason).toEqual({not: {and: [{or: [{userId: 'admin'}, {userId: 'root'}]}]}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1881,8 +1877,8 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             // !(!(!false)) = !(!(true)) = !false = true
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({not: {not: {not: {userId: 'admin'}}}});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({not: {not: {not: {userId: 'admin'}}}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1914,12 +1910,12 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
+            expect(result.result).toEqual(true);
             // All AND conditions are true:
             // 1. NOT(OR) is true because OR(admin, root) is false
             // 2. NOT(guest) is true because userId != guest
             // 3. OR short-circuits on first NOT(100) which is true
-            expect(result.reason).to.eql({
+            expect(result.reason).toEqual({
                 and: [
                     {not: {or: [{userId: 'admin'}, {userId: 'root'}]}},
                     {not: {userId: 'guest'}},
@@ -1945,9 +1941,9 @@ describe('evaluator', () => {
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
             // OR is false (both conditions false), so NOT(OR) is true
-            expect(result.result).to.eql(true);
+            expect(result.result).toEqual(true);
             // falseReason of OR contains both failing conditions
-            expect(result.reason).to.eql({
+            expect(result.reason).toEqual({
                 not: {
                     or: [
                         {not: {userId: 'john'}},
@@ -1966,8 +1962,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({user: 'r@a.com'});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({user: 'r@a.com'});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -1979,8 +1975,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(false);
-            expect(result.reason).to.eql({user: 'a@a.com'});
+            expect(result.result).toEqual(false);
+            expect(result.reason).toEqual({user: 'a@a.com'});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -2007,9 +2003,9 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
+            expect(result.result).toEqual(true);
             // The reason should be the second AND block that evaluated to true
-            expect(result.reason).to.eql({or: [{and: [{timesCounter: 5}, {userId: 'a'}]}]});
+            expect(result.reason).toEqual({or: [{and: [{timesCounter: 5}, {userId: 'a'}]}]});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -2032,8 +2028,8 @@ describe('evaluator', () => {
             const exp = new ExpressionHandler<Con, typeof functionsTable, never, CustomEvaluatorFuncRunOptions>(
                 expression, functionsTable);
             const result = await exp.evaluateWithReason(context, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({or: [{timesCounter: 5}]});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({or: [{timesCounter: 5}]});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -2047,8 +2043,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({timesCounter: {gt: 3}});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({timesCounter: {gt: 3}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -2062,8 +2058,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({timesCounter: {between: [3, 10]}});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({timesCounter: {between: [3, 10]}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -2077,8 +2073,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({timesCounter: {inq: [3, 5, 7]}});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({timesCounter: {inq: [3, 5, 7]}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -2092,8 +2088,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({userId: {regexp: '^a'}});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({userId: {regexp: '^a'}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -2107,8 +2103,8 @@ describe('evaluator', () => {
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({userId: {exists: true}});
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({userId: {exists: true}});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
 
@@ -2130,9 +2126,9 @@ describe('evaluator', () => {
             const context = {};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, fnTable, runOpts);
-            expect(result.result).to.eql(true);
-            expect(result.reason).to.eql({or: [{eval: true}]});
-            expect(fnCounter).to.eql(2);  // short-circuited at second expression
+            expect(result.result).toEqual(true);
+            expect(result.reason).toEqual({or: [{eval: true}]});
+            expect(fnCounter).toEqual(2);  // short-circuited at second expression
             await verifyReasonEvaluatesToSameResult(result, context, fnTable, runOpts);
         });
 
@@ -2154,9 +2150,9 @@ describe('evaluator', () => {
             const context = {};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, fnTable, runOpts);
-            expect(result.result).to.eql(false);
-            expect(result.reason).to.eql({and: [{eval: false}]});
-            expect(fnCounter).to.eql(2);  // short-circuited at second expression
+            expect(result.result).toEqual(false);
+            expect(result.reason).toEqual({and: [{eval: false}]});
+            expect(fnCounter).toEqual(2);  // short-circuited at second expression
             await verifyReasonEvaluatesToSameResult(result, context, fnTable, runOpts);
         });
 
@@ -2165,8 +2161,7 @@ describe('evaluator', () => {
             const context = {userId: 'r@a.com', timesCounter: 8};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             await expect(evaluateWithReason(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error,
-                    'Invalid expression - or operator must have at least one expression');
+                .rejects.toThrow('Invalid expression - or operator must have at least one expression');
         });
 
         it('should fail on empty and op', async () => {
@@ -2174,8 +2169,7 @@ describe('evaluator', () => {
             const context = {userId: 'r@a.com', timesCounter: 8};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             await expect(evaluateWithReason(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error,
-                    'Invalid expression - and operator must have at least one expression');
+                .rejects.toThrow('Invalid expression - and operator must have at least one expression');
         });
 
         it('should fail on too many keys', async () => {
@@ -2183,7 +2177,7 @@ describe('evaluator', () => {
             const context = {userId: 'r@a.com', timesCounter: 8};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             await expect(evaluateWithReason(expression, context, functionsTable, runOpts))
-                .to.eventually.rejectedWith(Error, 'Invalid expression - too may keys');
+                .rejects.toThrow('Invalid expression - too may keys');
         });
 
         it('should return false with reason for non-existing property', async () => {
@@ -2191,8 +2185,8 @@ describe('evaluator', () => {
             const context = {userId: 'r@a.com', timesCounter: 8};
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
             const result = await evaluateWithReason(expression, context, functionsTable, runOpts);
-            expect(result.result).to.eql(false);
-            expect(result.reason).to.eql({nonExistent: 1});
+            expect(result.result).toEqual(false);
+            expect(result.reason).toEqual({nonExistent: 1});
             await verifyReasonEvaluatesToSameResult(result, context, functionsTable, runOpts);
         });
     });
@@ -2222,8 +2216,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate recordNested.a with ref', async () => {
@@ -2250,8 +2244,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate recordNested.a with short eq to false', async () => {
@@ -2271,8 +2265,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(false);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(false);
         });
 
         it('should evaluate specialNested.a with short eq to true (ignoring array type)', async () => {
@@ -2293,8 +2287,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate specialNested.a with ref', async () => {
@@ -2315,8 +2309,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate specialNested.a with eq operator to true', async () => {
@@ -2337,8 +2331,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate specialNested.b with gt operator to true', async () => {
@@ -2359,8 +2353,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate specialNested.name with regexp operator to true', async () => {
@@ -2381,8 +2375,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate specialNested.id with inq operator to true', async () => {
@@ -2403,8 +2397,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should evaluate recordNested.status with boolean value to true', async () => {
@@ -2424,8 +2418,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, context, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, context, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
 
         it('should work with or operator combining specialNested paths', async () => {
@@ -2459,8 +2453,8 @@ describe('evaluator', () => {
                 },
             };
             const runOpts: CustomEvaluatorFuncRunOptions = {dryRun: false};
-            expect(await validate(expression, validationContext, functionsTable, runOpts)).to.be.an('undefined');
-            expect(await evaluate(expression, context, functionsTable, runOpts)).to.eql(true);
+            expect(await validate(expression, validationContext, functionsTable, runOpts)).toBeUndefined();
+            expect(await evaluate(expression, context, functionsTable, runOpts)).toEqual(true);
         });
     });
 
