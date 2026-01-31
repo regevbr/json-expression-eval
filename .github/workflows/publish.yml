@@ -31,29 +31,22 @@ jobs:
         run: |
           git fetch --prune --unshallow
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: ${{ env.REGISTRY }}
-
-      - name: Get yarn cache directory
-        id: yarn-cache-dir
-        run: |
-          echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ubuntu-latest-${{ env.NODE_VERSION }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ubuntu-latest-${{ env.NODE_VERSION }}-yarn-
+          cache: 'pnpm'
 
       - name: Install dependencies and build
         run: |
-          yarn install --ignore-engines
-          yarn build
+          pnpm install
+          pnpm build
 
       - name: Publish
         run: |

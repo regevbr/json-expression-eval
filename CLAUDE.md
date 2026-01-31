@@ -4,19 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build & Test Commands
 
-- `yarn install` - Install dependencies
-- `yarn build` - Lint and compile TypeScript
-- `yarn compile` - Compile TypeScript only
-- `yarn test` - Run linting, type tests, and coverage tests
-- `yarn test:unit` - Run unit tests only
-- `yarn test:cover` - Run unit tests with coverage
-- `yarn test:tsd` - Run TypeScript definition tests
-- `yarn lint` - Run TSLint
-- `yarn ci` - Full CI pipeline (lint, compile, type tests, coverage)
+- `pnpm install` - Install dependencies
+- `pnpm run build` - Lint and compile TypeScript
+- `pnpm run compile` - Compile TypeScript only
+- `pnpm run test` - Run linting, type tests, and coverage tests
+- `pnpm run test:unit` - Run unit tests only
+- `pnpm run test:cover` - Run unit tests with coverage
+- `pnpm run test:tsd` - Run TypeScript definition tests
+- `pnpm run lint` - Run ESLint
+- `pnpm run ci` - Full CI pipeline (lint, compile, type tests, coverage)
 
 Run a single test:
 ```sh
-yarn test:unit --grep "test name pattern"
+pnpm run test:unit -- --grep "test name pattern"
 ```
 
 ## Architecture
@@ -59,9 +59,11 @@ Right-hand side can be: literal value, `{ref: "path"}` to reference context, or 
 ## Code Style
 
 - 4-space indentation, single quotes, semicolons required
-- Lines ~140 characters max
+- Lines ~120 characters max
 - 100% code coverage required
 - Type tests use TSD in `src/test/types/`
+- Linting via ESLint (flat config in `eslint.config.mjs`)
+- Testing via Vitest
 
 ## Node.js Support
 

@@ -1,9 +1,5 @@
-import * as chai from 'chai';
-import {expect} from 'chai';
+import { describe, it, expect } from 'vitest';
 import {ValidationContext, RulesEngine, Rule, validateRules, evaluateRules} from '../';
-import chaiAsPromised from 'chai-as-promised';
-
-chai.use(chaiAsPromised);
 
 const functionsTable = {
     user: (user: string, context: { userId: string }, runOpts: {validation: boolean; custom: {dryRun: boolean}})
@@ -29,7 +25,7 @@ const ruleFunctionsTable = {
             return {
                 message: `Username ${user} is not allowed`,
                 custom: 543,
-            }
+            };
         }
     },
     userRuleComplex: async (user: string, context: { userId: string },
@@ -44,7 +40,7 @@ const ruleFunctionsTable = {
             return {
                 message: `Username ${user} is not allowed`,
                 custom: 543,
-            }
+            };
         }
     },
 };
@@ -94,20 +90,20 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
         await expect(engine.validate(rules, validationContext, runOpts))
-            .to.eventually.rejectedWith(Error, 'Missing condition for rule');
+            .rejects.toThrow('Missing condition for rule');
         await expect(validateRules<number, Con, RuleFunction, ExpressionFunction, Ignore,
             CustomEngineRuleFuncRunOptions>(rules, validationContext,
             functionsTable, ruleFunctionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Missing condition for rule');
+            .rejects.toThrow('Missing condition for rule');
         await expect(evaluateRules<number, Con, RuleFunction, ExpressionFunction, Ignore,
             CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, true, runOpts)).to.eventually.rejectedWith(Error, 'Missing condition for rule');
+            , ruleFunctionsTable, true, runOpts)).rejects.toThrow('Missing condition for rule');
         await expect(evaluateRules<number, Con, RuleFunction, ExpressionFunction, Ignore,
             CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, false, runOpts)).to.eventually.rejectedWith(Error, 'Missing condition for rule');
-        await expect(engine.evaluate(rules, context, runOpts)).to.eventually.rejectedWith(Error, 'Missing condition for rule');
-        await expect(engine.evaluateAll(rules, context, runOpts)).to.eventually
-            .rejectedWith(Error, 'Missing condition for rule');
+            , ruleFunctionsTable, false, runOpts)).rejects.toThrow('Missing condition for rule');
+        await expect(engine.evaluate(rules, context, runOpts)).rejects.toThrow('Missing condition for rule');
+        await expect(engine.evaluateAll(rules, context, runOpts))
+            .rejects.toThrow('Missing condition for rule');
     });
 
     it('should fail on empty consequence', async () => {
@@ -147,20 +143,20 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
         await expect(engine.validate(rules, validationContext, runOpts))
-            .to.eventually.rejectedWith(Error, 'Missing consequence for rule');
+            .rejects.toThrow('Missing consequence for rule');
         await expect(validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
             functionsTable, ruleFunctionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Missing consequence for rule');
+            .rejects.toThrow('Missing consequence for rule');
         await expect(evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, true, runOpts)).to.eventually.rejectedWith(Error, 'Missing consequence for rule');
+            , ruleFunctionsTable, true, runOpts)).rejects.toThrow('Missing consequence for rule');
         await expect(evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, false, runOpts)).to.eventually.rejectedWith(Error, 'Missing consequence for rule');
-        await expect(engine.evaluate(rules, context, runOpts)).to.eventually.rejectedWith(Error, 'Missing consequence for rule');
-        await expect(engine.evaluateAll(rules, context, runOpts)).to
-            .eventually.rejectedWith(Error, 'Missing consequence for rule');
+            , ruleFunctionsTable, false, runOpts)).rejects.toThrow('Missing consequence for rule');
+        await expect(engine.evaluate(rules, context, runOpts)).rejects.toThrow('Missing consequence for rule');
+        await expect(engine.evaluateAll(rules, context, runOpts))
+            .rejects.toThrow('Missing consequence for rule');
     });
 
     it('should fail on bad condition', async () => {
@@ -197,11 +193,11 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
         await expect(engine.validate(rules, validationContext, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key userIds');
+            .rejects.toThrow('Invalid expression - unknown context key userIds');
         await expect(validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
             functionsTable, ruleFunctionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid expression - unknown context key userIds');
+            .rejects.toThrow('Invalid expression - unknown context key userIds');
     });
 
     it('should fail on bad consequence ref', async () => {
@@ -247,20 +243,20 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
         await expect(engine.validate(rules, validationContext, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid consequence ref - unknown context key userIdd');
+            .rejects.toThrow('Invalid consequence ref - unknown context key userIdd');
         await expect(validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
             functionsTable, ruleFunctionsTable, runOpts))
-            .to.eventually.rejectedWith(Error, 'Invalid consequence ref - unknown context key userIdd');
+            .rejects.toThrow('Invalid consequence ref - unknown context key userIdd');
         await expect(evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, true, runOpts)).to.eventually.rejectedWith(Error, 'Invalid consequence ref - unknown context key userIdd');
+            , ruleFunctionsTable, true, runOpts)).rejects.toThrow('Invalid consequence ref - unknown context key userIdd');
         await expect(evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, false, runOpts)).to.eventually.rejectedWith(Error, 'Invalid consequence ref - unknown context key userIdd');
-        await expect(engine.evaluate(rules, context, runOpts)).to.eventually.rejectedWith(Error, 'Invalid consequence ref - unknown context key userIdd');
-        await expect(engine.evaluateAll(rules, context, runOpts)).to
-            .eventually.rejectedWith(Error, 'Invalid consequence ref - unknown context key userIdd');
+            , ruleFunctionsTable, false, runOpts)).rejects.toThrow('Invalid consequence ref - unknown context key userIdd');
+        await expect(engine.evaluate(rules, context, runOpts)).rejects.toThrow('Invalid consequence ref - unknown context key userIdd');
+        await expect(engine.evaluateAll(rules, context, runOpts))
+            .rejects.toThrow('Invalid consequence ref - unknown context key userIdd');
     });
 
     it('should pass run opts to functions', async () => {
@@ -285,20 +281,20 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
         await expect(engine.validate(rules, validationContext, {dryRun: false}))
-            .to.eventually.rejectedWith(Error, 'Failed user validation');
-        expect(await engine.validate(rules, validationContext, {dryRun: true})).to.be.an('undefined');
+            .rejects.toThrow('Failed user validation');
+        expect(await engine.validate(rules, validationContext, {dryRun: true})).toBeUndefined();
         await expect(validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
             functionsTable, ruleFunctionsTable, {dryRun: false}))
-            .to.eventually.rejectedWith(Error, 'Failed user validation');
+            .rejects.toThrow('Failed user validation');
         expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, {dryRun: true})).to.be.an('undefined');
+            functionsTable, ruleFunctionsTable, {dryRun: true})).toBeUndefined();
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'b',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: false})).to.eql([
+            , ruleFunctionsTable, true, {dryRun: false})).toEqual([
             {
                 'custom': 579,
                 'message': 'user b should not equal b',
@@ -306,7 +302,7 @@ describe('engine', () => {
         ]);
         expect(await engine.evaluate(rules, {
             userId: 'b',
-        }, {dryRun: false})).to.eql(
+        }, {dryRun: false})).toEqual(
             {
                 'custom': 579,
                 'message': 'user b should not equal b',
@@ -316,15 +312,15 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'a',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: false})).to.eql(undefined);
+            , ruleFunctionsTable, true, {dryRun: false})).toEqual(undefined);
         expect(await engine.evaluate(rules, {
             userId: 'a',
-        }, {dryRun: false})).to.eql(undefined);
+        }, {dryRun: false})).toEqual(undefined);
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'a',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: true})).to.eql([
+            , ruleFunctionsTable, true, {dryRun: true})).toEqual([
             {
                 'custom': 579,
                 'message': 'user a should not equal b',
@@ -332,7 +328,7 @@ describe('engine', () => {
         ]);
         expect(await engine.evaluate(rules, {
             userId: 'a',
-        }, {dryRun: true})).to.eql(
+        }, {dryRun: true})).toEqual(
             {
                 'custom': 579,
                 'message': 'user a should not equal b',
@@ -356,20 +352,20 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
         await expect(engine.validate(rules, validationContext, {dryRun: false}))
-            .to.eventually.rejectedWith(Error, 'Failed user validation');
-        expect(await engine.validate(rules, validationContext, {dryRun: true})).to.be.an('undefined');
+            .rejects.toThrow('Failed user validation');
+        expect(await engine.validate(rules, validationContext, {dryRun: true})).toBeUndefined();
         await expect(validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
             functionsTable, ruleFunctionsTable, {dryRun: false}))
-            .to.eventually.rejectedWith(Error, 'Failed user validation');
+            .rejects.toThrow('Failed user validation');
         expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, {dryRun: true})).to.be.an('undefined');
+            functionsTable, ruleFunctionsTable, {dryRun: true})).toBeUndefined();
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'b',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: false})).to.eql([
+            , ruleFunctionsTable, true, {dryRun: false})).toEqual([
             {
                 'custom': 543,
                 'message': 'Username b is not allowed',
@@ -377,7 +373,7 @@ describe('engine', () => {
         ]);
         expect(await engine.evaluate(rules, {
             userId: 'b',
-        }, {dryRun: false})).to.eql(
+        }, {dryRun: false})).toEqual(
             {
                 'custom': 543,
                 'message': 'Username b is not allowed',
@@ -387,15 +383,15 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'a',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: false})).to.eql(undefined);
+            , ruleFunctionsTable, true, {dryRun: false})).toEqual(undefined);
         expect(await engine.evaluate(rules, {
             userId: 'a',
-        }, {dryRun: false})).to.eql(undefined);
+        }, {dryRun: false})).toEqual(undefined);
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'a',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: true})).to.eql([
+            , ruleFunctionsTable, true, {dryRun: true})).toEqual([
             {
                 'custom': 543,
                 'message': 'Username b is not allowed',
@@ -403,7 +399,7 @@ describe('engine', () => {
         ]);
         expect(await engine.evaluate(rules, {
             userId: 'a',
-        }, {dryRun: true})).to.eql(
+        }, {dryRun: true})).toEqual(
             {
                 'custom': 543,
                 'message': 'Username b is not allowed',
@@ -462,18 +458,18 @@ describe('engine', () => {
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
-        expect(await engine.validate(rules, validationContext, runOpts)).to.be.an('undefined');
+        expect(await engine.validate(rules, validationContext, runOpts)).toBeUndefined();
         expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, runOpts)).to.be.an('undefined');
+            functionsTable, ruleFunctionsTable, runOpts)).toBeUndefined();
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, true, runOpts)).to.eql(undefined);
-        expect(await engine.evaluate(rules, context, runOpts)).to.eql(undefined);
+            , ruleFunctionsTable, true, runOpts)).toEqual(undefined);
+        expect(await engine.evaluate(rules, context, runOpts)).toEqual(undefined);
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, false, runOpts)).to.eql(undefined);
-        expect(await engine.evaluateAll(rules, context, runOpts)).to.eql(undefined);
+            , ruleFunctionsTable, false, runOpts)).toEqual(undefined);
+        expect(await engine.evaluateAll(rules, context, runOpts)).toEqual(undefined);
     });
 
     it('should evaluate and fail properly on regular rule', async () => {
@@ -527,27 +523,27 @@ describe('engine', () => {
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
-        expect(await engine.validate(rules, validationContext, runOpts)).to.be.an('undefined');
+        expect(await engine.validate(rules, validationContext, runOpts)).toBeUndefined();
         expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, runOpts)).to.be.an('undefined');
+            functionsTable, ruleFunctionsTable, runOpts)).toBeUndefined();
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, true, runOpts)).to.eql([{
+            , ruleFunctionsTable, true, runOpts)).toEqual([{
             'custom': 578,
             'message': 'nested value 7 should not equal 7 days',
         }]);
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, false, runOpts)).to.eql([{
+            , ruleFunctionsTable, false, runOpts)).toEqual([{
             'custom': 578,
             'message': 'nested value 7 should not equal 7 days',
         }]);
-        expect(await engine.evaluate(rules, context, runOpts)).to.eql({
+        expect(await engine.evaluate(rules, context, runOpts)).toEqual({
             'custom': 578,
             'message': 'nested value 7 should not equal 7 days',
         });
-        expect(await engine.evaluateAll(rules, context, runOpts)).to.eql([{
+        expect(await engine.evaluateAll(rules, context, runOpts)).toEqual([{
             'custom': 578,
             'message': 'nested value 7 should not equal 7 days',
         }]);
@@ -604,27 +600,27 @@ describe('engine', () => {
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
-        expect(await engine.validate(rules, validationContext, runOpts)).to.be.an('undefined');
+        expect(await engine.validate(rules, validationContext, runOpts)).toBeUndefined();
         expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, runOpts)).to.be.an('undefined');
+            functionsTable, ruleFunctionsTable, runOpts)).toBeUndefined();
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, true, runOpts)).to.eql([{
+            , ruleFunctionsTable, true, runOpts)).toEqual([{
             'custom': 543,
             'message': 'Username a is not allowed',
         }]);
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, false, runOpts)).to.eql([{
+            , ruleFunctionsTable, false, runOpts)).toEqual([{
             'custom': 543,
             'message': 'Username a is not allowed',
         }]);
-        expect(await engine.evaluate(rules, context, runOpts)).to.eql({
+        expect(await engine.evaluate(rules, context, runOpts)).toEqual({
             'custom': 543,
             'message': 'Username a is not allowed',
         });
-        expect(await engine.evaluateAll(rules, context, runOpts)).to.eql([{
+        expect(await engine.evaluateAll(rules, context, runOpts)).toEqual([{
             'custom': 543,
             'message': 'Username a is not allowed',
         }]);
@@ -681,27 +677,27 @@ describe('engine', () => {
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
-        expect(await engine.validate(rules, validationContext, runOpts)).to.be.an('undefined');
+        expect(await engine.validate(rules, validationContext, runOpts)).toBeUndefined();
         expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, runOpts)).to.be.an('undefined');
+            functionsTable, ruleFunctionsTable, runOpts)).toBeUndefined();
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, true, runOpts)).to.eql([{
+            , ruleFunctionsTable, true, runOpts)).toEqual([{
             'custom': 579,
             'message': 'user a should not equal a',
         }]);
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, false, runOpts)).to.eql([{
+            , ruleFunctionsTable, false, runOpts)).toEqual([{
             'custom': 579,
             'message': 'user a should not equal a',
         }]);
-        expect(await engine.evaluate(rules, context, runOpts)).to.eql({
+        expect(await engine.evaluate(rules, context, runOpts)).toEqual({
             'custom': 579,
             'message': 'user a should not equal a',
         });
-        expect(await engine.evaluateAll(rules, context, runOpts)).to.eql([{
+        expect(await engine.evaluateAll(rules, context, runOpts)).toEqual([{
             'custom': 579,
             'message': 'user a should not equal a',
         }]);
@@ -758,19 +754,19 @@ describe('engine', () => {
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
-        expect(await engine.validate(rules, validationContext, runOpts)).to.be.an('undefined');
+        expect(await engine.validate(rules, validationContext, runOpts)).toBeUndefined();
         expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, runOpts)).to.be.an('undefined');
+            functionsTable, ruleFunctionsTable, runOpts)).toBeUndefined();
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, true, runOpts)).to.eql([{
+            , ruleFunctionsTable, true, runOpts)).toEqual([{
             'custom': 579,
             'message': 'user should not equal a',
         }]);
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, context, functionsTable
-            , ruleFunctionsTable, false, runOpts)).to.eql([
+            , ruleFunctionsTable, false, runOpts)).toEqual([
             {
                 'custom': 579,
                 'message': 'user should not equal a',
@@ -780,11 +776,11 @@ describe('engine', () => {
                 'message': 'Username a is not allowed',
             },
         ]);
-        expect(await engine.evaluate(rules, context, runOpts)).to.eql({
+        expect(await engine.evaluate(rules, context, runOpts)).toEqual({
             'custom': 579,
             'message': 'user should not equal a',
         });
-        expect(await engine.evaluateAll(rules, context, runOpts)).to.eql([
+        expect(await engine.evaluateAll(rules, context, runOpts)).toEqual([
             {
                 'custom': 579,
                 'message': 'user should not equal a',

@@ -19,6 +19,7 @@
   "exclude": [
     "src/test/types/**/*.test-d.ts",
     "node_modules",
-    "dist"
+    "dist",
+    "vitest.config.ts"
   ]
 }
