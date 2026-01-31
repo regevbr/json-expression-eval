@@ -1,386 +1,278 @@
-[![Npm Version](https://img.shields.io/npm/v/json-expression-eval.svg?style=popout)](https://www.npmjs.com/package/json-expression-eval)
-[![node](https://img.shields.io/node/v-lts/json-expression-eval)](https://www.npmjs.com/package/json-expression-eval)
-[![Build status](https://github.com/regevbr/json-expression-eval/actions/workflows/ci.yml/badge.svg?branch=master)](https://www.npmjs.com/package/json-expression-eval)
-[![Code Coverage](https://qlty.sh/gh/regevbr/projects/json-expression-eval/coverage.svg)](https://qlty.sh/gh/regevbr/projects/json-expression-eval)
-[![Maintainability](https://qlty.sh/gh/regevbr/projects/json-expression-eval/maintainability.svg)](https://qlty.sh/gh/regevbr/projects/json-expression-eval)
-[![Known Vulnerabilities](https://snyk.io/test/github/regevbr/json-expression-eval/badge.svg?targetFile=package.json)](https://snyk.io/test/github/regevbr/json-expression-eval?targetFile=package.json)
+<p align="center">
+  <h1 align="center">json-expression-eval</h1>
+  <p align="center">
+    <strong>A fully typed, JSON-serializable boolean expression evaluator and rule engine for Node.js</strong>
+  </p>
+</p>
 
-# json-expression-eval (and rule engine)
-A Fully typed Node.js module that evaluates a json described boolean expressions using dynamic functions and a given context.
-Expressions can also be evaluated in a [`rule engine`](#rule-engine) manner.  
+<p align="center">
+  <a href="https://www.npmjs.com/package/json-expression-eval"><img src="https://img.shields.io/npm/v/json-expression-eval.svg?style=flat-square" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/json-expression-eval"><img src="https://img.shields.io/node/v-lts/json-expression-eval?style=flat-square" alt="node version"></a>
+  <a href="https://github.com/regevbr/json-expression-eval/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/regevbr/json-expression-eval/ci.yml?branch=master&style=flat-square" alt="build status"></a>
+  <a href="https://qlty.sh/gh/regevbr/projects/json-expression-eval"><img src="https://qlty.sh/gh/regevbr/projects/json-expression-eval/coverage.svg" alt="coverage"></a>
+  <a href="https://qlty.sh/gh/regevbr/projects/json-expression-eval"><img src="https://qlty.sh/gh/regevbr/projects/json-expression-eval/maintainability.svg" alt="maintainability"></a>
+  <a href="https://snyk.io/test/github/regevbr/json-expression-eval?targetFile=package.json"><img src="https://snyk.io/test/github/regevbr/json-expression-eval/badge.svg?targetFile=package.json" alt="vulnerabilities"></a>
+</p>
 
-The module is strictly typed, ensuring that passed expressions are 100% valid at compile time.
+---
 
-This module is especially useful if you need to serialize complex expressions / rules (to be saved in a DB for example) 
-  
-## Installation 
+## Why json-expression-eval?
+
+Need to store complex business rules in a database? Want to evaluate dynamic conditions without `eval()`? This library lets you:
+
+- **Serialize expressions as JSON** - Store rules in databases, send them over APIs
+- **100% type-safe** - Full TypeScript support with compile-time validation
+- **Extensible** - Add custom functions for domain-specific logic
+- **Debug easily** - `evaluateWithReason` tells you exactly *why* an expression matched
+
+---
+
+## Table of Contents
+
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Expression Syntax](#-expression-syntax)
+- [Operators](#-operators)
+- [Custom Functions](#-custom-functions)
+- [Rule Engine](#-rule-engine)
+- [API Reference](#-api-reference)
+
+---
+
+## Installation
+
 ```sh
+# npm
 npm install json-expression-eval
-```
-Or
-```sh
+
+# yarn
 yarn add json-expression-eval
+
+# pnpm
+pnpm add json-expression-eval
 ```
 
-## Usage
+---
 
- *Please see tests and examples dir for more usages and examples (under /src)* 
+## Quick Start
 
 ```typescript
-import {evaluate, evaluateWithReason, Expression, ExpressionHandler, validate, ValidationContext, EvaluatorFuncRunOptions, EvaluationResult} from 'json-expression-eval';
-import {Moment} from 'moment';
-import moment = require('moment');
+import { evaluate } from 'json-expression-eval';
 
-interface IExampleContext {
-    userId: string;
-    times: number | undefined;
-    date: Moment;
-    nested: {
-        value: number | null;
-        value4: number;
-        nested2: {
-            value2?: number;
-            value3: boolean;
-        };
-    };
-}
-
-type IExampleContextIgnore = Moment;
-
-type IExampleCustomEvaluatorFuncRunOptions = {dryRun: boolean};
-
-type IExampleFunctionTable = {
-    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
-                 runOpts: EvaluatorFuncRunOptions<IExampleCustomEvaluatorFuncRunOptions>) => Promise<boolean>;
-}
-
-type IExampleExpression = Expression<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>; // We pass Moment here to avoid TS exhaustion
-
-const context: IExampleContext = {
-    userId: 'a@b.com',
-    times: 3,
-    date: moment(),
-    nested: {
-        value: null,
-        value4: 5,
-        nested2: {
-            value3: true,
-        },
-    },
+// Define your context (the data to evaluate against)
+const context = {
+  user: { age: 25, role: 'admin' },
+  subscription: { plan: 'pro', daysLeft: 15 }
 };
 
-// For validation we must provide a full example context
-const validationContext: ValidationContext<IExampleContext, IExampleContextIgnore> = {
-    userId: 'a@b.com',
-    times: 3,
-    date: moment(),
-    nested: {
-        value: 5,
-        value4: 6,
-        nested2: {
-            value2: 6,
-            value3: true,
-        },
-    },
+// Define your expression (can be stored as JSON!)
+const expression = {
+  and: [
+    { 'user.age': { gte: 18 } },
+    { 'user.role': 'admin' },
+    { 'subscription.daysLeft': { gt: 0 } }
+  ]
 };
 
-const functionsTable: IExampleFunctionTable = {
-    countRange: async ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
-                       runOpts: EvaluatorFuncRunOptions<IExampleCustomEvaluatorFuncRunOptions>): Promise<boolean> => {
-        return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
-    },
-};
-
-const expression: IExampleExpression = {
-    or: [
-        {
-            userId: 'a@b.com',
-        },
-        {
-            times: {
-                lte: {
-                    op: '+',
-                    lhs: {
-                        ref: 'nested.value4',
-                    },
-                    rhs: 2,
-                },
-            },
-        },
-        {
-            and: [
-                {
-                    countRange: [2, 6],
-                },
-                {
-                    'nested.nested2.value3': true,
-                },
-                {
-                    times: {
-                        lte: {
-                            ref: 'nested.value4',
-                        },
-                    },
-                },
-            ],
-        },
-    ],
-};
-
-(async () => {
-    // Example usage 1
-    const handler =
-        new ExpressionHandler<IExampleContext, IExampleFunctionTable, IExampleContextIgnore,
-            IExampleCustomEvaluatorFuncRunOptions>(expression, functionsTable);
-    await handler.validate(validationContext, {dryRun: false}); // Should not throw
-    console.log(await handler.evaluate(context, {dryRun: true})); // true
-
-    // Example usage 2
-    await validate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore,
-        IExampleCustomEvaluatorFuncRunOptions>(expression, validationContext, functionsTable, {dryRun: true}); // Should not throw
-    console.log(await evaluate<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>(expression, context, functionsTable, {dryRun: true})); // true
-
-    // Example usage 3 - evaluateWithReason returns the minimal expression that led to the result
-    const resultWithReason = await evaluateWithReason<IExampleContext, IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEvaluatorFuncRunOptions>(expression, context, functionsTable, {dryRun: true});
-    console.log(resultWithReason.result); // true
-    console.log(JSON.stringify(resultWithReason.reason)); // {"or":[{"userId":"a@b.com"}]} - the first matching condition in the OR
-
-    // Using ExpressionHandler
-    const handlerResult = await handler.evaluateWithReason(context, {dryRun: true});
-    console.log(handlerResult.result); // true
-    console.log(JSON.stringify(handlerResult.reason)); // {"or":[{"userId":"a@b.com"}]}
-})()
+// Evaluate
+const result = await evaluate(expression, context, {});
+console.log(result); // true
 ```
 
-### evaluateWithReason
+---
 
-The `evaluateWithReason` function evaluates an expression and returns not only the boolean result, but also the minimal sub-expression that led to that result. This is useful for debugging and understanding why an expression evaluated to a specific value.
+## Expression Syntax
+
+Expressions are plain JavaScript objects that can be serialized to JSON. They support:
+
+### Logical Operators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `and` | All conditions must be true | `{ and: [expr1, expr2] }` |
+| `or` | At least one condition must be true | `{ or: [expr1, expr2] }` |
+| `not` | Negates the condition | `{ not: expr }` |
+
+### Comparison Operators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `eq` | Equal (`===`) | `{ age: { eq: 25 } }` |
+| `neq` | Not equal (`!==`) | `{ status: { neq: 'inactive' } }` |
+| `gt` | Greater than | `{ price: { gt: 100 } }` |
+| `gte` | Greater than or equal | `{ age: { gte: 18 } }` |
+| `lt` | Less than | `{ quantity: { lt: 10 } }` |
+| `lte` | Less than or equal | `{ score: { lte: 100 } }` |
+| `inq` | In array | `{ color: { inq: ['red', 'blue'] } }` |
+| `nin` | Not in array | `{ status: { nin: ['banned', 'suspended'] } }` |
+| `between` | Between two values (inclusive) | `{ age: { between: [18, 65] as const } }` |
+| `regexp` | Matches regex | `{ email: { regexp: '^.*@gmail\\.com$' } }` |
+| `regexpi` | Matches regex (case-insensitive) | `{ name: { regexpi: '^john' } }` |
+| `exists` | Check if value exists (not null/undefined) | `{ middleName: { exists: true } }` |
+
+### Shorthand Syntax
+
+For simple equality checks, you can omit the operator:
 
 ```typescript
-const result: EvaluationResult<...> = await evaluateWithReason(expression, context, functionsTable, runOptions);
-// result.result - boolean: the evaluation result
-// result.reason - Expression: the minimal expression that caused the result
+// These are equivalent:
+{ userId: { eq: 'abc123' } }
+{ userId: 'abc123' }
 ```
 
-**Behavior:**
-- For `or` expressions that evaluate to `true`: returns `{or: [reason]}` with the first sub-expression that evaluated to `true`
-- For `or` expressions that evaluate to `false`: returns `{or: [reasons...]}` with all sub-expressions (all failed)
-- For `and` expressions that evaluate to `false`: returns `{and: [reason]}` with the first sub-expression that evaluated to `false`
-- For `and` expressions that evaluate to `true`: returns `{and: [reasons...]}` with all sub-expressions (all passed)
-- For `not` expressions: returns `{not: reason}` wrapping the reason from the inner expression
-- For simple property comparisons and function calls: returns the expression itself
+### Nested Properties
 
-### Expression
+Access nested properties using dot notation:
 
-There are 4 types of operators you can use (evaluated in that order of precedence):
-- `and` - accepts a non-empty list of expressions
-- `or` - accepts a non-empty list of expressions
-- `not` - accepts another expressions
-- `<user defined funcs>` - accepts any type of argument and evaluated by the user defined functions, and the given context (can be async) and run options (i.e. validation + custom defined value).
-- `<compare funcs>` - operates on one of the context properties and compares it to a given value.
-    - `{property: {op: value}}`
-        - available ops:
-            - `gt` - >
-            - `gte` - >=
-            - `lt` - <
-            - `lte` - <=
-            - `eq` - ===
-            - `neq` - !==
-            - `regexp: RegExp` - True if matches the compiled regular expression.
-            - `regexpi: RegExp` - True if matches the compiled regular expression with the `i` flag set.
-            - `nin: any[]` - True if *not* in an array of values. Comparison is done using the `===` operator
-            - `inq: any[]` - True if in an array of values. Comparison is done using the `===` operator
-            - `between: readonly [number, number] (as const)` - True if the value is between the two specified values: greater than or equal to first value and less than or equal to second value.
-            - `exists: boolean` - True if the value is not null or undefined (when `exists: true`), or True if the value is null or undefined (when `exists: false`). Note: Falsy values like `0`, `false`, and `""` are considered as existing.
-    - `{property: value}`
-        - compares the property to that value (shorthand to the `eq` op, without the option to user math or refs to other properties)
+```typescript
+{ 'user.address.city': 'New York' }
+{ 'order.items.0.price': { gt: 50 } }
+```
 
-> Nested properties in the context can also be accessed using a dot notation (see example above)
+---
 
-> In each expression level, you can only define 1 operator, and 1 only
+## Operators
 
-The right-hand side of compare (not user defined) functions can be a:
-- literal - number/string/boolean (depending on the left-hand side of the function)
-- reference to a property (or nested property) in the context.  
-  This can be achieved by using `{"ref":"<dot notation path>"}`
-- A math operation that can reference properties in the context.  
-  The valid operations are `+,-,*,/,%,pow`.  
-  This can be achieved by using  
-  ```json
-  {
-    "op": "<+,-,*,/,%,pow>",
-    "lhs": {"ref": "<dot notation path>"}, // or a number literal
-    "rhs": {"ref": "<dot notation path>"} // or a number literal
+### Reference Values
+
+Compare a property against another property in the context:
+
+```typescript
+{
+  'cart.total': {
+    lte: { ref: 'user.balance' }  // cart.total <= user.balance
   }
-  ```
-  which will be computed as `<lhs> <op> <rhs>` where lhs is left-hand-side and rhs is right-hand-side. So for example
-  ```json
-  {
-    "op": "/",
-    "lhs": 10,
-    "rhs": 2
-  }
-  ```
-  will equal `10 / 2 = 5`
-
-
-Example expressions, assuming we have the `user` and `maxCount` user defined functions in place can be:
-```json
-{  
-   "or":[  
-      {  
-         "not":{  
-            "user":"a@b.com"
-         }
-      },
-      {  
-         "maxCount":1
-      },
-      {  
-         "times": { "eq" : 5}
-      },
-      {  
-         "times": { "eq" : { "ref": "nested.preoprty"}}
-      },
-      {  
-         "country": "USA"
-      }
-   ]
 }
 ```
 
-### Rule Engine
+### Math Operations
 
-*Please see tests and examples dir for more usages and examples (under /src)* 
+Perform calculations in comparisons:
 
 ```typescript
-import {ValidationContext, validateRules, evaluateRules, RulesEngine, Rule, ResolvedConsequence, EngineRuleFuncRunOptions} from 'json-expression-eval';
-import {Moment} from 'moment';
-import moment = require('moment');
-
-interface IExampleContext {
-    userId: string;
-    times: number | undefined;
-    date: Moment;
-    nested: {
-        value: number | null;
-        nested2: {
-            value2?: number;
-            value3: boolean;
-        };
-    };
+{
+  'order.total': {
+    lte: {
+      op: '*',           // Multiply
+      lhs: { ref: 'user.credit' },  // Left-hand side
+      rhs: 0.9           // Right-hand side (10% discount)
+    }
+  }
 }
+```
 
-type IExampleContextIgnore = Moment;
+**Available operations:** `+`, `-`, `*`, `/`, `%`, `pow`
 
-type IExampleCustomEngineRuleFuncRunOptions = {dryRun: boolean};
+---
 
-type IExamplePayload = number;
+## Custom Functions
 
-type IExampleFunctionTable = {
-    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
-                 runOpts: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>) => boolean;
-}
+Add domain-specific logic with custom functions:
 
-type IExampleRuleFunctionTable = {
-    userRule: (user: string, ctx: IExampleContext,
-               runOpts: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>) =>
-        Promise<void | ResolvedConsequence<IExamplePayload>>;
-}
+```typescript
+import { evaluate, Expression, EvaluatorFuncRunOptions } from 'json-expression-eval';
 
-type IExampleRule = Rule<IExamplePayload, IExampleRuleFunctionTable, IExampleContext,
-    IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>;
-
-const context: IExampleContext = {
-    userId: 'a@b.com',
-    times: 3,
-    date: moment(),
-    nested: {
-        value: null,
-        nested2: {
-            value3: true,
-        },
-    },
+// Define your function table type
+type MyFunctions = {
+  isPremiumUser: (
+    minPurchases: number,
+    ctx: { purchases: number },
+    opts: EvaluatorFuncRunOptions<{}>
+  ) => Promise<boolean>;
 };
 
-// For validation we must provide a full example context
-const validationContext: ValidationContext<IExampleContext, IExampleContextIgnore> = {
-    userId: 'a@b.com',
-    times: 3,
-    date: moment(),
-    nested: {
-        value: 5,
-        nested2: {
-            value2: 6,
-            value3: true,
-        },
-    },
+// Implement the functions
+const functions: MyFunctions = {
+  isPremiumUser: async (minPurchases, ctx) => {
+    return ctx.purchases >= minPurchases;
+  }
 };
 
-const functionsTable: IExampleFunctionTable = {
-    countRange: ([min, max]: [min: number, max: number], ctx: { times: number | undefined },
-                 runOptions: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>): boolean => {
-        return ctx.times === undefined ? false : ctx.times >= min && ctx.times < max;
-    },
+// Use in expressions
+const expression: Expression<MyContext, MyFunctions> = {
+  and: [
+    { isPremiumUser: 10 },  // Custom function call
+    { 'subscription.active': true }
+  ]
 };
 
-const ruleFunctionsTable: IExampleRuleFunctionTable = {
-    userRule: async (user: string, ctx: IExampleContext,
-                     runOptions: EngineRuleFuncRunOptions<IExampleCustomEngineRuleFuncRunOptions>)
-        : Promise<void | ResolvedConsequence<number>> => {
-        if (ctx.userId === user) {
-            return {
-                message: `Username ${user} is not allowed`,
-                custom: 543,
-            }
-        }
-    },
-};
+await evaluate(expression, context, functions);
+```
 
-const rules: IExampleRule[] = [
-    {
-        condition: {
-            or: [
-                {
-                    userId: 'a@b.com',
-                },
-                {
-                    and: [
-                        {
-                            countRange: [2, 6],
-                        },
-                        {
-                            'nested.nested2.value3': true,
-                        },
-                    ],
-                },
-            ],
-        },
-        consequence: {
-            message: ['user', {
-                ref: 'userId',
-            }, 'should not equal a@b.com'],
-            custom: 579,
-        },
+---
+
+## Rule Engine
+
+For more complex scenarios, use the rule engine to evaluate multiple rules and get detailed results:
+
+```typescript
+import { RulesEngine, Rule } from 'json-expression-eval';
+
+type MyPayload = { discountPercent: number };
+
+const rules: Rule<MyPayload, ...>[] = [
+  {
+    condition: {
+      and: [
+        { 'user.tier': 'gold' },
+        { 'cart.total': { gte: 100 } }
+      ]
     },
-    {
-        userRule: 'b@c.com',
-    },
+    consequence: {
+      message: 'Gold member discount applied!',
+      custom: { discountPercent: 20 }
+    }
+  },
+  {
+    condition: { 'cart.total': { gte: 50 } },
+    consequence: {
+      message: 'Bulk discount applied!',
+      custom: { discountPercent: 10 }
+    }
+  }
 ];
 
-(async () => {
-    // Example usage 1
-    const engine = new RulesEngine<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
-        IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>(
-        functionsTable, ruleFunctionsTable);
-    await engine.validate(rules, validationContext, {dryRun: false}); // Should not throw
-    console.log(JSON.stringify(await engine.evaluateAll(rules, context, {dryRun: false}))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
-
-    // Example usage 2
-    await validateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
-        IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>(
-        rules, validationContext, functionsTable, ruleFunctionsTable, {dryRun: false}); // Should not throw
-    console.log(JSON.stringify(await evaluateRules<IExamplePayload, IExampleContext, IExampleRuleFunctionTable,
-        IExampleFunctionTable, IExampleContextIgnore, IExampleCustomEngineRuleFuncRunOptions>(rules, context, functionsTable, ruleFunctionsTable, false, {dryRun: false}))); // [{"message":"user a@b.com should not equal a@b.com","custom":579}]
-})();
+const engine = new RulesEngine(functions, ruleFunctions);
+const results = await engine.evaluateAll(rules, context, {});
+// Returns all matching rules with their consequences
 ```
+
+---
+
+## API Reference
+
+### Core Functions
+
+| Function | Description |
+|----------|-------------|
+| `evaluate(expr, ctx, funcs, opts?)` | Evaluate expression, returns `boolean` |
+| `evaluateWithReason(expr, ctx, funcs, opts?)` | Evaluate and return the minimal matching sub-expression |
+| `validate(expr, ctx, funcs, opts?)` | Validate expression structure against a context |
+
+### Classes
+
+| Class | Description |
+|-------|-------------|
+| `ExpressionHandler` | Reusable expression evaluator instance |
+| `RulesEngine` | Rule engine for evaluating multiple rules |
+
+### `evaluateWithReason` Behavior
+
+Returns `{ result: boolean, reason: Expression }` where `reason` is the minimal sub-expression that determined the result:
+
+- **`or` = true**: Returns `{or: [firstTrueExpr]}`
+- **`or` = false**: Returns `{or: [allExprs]}` (all failed)
+- **`and` = false**: Returns `{and: [firstFalseExpr]}`
+- **`and` = true**: Returns `{and: [allExprs]}` (all passed)
+
+---
+
+## Examples
+
+For more examples, see the [`/src/examples`](./src/examples) and [`/src/test`](./src/test) directories.
+
+---
+
+## License
+
+MIT - See [LICENSE](./LICENSE) for details.
