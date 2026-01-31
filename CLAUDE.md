@@ -68,3 +68,14 @@ Right-hand side can be: literal value, `{ref: "path"}` to reference context, or 
 ## Node.js Support
 
 Supports Node.js ^20, ^22, or ^24
+
+## CI/CD
+
+- CI runs on **Ubuntu, macOS, and Windows**
+- Tests run across all supported Node.js versions
+- Primary checks (Snyk, coverage, type tests) run on Ubuntu + Node 24
+
+## Cross-Platform Notes
+
+- Avoid shell-specific glob patterns in npm scripts (let tools handle glob expansion internally)
+- Use forward slashes in paths within config files (ESLint, TypeScript handle this cross-platform)
