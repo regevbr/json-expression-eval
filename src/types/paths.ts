@@ -1,5 +1,5 @@
-import {Any, List, Misc, Union} from 'ts-toolbelt';
-import {NonNullableFlat} from 'ts-toolbelt/out/Object/NonNullable';
+import { Any, List, Misc, Union } from 'ts-toolbelt';
+import { NonNullableFlat } from 'ts-toolbelt/out/Object/NonNullable';
 
 type UnionOf<A> =
     A extends List.List

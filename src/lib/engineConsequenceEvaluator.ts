@@ -1,5 +1,5 @@
-import {ResolvedConsequence, Context, RuleConsequence, RuleConsequenceMessagePart} from '../types';
-import {getFromPath} from './helpers';
+import { ResolvedConsequence, Context, RuleConsequence, RuleConsequenceMessagePart } from '../types';
+import { getFromPath } from './helpers';
 
 export const evaluateEngineConsequence = async <ConsequencePayload, C extends Context, Ignore = never>
 (context: C, consequence: RuleConsequence<ConsequencePayload, C, Ignore>)
@@ -15,7 +15,7 @@ export const evaluateEngineConsequence = async <ConsequencePayload, C extends Co
       if (typeof msgPart === 'string') {
         return msgPart;
       }
-      const {value, exists} = getFromPath(context, msgPart.ref);
+      const { value, exists } = getFromPath(context, msgPart.ref);
       if (!exists) {
         throw new Error(`Invalid consequence ref - unknown context key ${msgPart.ref}`)
       }

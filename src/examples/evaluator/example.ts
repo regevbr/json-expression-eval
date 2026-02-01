@@ -1,6 +1,6 @@
-import {ExpressionContext, ExpressionFunction, getEvaluator, CustomEvaluatorFuncRunOptions} from './lib/evaluator';
-import {Expression, ExpressionParts} from '../..';
-import {Moment} from 'moment';
+import { ExpressionContext, ExpressionFunction, getEvaluator, CustomEvaluatorFuncRunOptions } from './lib/evaluator';
+import { Expression, ExpressionParts } from '../..';
+import { Moment } from 'moment';
 import moment = require('moment');
 
 const context: ExpressionContext = {
@@ -17,7 +17,7 @@ const context: ExpressionContext = {
 
 const run = async (expr: Expression<ExpressionContext, ExpressionFunction, Moment, CustomEvaluatorFuncRunOptions>,
                    ctx: ExpressionContext) => {
-    const result = await getEvaluator(expression).evaluate(ctx, {dryRun: true});
+    const result = await getEvaluator(expression).evaluate(ctx, { dryRun: true });
     console.log(`Evaluating expression ${JSON.stringify(expr)} using context ${JSON.stringify(ctx)}`);
     console.log(`Result: ${result}`);
 };
@@ -30,8 +30,8 @@ run(expression, context);
 
 expression = {
     and: [
-        {user: 'a@b.com'},
-        {maxCount: 5},
+        { user: 'a@b.com' },
+        { maxCount: 5 },
     ],
 };
 
@@ -39,8 +39,8 @@ run(expression, context);
 
 expression = {
     and: [
-        {user: 'a@b.com'},
-        {times: {eq:{ref:'nested.value'}}},
+        { user: 'a@b.com' },
+        { times: { eq: { ref: 'nested.value' } } },
     ],
 };
 
@@ -48,8 +48,8 @@ run(expression, context);
 
 expression = {
     and: [
-        {user: 'a@b.com'},
-        {times: {eq:{op:'+', lhs: {ref:'nested.value'}, rhs: 1}}},
+        { user: 'a@b.com' },
+        { times: { eq: { op: '+', lhs: { ref: 'nested.value' }, rhs: 1 } } },
     ],
 };
 
@@ -57,8 +57,8 @@ run(expression, context);
 
 expression = {
     and: [
-        {user: 'a@b.com'},
-        {maxCount: 1},
+        { user: 'a@b.com' },
+        { maxCount: 1 },
     ],
 };
 
@@ -66,8 +66,8 @@ run(expression, context);
 
 expression = {
     or: [
-        {user: 'a@b.com'},
-        {maxCount: 6},
+        { user: 'a@b.com' },
+        { maxCount: 6 },
     ],
 };
 
@@ -75,8 +75,8 @@ run(expression, context);
 
 expression = {
     or: [
-        {not: {user: 'a@b.com'}},
-        {maxCount: 1},
+        { not: { user: 'a@b.com' } },
+        { maxCount: 1 },
     ],
 };
 
@@ -84,14 +84,14 @@ run(expression, context);
 
 expression = {
     or: [
-        {times: {lt: 5}},
-        {times: {between: [7, 9] as const}},
-        {times: {inq: [7, 9]}},
-        {userId: {inq: ['a', 'b']}},
-        {userId: {nin: ['a', 'b']}},
-        {userId: {regexp: '^a'}},
-        {userId: {regexpi: '^a'}},
-        {times: {gte: 10}},
+        { times: { lt: 5 } },
+        { times: { between: [7, 9] as const } },
+        { times: { inq: [7, 9] } },
+        { userId: { inq: ['a', 'b'] } },
+        { userId: { nin: ['a', 'b'] } },
+        { userId: { regexp: '^a' } },
+        { userId: { regexpi: '^a' } },
+        { times: { gte: 10 } },
     ],
 };
 
@@ -99,8 +99,8 @@ run(expression, context);
 
 expression = {
     or: [
-        {times: 3},
-        {times: {gte: 10}},
+        { times: 3 },
+        { times: { gte: 10 } },
     ],
 };
 
@@ -108,7 +108,7 @@ run(expression, context);
 
 expression = {
     or: [
-        {times: 3},
+        { times: 3 },
         {
             'nested.value': 5,
         },

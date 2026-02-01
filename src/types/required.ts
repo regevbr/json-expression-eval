@@ -1,4 +1,4 @@
-import {Union, Misc} from 'ts-toolbelt'
+import { Union, Misc } from 'ts-toolbelt'
 
 type _NonNullable<O, Ignore> = {
     [K in keyof O]-?: O[K] extends Misc.BuiltIn | Ignore

@@ -1,6 +1,6 @@
-import {Object, String, Union} from 'ts-toolbelt';
-import {Paths} from './paths';
-import {NonNullable} from './required';
+import { Object, String, Union } from 'ts-toolbelt';
+import { Paths } from './paths';
+import { NonNullable } from './required';
 
 export type FuncCompareOp<C extends Context, F extends FunctionsTable<C, CustomEvaluatorFuncRunOptions>,
     K extends keyof F, CustomEvaluatorFuncRunOptions> =

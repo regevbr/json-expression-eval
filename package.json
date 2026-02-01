@@ -1,6 +1,6 @@
 {
   "name": "json-expression-eval",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "description": "json serializable rule engine / boolean expression evaluator",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,6 +15,7 @@
     "compile": "tsc -p tsconfig.build.json",
     "test:cover": "vitest run --coverage",
     "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "ci": "pnpm run lint && pnpm run compile && pnpm run test:tsd && pnpm run test:cover"
   },
   "repository": {

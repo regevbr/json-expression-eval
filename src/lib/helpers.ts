@@ -1,4 +1,4 @@
-import {Any} from 'ts-toolbelt';
+import { Any } from 'ts-toolbelt';
 
 export const getFromPath = <O extends object>(obj: O, path: string)
     : { value: any, exists: boolean } => {
@@ -9,7 +9,7 @@ export const getFromPath = <O extends object>(obj: O, path: string)
         exists = exists && accessible && key in acc;
         return accessible ? acc[key] : undefined;
     }, obj);
-    return {value, exists};
+    return { value, exists };
 };
 
 export const objectKeys = Object.keys as <T>(o: T) => (Extract<keyof T, string>)[];

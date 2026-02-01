@@ -1,4 +1,4 @@
-import {ExpressionContext, engine, MyRule} from './lib/engine';
+import { ExpressionContext, engine, MyRule } from './lib/engine';
 import moment = require('moment');
 
 const context: ExpressionContext = {
@@ -14,7 +14,7 @@ const context: ExpressionContext = {
 };
 
 const run = async (_rules: MyRule[], _context: ExpressionContext) => {
-  const result = await engine.evaluateAll(_rules, _context, {dryRun: false});
+  const result = await engine.evaluateAll(_rules, _context, { dryRun: false });
   console.log(`Evaluating rules ${JSON.stringify(_rules)} using context ${JSON.stringify(_context)}`);
   console.log(`Result: ${JSON.stringify(result)}\n\n`);
 };
@@ -47,10 +47,10 @@ rules = [
   {
     condition: {
       and: [
-        {user: 'a@b.com'},
-        {maxCount: 5},
-        {times: {eq:{ref:'nested.value'}}},
-        {times: {lte:{op:'+', lhs: {ref:'nested.value'}, rhs: 1}}},
+        { user: 'a@b.com' },
+        { maxCount: 5 },
+        { times: { eq: { ref: 'nested.value' } } },
+        { times: { lte: { op: '+', lhs: { ref: 'nested.value' }, rhs: 1 } } },
       ],
     },
     consequence: {
@@ -76,8 +76,8 @@ rules = [
   {
     condition: {
       and: [
-        {user: 'a@b.com'},
-        {maxCount: 1},
+        { user: 'a@b.com' },
+        { maxCount: 1 },
       ],
     },
     consequence: {
@@ -103,8 +103,8 @@ rules = [
   {
     condition: {
       and: [
-        {not: {user: 'a@b.com'}},
-        {maxCount: 1},
+        { not: { user: 'a@b.com' } },
+        { maxCount: 1 },
       ],
     },
     consequence: {
@@ -146,7 +146,7 @@ rules = [
   },
   {
     condition: {
-      times: {gte: 10},
+      times: { gte: 10 },
     },
     consequence: {
       message: [

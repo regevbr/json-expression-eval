@@ -1,6 +1,6 @@
-import {functionsTable, ruleFunctionsTable} from './functionsFactory';
-import {RulesEngine, Rule} from '../../..';
-import {Moment} from 'moment';
+import { functionsTable, ruleFunctionsTable } from './functionsFactory';
+import { RulesEngine, Rule } from '../../..';
+import { Moment } from 'moment';
 
 export interface ExpressionContext {
   userId: string;
@@ -24,4 +24,3 @@ export type MyRule = Rule<Payload, RuleFunction, ExpressionContext, ExpressionFu
 export const engine = new RulesEngine<Payload, ExpressionContext, RuleFunction, ExpressionFunction,
     Ignore, CustomEngineRuleFuncRunOptions>
 (functionsTable, ruleFunctionsTable);
-
