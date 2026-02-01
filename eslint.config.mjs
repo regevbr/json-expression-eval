@@ -65,6 +65,38 @@ export default [
 
             // Disable multiline check - TypeScript handles this
             'no-unexpected-multiline': 'off',
+
+            // Disallow multiple spaces
+            'no-multi-spaces': 'error',
+
+            // Whitespace rules
+            'no-trailing-spaces': 'error',
+            'eol-last': ['error', 'always'],
+            'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0, maxBOF: 0 }],
+
+            // Spacing rules
+            'keyword-spacing': ['error', { before: true, after: true }],
+            'space-before-blocks': 'error',
+            'space-infix-ops': 'error',
+            'comma-spacing': ['error', { before: false, after: true }],
+            'semi-spacing': ['error', { before: false, after: true }],
+            'key-spacing': ['error', { beforeColon: false, afterColon: true }],
+            'object-curly-spacing': ['error', 'always'],
+            'array-bracket-spacing': ['error', 'never'],
+            'space-in-parens': ['error', 'never'],
+            'computed-property-spacing': ['error', 'never'],
+
+            // Brace and block style
+            'brace-style': ['error', '1tbs', { allowSingleLine: true }],
+            'curly': ['error', 'all'],
+
+            // Other common rules
+            'arrow-spacing': ['error', { before: true, after: true }],
+            'template-curly-spacing': ['error', 'never'],
+            'rest-spread-spacing': ['error', 'never'],
+            'prefer-const': 'error',
+            'no-var': 'error',
+            'eqeqeq': ['error', 'always'],
         },
     },
     {

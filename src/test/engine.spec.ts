@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {ValidationContext, RulesEngine, Rule, validateRules, evaluateRules} from '../';
+import { ValidationContext, RulesEngine, Rule, validateRules, evaluateRules } from '../';
 
 const functionsTable = {
     user: (user: string, context: { userId: string }, runOpts: {validation: boolean; custom: {dryRun: boolean}})
@@ -65,7 +65,7 @@ describe('engine', () => {
             // @ts-ignore
             {
                 consequence: {
-                    message: ['user', {ref: 'userId'}, 'should not equal b'],
+                    message: ['user', { ref: 'userId' }, 'should not equal b'],
                     custom: 579,
                 },
             },
@@ -85,7 +85,7 @@ describe('engine', () => {
                 value: 7,
             },
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEngineRuleFuncRunOptions = { dryRun: false };
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
@@ -138,7 +138,7 @@ describe('engine', () => {
                 value: 7,
             },
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEngineRuleFuncRunOptions = { dryRun: false };
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
@@ -175,7 +175,7 @@ describe('engine', () => {
                     'userIds': 'n',
                 },
                 consequence: {
-                    message: ['user', {ref: 'userId'}, 'should not equal b'],
+                    message: ['user', { ref: 'userId' }, 'should not equal b'],
                     custom: 579,
                 },
             },
@@ -188,7 +188,7 @@ describe('engine', () => {
                 value: 7,
             },
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEngineRuleFuncRunOptions = { dryRun: false };
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
@@ -238,7 +238,7 @@ describe('engine', () => {
                 value: 7,
             },
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEngineRuleFuncRunOptions = { dryRun: false };
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
@@ -269,7 +269,7 @@ describe('engine', () => {
                     userComplex: 'b',
                 },
                 consequence: {
-                    message: ['user', {ref: 'userId'}, 'should not equal b'],
+                    message: ['user', { ref: 'userId' }, 'should not equal b'],
                     custom: 579,
                 },
             },
@@ -280,21 +280,21 @@ describe('engine', () => {
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
-        await expect(engine.validate(rules, validationContext, {dryRun: false}))
+        await expect(engine.validate(rules, validationContext, { dryRun: false }))
             .rejects.toThrow('Failed user validation');
-        expect(await engine.validate(rules, validationContext, {dryRun: true})).toBeUndefined();
+        expect(await engine.validate(rules, validationContext, { dryRun: true })).toBeUndefined();
         await expect(validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, {dryRun: false}))
+            functionsTable, ruleFunctionsTable, { dryRun: false }))
             .rejects.toThrow('Failed user validation');
         expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, {dryRun: true})).toBeUndefined();
+            functionsTable, ruleFunctionsTable, { dryRun: true })).toBeUndefined();
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'b',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: false})).toEqual([
+            , ruleFunctionsTable, true, { dryRun: false })).toEqual([
             {
                 'custom': 579,
                 'message': 'user b should not equal b',
@@ -302,7 +302,7 @@ describe('engine', () => {
         ]);
         expect(await engine.evaluate(rules, {
             userId: 'b',
-        }, {dryRun: false})).toEqual(
+        }, { dryRun: false })).toEqual(
             {
                 'custom': 579,
                 'message': 'user b should not equal b',
@@ -312,15 +312,15 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'a',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: false})).toEqual(undefined);
+            , ruleFunctionsTable, true, { dryRun: false })).toEqual(undefined);
         expect(await engine.evaluate(rules, {
             userId: 'a',
-        }, {dryRun: false})).toEqual(undefined);
+        }, { dryRun: false })).toEqual(undefined);
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'a',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: true})).toEqual([
+            , ruleFunctionsTable, true, { dryRun: true })).toEqual([
             {
                 'custom': 579,
                 'message': 'user a should not equal b',
@@ -328,7 +328,7 @@ describe('engine', () => {
         ]);
         expect(await engine.evaluate(rules, {
             userId: 'a',
-        }, {dryRun: true})).toEqual(
+        }, { dryRun: true })).toEqual(
             {
                 'custom': 579,
                 'message': 'user a should not equal b',
@@ -351,21 +351,21 @@ describe('engine', () => {
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
-        await expect(engine.validate(rules, validationContext, {dryRun: false}))
+        await expect(engine.validate(rules, validationContext, { dryRun: false }))
             .rejects.toThrow('Failed user validation');
-        expect(await engine.validate(rules, validationContext, {dryRun: true})).toBeUndefined();
+        expect(await engine.validate(rules, validationContext, { dryRun: true })).toBeUndefined();
         await expect(validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, {dryRun: false}))
+            functionsTable, ruleFunctionsTable, { dryRun: false }))
             .rejects.toThrow('Failed user validation');
         expect(await validateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, validationContext,
-            functionsTable, ruleFunctionsTable, {dryRun: true})).toBeUndefined();
+            functionsTable, ruleFunctionsTable, { dryRun: true })).toBeUndefined();
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'b',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: false})).toEqual([
+            , ruleFunctionsTable, true, { dryRun: false })).toEqual([
             {
                 'custom': 543,
                 'message': 'Username b is not allowed',
@@ -373,7 +373,7 @@ describe('engine', () => {
         ]);
         expect(await engine.evaluate(rules, {
             userId: 'b',
-        }, {dryRun: false})).toEqual(
+        }, { dryRun: false })).toEqual(
             {
                 'custom': 543,
                 'message': 'Username b is not allowed',
@@ -383,15 +383,15 @@ describe('engine', () => {
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'a',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: false})).toEqual(undefined);
+            , ruleFunctionsTable, true, { dryRun: false })).toEqual(undefined);
         expect(await engine.evaluate(rules, {
             userId: 'a',
-        }, {dryRun: false})).toEqual(undefined);
+        }, { dryRun: false })).toEqual(undefined);
         expect(await evaluateRules<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>(rules, {
                 userId: 'a',
             }, functionsTable
-            , ruleFunctionsTable, true, {dryRun: true})).toEqual([
+            , ruleFunctionsTable, true, { dryRun: true })).toEqual([
             {
                 'custom': 543,
                 'message': 'Username b is not allowed',
@@ -399,7 +399,7 @@ describe('engine', () => {
         ]);
         expect(await engine.evaluate(rules, {
             userId: 'a',
-        }, {dryRun: true})).toEqual(
+        }, { dryRun: true })).toEqual(
             {
                 'custom': 543,
                 'message': 'Username b is not allowed',
@@ -422,7 +422,7 @@ describe('engine', () => {
                     user: 'b',
                 },
                 consequence: {
-                    message: ['user', {ref: 'userId'}, 'should not equal b'],
+                    message: ['user', { ref: 'userId' }, 'should not equal b'],
                     custom: 579,
                 },
             },
@@ -431,7 +431,7 @@ describe('engine', () => {
                     'nested.value': 10,
                 },
                 consequence: {
-                    message: ['nested value', {ref: 'nested.value'}, 'should not equal 7 days'],
+                    message: ['nested value', { ref: 'nested.value' }, 'should not equal 7 days'],
                     custom: 578,
                 },
             },
@@ -454,7 +454,7 @@ describe('engine', () => {
                 value: 7,
             },
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEngineRuleFuncRunOptions = { dryRun: false };
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
@@ -487,7 +487,7 @@ describe('engine', () => {
                     user: 'b',
                 },
                 consequence: {
-                    message: ['user', {ref: 'userId'}, 'should not equal b'],
+                    message: ['user', { ref: 'userId' }, 'should not equal b'],
                     custom: 579,
                 },
             },
@@ -496,7 +496,7 @@ describe('engine', () => {
                     'nested.value': 7,
                 },
                 consequence: {
-                    message: ['nested value', {ref: 'nested.value'}, 'should not equal 7 days'],
+                    message: ['nested value', { ref: 'nested.value' }, 'should not equal 7 days'],
                     custom: 578,
                 },
             },
@@ -519,7 +519,7 @@ describe('engine', () => {
                 value: 7,
             },
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEngineRuleFuncRunOptions = { dryRun: false };
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
@@ -564,7 +564,7 @@ describe('engine', () => {
                     user: 'b',
                 },
                 consequence: {
-                    message: ['user', {ref: 'userId'}, 'should not equal b'],
+                    message: ['user', { ref: 'userId' }, 'should not equal b'],
                     custom: 579,
                 },
             },
@@ -573,7 +573,7 @@ describe('engine', () => {
                     'nested.value': 9,
                 },
                 consequence: {
-                    message: ['nested value', {ref: 'nested.value'}, 'should not equal 9 days'],
+                    message: ['nested value', { ref: 'nested.value' }, 'should not equal 9 days'],
                     custom: 578,
                 },
             },
@@ -596,7 +596,7 @@ describe('engine', () => {
                 value: 7,
             },
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEngineRuleFuncRunOptions = { dryRun: false };
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
@@ -641,7 +641,7 @@ describe('engine', () => {
                     user: 'a',
                 },
                 consequence: {
-                    message: ['user', {ref: 'userId'}, 'should not equal a'],
+                    message: ['user', { ref: 'userId' }, 'should not equal a'],
                     custom: 579,
                 },
             },
@@ -650,7 +650,7 @@ describe('engine', () => {
                     'nested.value': 9,
                 },
                 consequence: {
-                    message: ['nested value', {ref: 'nested.value'}, 'should not equal 9 days'],
+                    message: ['nested value', { ref: 'nested.value' }, 'should not equal 9 days'],
                     custom: 578,
                 },
             },
@@ -673,7 +673,7 @@ describe('engine', () => {
                 value: 7,
             },
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEngineRuleFuncRunOptions = { dryRun: false };
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);
@@ -727,7 +727,7 @@ describe('engine', () => {
                     'nested.value': 9,
                 },
                 consequence: {
-                    message: ['nested value', {ref: 'nested.value'}, 'should not equal 9 days'],
+                    message: ['nested value', { ref: 'nested.value' }, 'should not equal 9 days'],
                     custom: 578,
                 },
             },
@@ -750,7 +750,7 @@ describe('engine', () => {
                 value: 7,
             },
         };
-        const runOpts: CustomEngineRuleFuncRunOptions = {dryRun: false};
+        const runOpts: CustomEngineRuleFuncRunOptions = { dryRun: false };
         const engine = new RulesEngine<number, Con, RuleFunction, ExpressionFunction,
             Ignore, CustomEngineRuleFuncRunOptions>
         (functionsTable, ruleFunctionsTable);

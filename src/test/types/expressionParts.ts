@@ -1,5 +1,6 @@
-import {ExpressionParts} from '../../types';
-import {Any, Test} from 'ts-toolbelt';
+/* eslint-disable prefer-const */
+import { ExpressionParts } from '../../types';
+import { Any, Test } from 'ts-toolbelt';
 
 interface ExpressionContext {
     str: string;

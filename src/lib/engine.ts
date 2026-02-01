@@ -1,8 +1,8 @@
-import {RuleFunctionsTable, Rule, FunctionsTable, Context, ResolvedConsequence, ValidationContext} from '../types';
-import {evaluate, validate} from './evaluator';
-import {objectKeys} from './helpers';
-import {isRuleFunction} from './typeGuards';
-import {evaluateEngineConsequence} from './engineConsequenceEvaluator';
+import { RuleFunctionsTable, Rule, FunctionsTable, Context, ResolvedConsequence, ValidationContext } from '../types';
+import { evaluate, validate } from './evaluator';
+import { objectKeys } from './helpers';
+import { isRuleFunction } from './typeGuards';
+import { evaluateEngineConsequence } from './engineConsequenceEvaluator';
 
 async function run<ConsequencePayload, C extends Context,
     RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,

@@ -1,5 +1,5 @@
-import {userFunc} from './functions/userFunc';
-import {counterFunc} from './functions/counterFunc';
+import { userFunc } from './functions/userFunc';
+import { counterFunc } from './functions/counterFunc';
 
 export const functionsTable = {
     user: userFunc,

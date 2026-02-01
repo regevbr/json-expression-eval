@@ -41,7 +41,7 @@ import {
 const extractValueOrRef = <C extends Context>(context: C, validation: boolean, valueOrRef: Primitive | WithRef)
     : Primitive => {
     if (isWithRef(valueOrRef)) {
-        const {value, exists} = getFromPath(context, valueOrRef.ref);
+        const { value, exists } = getFromPath(context, valueOrRef.ref);
         if (validation && !exists) {
             throw new Error(`Invalid expression - unknown context key ${valueOrRef.ref}`);
         }
@@ -167,15 +167,15 @@ async function handleAndOp<C extends Context, F extends FunctionsTable<C, Custom
             currExpression, context, functionsTable, validation, runOptions);
         if (!runResult.result && !validation) {
             // AND fails on first false
-            const reason = {and: [runResult.reason] as const} as
+            const reason = { and: [runResult.reason] as const } as
                 Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
-            return {result: false, reason};
+            return { result: false, reason };
         }
         reasons.push(runResult.reason);
     }
     return {
         result: true,
-        reason: {and: reasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+        reason: { and: reasons } as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
     };
 }
 
@@ -193,14 +193,15 @@ async function handleOrOp<C extends Context, F extends FunctionsTable<C, CustomE
             currExpression, context, functionsTable, validation, runOptions);
         if (runResult.result && !validation) {
             // OR succeeds on first true
-            const reason = {or: [runResult.reason] as const} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
-            return {result: true, reason};
+            const reason =
+                { or: [runResult.reason] as const } as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>;
+            return { result: true, reason };
         }
         reasons.push(runResult.reason);
     }
     return {
         result: false,
-        reason: {or: reasons} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+        reason: { or: reasons } as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
     };
 }
 
@@ -225,7 +226,7 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
             expression.not, context, functionsTable, validation, runOptions);
         return {
             result: !innerResult.result,
-            reason: {not: innerResult.reason} as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
+            reason: { not: innerResult.reason } as Expression<C, F, Ignore, CustomEvaluatorFuncRunOptions>,
         };
     } else if (isFunctionCompareOp<C, F, Ignore, CustomEvaluatorFuncRunOptions>(expression,
         functionsTable, expressionKey)) {
@@ -233,9 +234,9 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
             custom: runOptions,
             validation,
         });
-        return {result, reason: expression};
+        return { result, reason: expression };
     } else {
-        const {value: contextValue, exists} = getFromPath(context, expressionKey);
+        const { value: contextValue, exists } = getFromPath(context, expressionKey);
         if (validation && !exists) {
             throw new Error(`Invalid expression - unknown context key ${expressionKey}`);
         }
@@ -244,7 +245,7 @@ async function run<C extends Context, F extends FunctionsTable<C, CustomEvaluato
                 [expressionKey as any as keyof PropertyCompareOps<C, Ignore>] as
                 unknown as ExtendedCompareOp<any, any, any>,
             expressionKey, contextValue, context, validation);
-        return {result, reason: expression};
+        return { result, reason: expression };
     }
 }
 

@@ -3,7 +3,7 @@ import {
     FunctionsTable,
     ValidationContext, RuleFunctionsTable, Rule, ResolvedConsequence
 } from '../types';
-import {evaluateRules, validateRules} from './engine';
+import { evaluateRules, validateRules } from './engine';
 
 export class RulesEngine<ConsequencePayload, C extends Context,
     RF extends RuleFunctionsTable<C, ConsequencePayload, CustomEngineRuleFuncRunOptions>,

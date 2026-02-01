@@ -1,6 +1,6 @@
-import {functionsTable} from './functionsFactory';
-import {Expression, ExpressionHandler} from '../../..';
-import {Moment} from 'moment';
+import { functionsTable } from './functionsFactory';
+import { Expression, ExpressionHandler } from '../../..';
+import { Moment } from 'moment';
 
 export interface ExpressionContext {
     userId: string;
@@ -22,4 +22,3 @@ export const getEvaluator = (expression: Expression<ExpressionContext, Expressio
     Moment, CustomEvaluatorFuncRunOptions>) =>
     new ExpressionHandler<ExpressionContext, ExpressionFunction, Moment, CustomEvaluatorFuncRunOptions>
     (expression, functionsTable);
-

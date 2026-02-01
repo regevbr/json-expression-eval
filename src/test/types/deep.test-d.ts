@@ -1,5 +1,5 @@
-import {ResolvedConsequence, Rule} from '../../index';
-import {expectType} from 'tsd';
+import { ResolvedConsequence, Rule } from '../../index';
+import { expectType } from 'tsd';
 
 type ExpressionFunction1 = {
     user: (user: string, context: { userId: string },

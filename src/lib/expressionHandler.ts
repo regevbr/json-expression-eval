@@ -1,4 +1,4 @@
-import {evaluate, validate, evaluateWithReason} from './evaluator';
+import { evaluate, validate, evaluateWithReason } from './evaluator';
 import {
     Context,
     Expression,
